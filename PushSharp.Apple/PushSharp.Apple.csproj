@@ -32,10 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApnsHttp2Configuration.cs" />
@@ -52,12 +52,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\HttpTwo\HttpTwo\HttpTwo.csproj">
+      <Project>{dc2f25d9-75be-4c67-b41d-84b738a16b9f}</Project>
+      <Name>HttpTwo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PushSharp.Core\PushSharp.Core.csproj">
       <Project>{2B44A8DA-60BC-4577-A2D7-D9D53F164B2E}</Project>
       <Name>PushSharp.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

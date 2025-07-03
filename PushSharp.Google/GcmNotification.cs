@@ -75,7 +75,7 @@ namespace PushSharp.Google
         public List<string> RegistrationIds { get; set; }
 
         /// <summary>
-        /// Registration ID or Group/Topic to send notification to.  Overrides RegsitrationIds.
+        /// Registration ID or Group/Topic to send notification to.  Overrides RegistrationIds.
         /// </summary>
         /// <value>To.</value>
         [JsonProperty ("to")]

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using System.Collections.Specialized;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Newtonsoft.Json.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace PushSharp.Apple
 {
@@ -66,7 +64,7 @@ namespace PushSharp.Apple
             var url = string.Format ("https://{0}:{1}/3/device/{2}", 
                           Configuration.Host,
                           Configuration.Port,
-                          notification.DeviceToken);            
+                          notification.DeviceToken);
             var uri = new Uri (url);
 
             var payload = notification.Payload.ToString ();
@@ -115,7 +113,7 @@ namespace PushSharp.Apple
                     }
 
                     // Expired
-                    throw new PushSharp.Core.DeviceSubscriptonExpiredException {
+                    throw new PushSharp.Core.DeviceSubscriptionExpiredException(notification) {
                         OldSubscriptionId = notification.DeviceToken,
                         NewSubscriptionId = null,
                         ExpiredAt = timestamp
@@ -132,4 +130,3 @@ namespace PushSharp.Apple
         }
     }
 }
-

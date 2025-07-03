@@ -19,6 +19,12 @@ namespace PushSharp.Apple
         Unknown = 255
     }
 
+    public enum ApnsHttp2FailureReason
+    {
+        Unknown,
+    }
+
+
     public class ApnsNotificationException : NotificationException
     {
         public ApnsNotificationException(byte errorStatusCode, ApnsNotification notification)
@@ -50,7 +56,39 @@ namespace PushSharp.Apple
         }
     }
 
-    public class ApnsConnectionException : Exception
+	public class ApnsHttp2NotificationException : NotificationException
+	{
+		public ApnsHttp2NotificationException(byte errorStatusCode, ApnsHttp2Notification notification)
+			: this(ToErrorStatusCode(errorStatusCode), notification)
+		{ }
+
+		public ApnsHttp2NotificationException(ApnsHttp2FailureReason errorStatusCode, ApnsHttp2Notification notification)
+			: base("Apns notification error: '" + errorStatusCode + "'", notification)
+		{
+			Notification = notification;
+			ErrorStatusCode = errorStatusCode;
+		}
+
+		public ApnsHttp2NotificationException(ApnsHttp2FailureReason errorStatusCode, ApnsHttp2Notification notification, Exception innerException)
+			: base("Apns notification error: '" + errorStatusCode + "'", notification, innerException)
+		{
+			Notification = notification;
+			ErrorStatusCode = errorStatusCode;
+		}
+
+		public new ApnsHttp2Notification Notification { get; set; }
+
+		public ApnsHttp2FailureReason ErrorStatusCode { get; private set; }
+
+		private static ApnsHttp2FailureReason ToErrorStatusCode(byte errorStatusCode)
+		{
+			var s = ApnsHttp2FailureReason.Unknown;
+			Enum.TryParse(errorStatusCode.ToString(), out s);
+			return s;
+		}
+	}
+
+	public class ApnsConnectionException : Exception
     {
         public ApnsConnectionException (string message) : base (message)
         {
