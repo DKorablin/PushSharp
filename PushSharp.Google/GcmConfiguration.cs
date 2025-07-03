@@ -25,7 +25,7 @@ namespace PushSharp.Google
             this.ValidateServerCertificate = false;
         }
 
-		public string SenderID { get; private set; }
+        public string SenderID { get; private set; }
 
         public string SenderAuthToken { get; private set; }
 
