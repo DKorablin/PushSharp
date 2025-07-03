@@ -14,19 +14,22 @@ namespace PushSharp.Google
             this.ValidateServerCertificate = false;
         }
 
-        public GcmConfiguration (string optionalSenderID, string senderAuthToken, string optionalApplicationIdPackageName)
+        public GcmConfiguration (string optionalSenderID, string senderAuthToken, string optionalApplicationIdPackageName, string bearerToken = null)
         {
             this.SenderID = optionalSenderID;
             this.SenderAuthToken = senderAuthToken;
+            this.BearerToken = bearerToken;
             this.ApplicationIdPackageName = optionalApplicationIdPackageName;
             this.GcmUrl = GCM_SEND_URL;
 
             this.ValidateServerCertificate = false;
         }
 
-        public string SenderID { get; private set; }
+		public string SenderID { get; private set; }
 
         public string SenderAuthToken { get; private set; }
+
+        public string BearerToken { get; }
 
         public string ApplicationIdPackageName { get; private set; }
 
