@@ -1,15 +1,14 @@
 ﻿using System;
-using NUnit.Framework;
 using PushSharp.Apple;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [TestFixture]
-    [Category ("Disabled")]
+    [Collection(Settings.DISABLED)]
     public class ApnsRealTest
     {
-        [Test]
+        [Fact(Skip = Settings.DISABLED)]
         public void APNS_Send_Single ()
         {
             var succeeded = 0;
@@ -18,12 +17,8 @@ namespace PushSharp.Tests
 
             var config = new ApnsConfiguration (ApnsConfiguration.ApnsServerEnvironment.Sandbox, Settings.Instance.ApnsCertificateFile, Settings.Instance.ApnsCertificatePassword);
             var broker = new ApnsServiceBroker (config);
-            broker.OnNotificationFailed += (notification, exception) => {
-                failed++;
-            };
-            broker.OnNotificationSucceeded += (notification) => {
-                succeeded++;
-            };
+            broker.OnNotificationFailed += (notification, exception) => failed++;
+            broker.OnNotificationSucceeded += (notification) => succeeded++;
             broker.Start ();
 
             foreach (var dt in Settings.Instance.ApnsDeviceTokens) {
@@ -36,11 +31,11 @@ namespace PushSharp.Tests
 
             broker.Stop ();
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal (attempted, succeeded);
+            Assert.Equal (0, failed);
         }
 
-        [Test]
+        [Fact(Skip = Settings.DISABLED)]
         public void APNS_Feedback_Service ()
         {
             var config = new ApnsConfiguration (
@@ -57,4 +52,3 @@ namespace PushSharp.Tests
         }
     }
 }
-

@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using PushSharp.Apple;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using NUnit.Framework;
+using PushSharp.Apple;
 using PushSharp.Core;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [TestFixture]
-    [Category ("Fake")]
+    [Collection("Fake")]
     public class ApnsTests
     {   
-        [Test]
+        [Fact]
         public async Task APNS_Single_Succeeds ()
         {
             await Apns (0, 1, new List<ApnsResponseFilter> ());
         }
 
-        [Test]
+        [Fact]
         public async Task APNS_Multiple_Succeed ()
         {
             await Apns (0, 3, new List<ApnsResponseFilter> ());
         }
 
-        //[Test]
+        //[Fact]
         public async Task APNS_Send_Many ()
         {
             await Apns (10, 1010, new List<ApnsResponseFilter> {
@@ -35,7 +34,7 @@ namespace PushSharp.Tests
             });
         }
 
-        [Test]
+        [Fact]
         public async Task APNS_Send_Small ()
         {
             await Apns (2, 256, new List<ApnsResponseFilter> () {
@@ -45,7 +44,7 @@ namespace PushSharp.Tests
             });
         }
 
-        //[Test]
+        //[Fact]
         public async Task APNS_Scale_Brokers ()
         {
             await Apns (10, 10100, new List<ApnsResponseFilter> {
@@ -55,7 +54,7 @@ namespace PushSharp.Tests
             }, scale: 2);
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Fail_Connect ()
         {
             int count = 2;
@@ -91,8 +90,8 @@ namespace PushSharp.Tests
 
             Console.WriteLine ("Success: {0}, Failed: {1}", actualSuccess, actualFailed);
 
-            Assert.AreEqual (count, actualFailed);//, "Expected Failed Count not met");
-            Assert.AreEqual (0, actualSuccess);//, "Expected Success Count not met");
+            Assert.Equal (count, actualFailed);//, "Expected Failed Count not met");
+            Assert.Equal (0, actualSuccess);//, "Expected Success Count not met");
         }
 
         public async Task Apns (int expectFailed, int numberNotifications, IEnumerable<ApnsResponseFilter> responseFilters, int batchSize = 1000, int scale = 1)
@@ -128,9 +127,7 @@ namespace PushSharp.Tests
 
 
             var broker = new ApnsServiceBroker (config);
-            broker.OnNotificationFailed += (notification, exception) => {
-                Interlocked.Increment (ref failed);
-            };
+            broker.OnNotificationFailed += (notification, exception) => Interlocked.Increment (ref failed);
             broker.OnNotificationSucceeded += (notification) => Interlocked.Increment (ref success);
 
             broker.Start ();
@@ -158,12 +155,11 @@ namespace PushSharp.Tests
             Console.WriteLine("SERVER: Successful: {0}, Failed: {1}", server.Successful, server.Failed);
             Console.WriteLine("CLIENT: Successful: {0}, Failed: {1}", actualSuccess, actualFailed);
 
-            Assert.AreEqual (expectFailed, actualFailed);
-            Assert.AreEqual (expectedSuccess, actualSuccess);
+            Assert.Equal (expectFailed, actualFailed);
+            Assert.Equal (expectedSuccess, actualSuccess);
 
-            Assert.AreEqual (server.Failed, actualFailed);
-            Assert.AreEqual (server.Successful, actualSuccess);
+            Assert.Equal (server.Failed, actualFailed);
+            Assert.Equal (server.Successful, actualSuccess);
         }
     }
 }
-

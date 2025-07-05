@@ -7,6 +7,7 @@ namespace PushSharp.Tests
 {
     public class Settings
     {
+        public const String DISABLED = "Disabled";
         static Settings instance = null;
 
         public static Settings Instance {

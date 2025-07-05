@@ -1,16 +1,14 @@
-﻿using System;
-using NUnit.Framework;
-using PushSharp.Google;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using PushSharp.Google;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [TestFixture]
-    [Category ("Real")]
+    [Collection("Real")]
     public class GcmRealTests
     {
-        [Test]
+        [Fact]
         public void Gcm_Send_Single ()
         {
             var succeeded = 0;
@@ -41,9 +39,8 @@ namespace PushSharp.Tests
 
             broker.Stop ();
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal (attempted, succeeded);
+            Assert.Equal (0, failed);
         }
     }
 }
-

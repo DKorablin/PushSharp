@@ -1,15 +1,13 @@
-﻿using System;
-using NUnit.Framework;
+﻿using System.Xml.Linq;
 using PushSharp.Windows;
-using System.Xml.Linq;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [TestFixture]
-    [Category ("Disabled")]
+    [Collection ("Disabled")]
     public class WnsRealTests
     {
-        [Test]
+        [Fact]
         public void WNS_Send_Single ()
         {
             var succeeded = 0;
@@ -48,11 +46,11 @@ namespace PushSharp.Tests
 
             broker.Stop ();
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal (attempted, succeeded);
+            Assert.Equal (0, failed);
         }
 
-        [Test]
+        [Fact]
         public void WNS_Send_Mutiple ()
         {
             var succeeded = 0;
@@ -93,9 +91,8 @@ namespace PushSharp.Tests
 
             broker.Stop ();
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal (attempted, succeeded);
+            Assert.Equal (0, failed);
         }
     }
 }
-

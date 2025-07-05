@@ -34,7 +34,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="INotification.cs" />
     <Compile Include="IServiceConnection.cs" />
     <Compile Include="NotificationBlockingCollection.cs" />
@@ -45,6 +44,9 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="PushHttpClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

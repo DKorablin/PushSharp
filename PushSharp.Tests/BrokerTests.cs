@@ -1,22 +1,15 @@
-﻿using NUnit.Framework;
-
-using System;
-using PushSharp.Core;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections.Generic;
-using PushSharp.Apple;
-using Newtonsoft.Json.Linq;
-using System.Threading;
+using PushSharp.Core;
+using Xunit;
 
 
 namespace PushSharp.Tests
 {
-	[TestFixture]
-    [Category ("Core")]
+	[Collection ("Core")]
 	public class BrokerTests
 	{
-		[Test]
+		[Fact]
         public void Broker_Send_Many ()
 		{
             var succeeded = 0;
@@ -44,12 +37,12 @@ namespace PushSharp.Tests
 		
             c.StopAndLog ("Test Took {0} ms");
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal (attempted, succeeded);
+            Assert.Equal (0, failed);
 		}
 
 
-        [Test]
+        [Fact]
         #pragma warning disable 1998
         public async Task Broker_Some_Fail ()
         #pragma warning restore 1998
@@ -84,9 +77,8 @@ namespace PushSharp.Tests
 
             c.StopAndLog ("Test Took {0} ms");
 
-            Assert.AreEqual (attempted - failIds.Length, succeeded);
-            Assert.AreEqual (failIds.Length, failed);
+            Assert.Equal (attempted - failIds.Length, succeeded);
+            Assert.Equal (failIds.Length, failed);
         }
     }
 }
-

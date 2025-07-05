@@ -1,34 +1,30 @@
-﻿using System;
-using NUnit.Framework;
+﻿using System.Collections.Generic;
 using PushSharp.Amazon;
-using System.Collections.Generic;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [TestFixture]
+    [Collection(Settings.DISABLED)]
     public class AdmRealTests
     {
-        [Test]
-        [Category ("Disabled")]
-        public void ADM_Send_Single ()
+        [Fact(Skip = Settings.DISABLED)]
+        public void ADM_Send_Single()
         {
             var succeeded = 0;
             var failed = 0;
             var attempted = 0;
 
-            var config = new AdmConfiguration (Settings.Instance.AdmClientId, Settings.Instance.AdmClientSecret);
-            var broker = new AdmServiceBroker (config);
-            broker.OnNotificationFailed += (notification, exception) => {
-                failed++;
-            };
-            broker.OnNotificationSucceeded += (notification) => {
-                succeeded++;
-            };
-            broker.Start ();
+            var config = new AdmConfiguration(Settings.Instance.AdmClientId, Settings.Instance.AdmClientSecret);
+            var broker = new AdmServiceBroker(config);
+            broker.OnNotificationFailed += (notification, exception) => failed++;
+            broker.OnNotificationSucceeded += (notification) => succeeded++;
+            broker.Start();
 
-            foreach (var regId in Settings.Instance.AdmRegistrationIds) {
+            foreach(var regId in Settings.Instance.AdmRegistrationIds)
+            {
                 attempted++;
-                broker.QueueNotification (new AdmNotification {
+                broker.QueueNotification(new AdmNotification
+                {
                     RegistrationId = regId,
                     Data = new Dictionary<string, string> {
                         { "somekey", "somevalue" }
@@ -36,11 +32,10 @@ namespace PushSharp.Tests
                 });
             }
 
-            broker.Stop ();
+            broker.Stop();
 
-            Assert.AreEqual (attempted, succeeded);
-            Assert.AreEqual (0, failed);
+            Assert.Equal(attempted, succeeded);
+            Assert.Equal(0, failed);
         }
     }
 }
-

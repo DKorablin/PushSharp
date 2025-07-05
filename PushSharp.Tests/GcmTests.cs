@@ -1,16 +1,12 @@
-﻿using System;
-using NUnit.Framework;
-using PushSharp.Google;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+﻿using PushSharp.Google;
+using Xunit;
 
 namespace PushSharp.Tests
 {
-    [Category ("GCM")]
-    [TestFixture]
+    [Collection ("GCM")]
     public class GcmTests
     {
-        [Test]
+        [Fact]
         public void GcmNotification_Priority_Should_Serialize_As_String_High ()
         {
             var n = new GcmNotification ();
@@ -18,10 +14,10 @@ namespace PushSharp.Tests
 
             var str = n.ToString ();
 
-            Assert.IsTrue (str.Contains ("high"));
+            Assert.Contains(str, "high");
         }
 
-        [Test]
+        [Fact]
         public void GcmNotification_Priority_Should_Serialize_As_String_Normal ()
         {
             var n = new GcmNotification ();
@@ -29,8 +25,7 @@ namespace PushSharp.Tests
 
             var str = n.ToString ();
 
-            Assert.IsTrue (str.Contains ("normal"));
+            Assert.Contains(str, "normal");
         }
     }
 }
-
