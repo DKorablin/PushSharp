@@ -24,7 +24,7 @@ namespace PushSharp.Tests
             await Apns (0, 3, new List<ApnsResponseFilter> ());
         }
 
-        //[Fact]
+        [Fact(Skip = Settings.REMOVED)]
         public async Task APNS_Send_Many ()
         {
             await Apns (10, 1010, new List<ApnsResponseFilter> {
@@ -44,7 +44,7 @@ namespace PushSharp.Tests
             });
         }
 
-        //[Fact]
+        [Fact(Skip = Settings.REMOVED)]
         public async Task APNS_Scale_Brokers ()
         {
             await Apns (10, 10100, new List<ApnsResponseFilter> {
@@ -94,7 +94,7 @@ namespace PushSharp.Tests
             Assert.Equal (0, actualSuccess);//, "Expected Success Count not met");
         }
 
-        public async Task Apns (int expectFailed, int numberNotifications, IEnumerable<ApnsResponseFilter> responseFilters, int batchSize = 1000, int scale = 1)
+        private async Task Apns (int expectFailed, int numberNotifications, IEnumerable<ApnsResponseFilter> responseFilters, int batchSize = 1000, int scale = 1)
         {
             var notifications = new List<ApnsNotification> ();
 
@@ -108,7 +108,7 @@ namespace PushSharp.Tests
             await Apns (expectFailed, notifications, responseFilters, batchSize, scale).ConfigureAwait (false);
         }
 
-        public async Task Apns (int expectFailed, List<ApnsNotification> notifications, IEnumerable<ApnsResponseFilter> responseFilters, int batchSize = 1000, int scale = 1)
+        private async Task Apns (int expectFailed, List<ApnsNotification> notifications, IEnumerable<ApnsResponseFilter> responseFilters, int batchSize = 1000, int scale = 1)
         {
             long success = 0;
             long failed = 0;

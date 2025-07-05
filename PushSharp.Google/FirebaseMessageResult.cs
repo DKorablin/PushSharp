@@ -1,60 +1,55 @@
 using System;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace PushSharp.Google
 {
-    public class GcmMessageResult
+    public class FirebaseMessageResult
     {
         [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
-        public string MessageId { get; set; }
+        public String MessageId { get; set; }
 
         [JsonProperty("registration_id", NullValueHandling = NullValueHandling.Ignore)]
-        public string CanonicalRegistrationId { get; set; }
+        public String CanonicalRegistrationId { get; set; }
 
         [JsonIgnore]
         public GcmResponseStatus ResponseStatus { get; set; }
 
         [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
-        public string Error
+        public String Error
         {
             get 
             {
-                switch (ResponseStatus)
+                switch (this.ResponseStatus)
                 {
                 case GcmResponseStatus.Ok:
                     return null;
                 case GcmResponseStatus.Unavailable:
-                    return "Unavailable";
+                    return nameof(GcmResponseStatus.Unavailable);
                 case GcmResponseStatus.QuotaExceeded:
-                    return "QuotaExceeded";
+                    return nameof(GcmResponseStatus.QuotaExceeded);
                 case GcmResponseStatus.NotRegistered:
-                    return "NotRegistered";
+                    return nameof(GcmResponseStatus.NotRegistered);
                 case GcmResponseStatus.MissingRegistrationId:
                     return "MissingRegistration";
                 case GcmResponseStatus.MissingCollapseKey:
-                    return "MissingCollapseKey";
+                    return nameof(GcmResponseStatus.MissingCollapseKey);
                 case GcmResponseStatus.MismatchSenderId:
-                    return "MismatchSenderId";
+                    return nameof(GcmResponseStatus.MismatchSenderId);
                 case GcmResponseStatus.MessageTooBig:
-                    return "MessageTooBig";
+                    return nameof(GcmResponseStatus.MessageTooBig);
                 case GcmResponseStatus.InvalidTtl:
-                    return "InvalidTtl";
+                    return nameof(GcmResponseStatus.InvalidTtl);
                 case GcmResponseStatus.InvalidRegistration:
-                    return "InvalidRegistration";
+                    return nameof(GcmResponseStatus.InvalidRegistration);
                 case GcmResponseStatus.InvalidDataKey:
-                    return "InvalidDataKey";
+                    return nameof(GcmResponseStatus.InvalidDataKey);
                 case GcmResponseStatus.InternalServerError:
-                    return "InternalServerError";
-                case GcmResponseStatus.DeviceQuotaExceeded:
-                    return null;
-                case GcmResponseStatus.CanonicalRegistrationId:
-                    return null;
+                    return nameof(GcmResponseStatus.InternalServerError);
                 case GcmResponseStatus.Error:
-                    return "Error";
-                default:
+                    return nameof(GcmResponseStatus.Error);
+				case GcmResponseStatus.DeviceQuotaExceeded:
+				case GcmResponseStatus.CanonicalRegistrationId:
+				default:
                     return null;
                 }
             }

@@ -10,59 +10,57 @@ using PushSharp.Core;
 
 namespace PushSharp.Google
 {
-	public class FirebaseServiceConnectionFactory : IServiceConnectionFactory<GcmNotification>
+	public class FirebaseServiceConnectionFactory : IServiceConnectionFactory<FirebaseNotification>
 	{
 		public FirebaseServiceConnectionFactory(FirebaseConfiguration configuration)
-			=> this.Configuration = configuration;
+			=> this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-		public FirebaseConfiguration Configuration { get; private set; }
+		public FirebaseConfiguration Configuration { get; }
 
-		public IServiceConnection<GcmNotification> Create()
+		public IServiceConnection<FirebaseNotification> Create()
 			=> new FirebaseServiceConnection(this.Configuration);
 	}
 
-	public class FirebaseServiceBroker : ServiceBroker<GcmNotification>
+	public class FirebaseServiceBroker : ServiceBroker<FirebaseNotification>
 	{
 		public FirebaseServiceBroker(FirebaseConfiguration configuration) : base(new FirebaseServiceConnectionFactory(configuration))
 		{
 		}
 	}
 
-	public class FirebaseServiceConnection : IServiceConnection<GcmNotification>
+	public class FirebaseServiceConnection : IServiceConnection<FirebaseNotification>
 	{
 		private readonly HttpClient _client;
 
-		public FirebaseConfiguration Configuration { get; private set; }
+		public FirebaseConfiguration Configuration { get; }
 
 		public FirebaseServiceConnection(FirebaseConfiguration configuration)
 		{
-			this.Configuration = configuration;
+			this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 			this._client = new HttpClient();
 
 			this._client.DefaultRequestHeaders.UserAgent.Clear();
-			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "3.0"));
+			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "3.1"));
 		}
 
-		public async Task Send(GcmNotification notification)
+		public async Task Send(FirebaseNotification notification)
 		{
-			String token = await this.Configuration.GetJwtTokenAsync();
-
+			var token = await this.Configuration.GetJwtTokenAsync();
 			var json = notification.GetJson();
-
 			var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
 			this._client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + token);
-			var response = await _client.PostAsync(this.Configuration.FirebaseSendUrl, content);
+			var response = await this._client.PostAsync(this.Configuration.FirebaseSendUrl, content);
 
 			if(response.IsSuccessStatusCode)
-				await ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
+				await this.ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
 			else
-				await ProcessErrorResponseAsync(response, notification).ConfigureAwait(false);
+				await this.ProcessErrorResponseAsync(response, notification).ConfigureAwait(false);
 		}
 
-		private async Task ProcessOkResponseAsync(HttpResponseMessage httpResponse, GcmNotification notification)
+		private async Task ProcessOkResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)
 		{
-			var result = new GcmResponse()
+			var result = new FirebaseResponse()
 			{
 				ResponseCode = GcmResponseCode.Ok,
 				OriginalNotification = notification
@@ -79,32 +77,32 @@ namespace PushSharp.Google
 
 			foreach(var r in jsonResults)
 			{
-				var msgResult = new GcmMessageResult();
+				var msgResult = new FirebaseMessageResult()
+				{
+					MessageId = r.Value<String>("message_id"),
+					CanonicalRegistrationId = r.Value<String>("registration_id"),
+					ResponseStatus = GcmResponseStatus.Ok,
+				};
 
-				msgResult.MessageId = r.Value<String>("message_id");
-				msgResult.CanonicalRegistrationId = r.Value<String>("registration_id");
-				msgResult.ResponseStatus = GcmResponseStatus.Ok;
-
-				if(!string.IsNullOrEmpty(msgResult.CanonicalRegistrationId))
+				if(!String.IsNullOrEmpty(msgResult.CanonicalRegistrationId))
 					msgResult.ResponseStatus = GcmResponseStatus.CanonicalRegistrationId;
 				else if(r["error"] != null)
 				{
-					var err = r.Value<string>("error") ?? "";
+					var err = r.Value<String>("error") ?? "";
 					msgResult.ResponseStatus = GetGcmResponseStatus(err);
 				}
 
 				result.Results.Add(msgResult);
 			}
 
-			Int32 index = 0;
+			var index = 0;
 			var multicastException = new GcmMulticastResultException();
 			//Loop through every result in the response
 			// We will raise events for each individual result so that the consumer of the library
 			// can deal with individual registrationId's for the notification
 			foreach(var r in result.Results)
 			{
-				var singleResultNotification = GcmNotification.ForSingleResult(result, index);
-
+				FirebaseNotification singleResultNotification = FirebaseNotification.ForSingleResult(result, index);
 				singleResultNotification.MessageId = r.MessageId;
 
 				switch(r.ResponseStatus)
@@ -117,7 +115,7 @@ namespace PushSharp.Google
 						//Need to swap reg id's
 						//Swap Registrations Id's
 						var newRegistrationId = r.CanonicalRegistrationId;
-						var oldRegistrationId = string.Empty;
+						var oldRegistrationId = String.Empty;
 
 						if(singleResultNotification.RegistrationIds?.Count > 0)
 							oldRegistrationId = singleResultNotification.RegistrationIds[0];
@@ -137,11 +135,11 @@ namespace PushSharp.Google
 					break;
 				case GcmResponseStatus.NotRegistered://Bad registration Id
 					{
-						var oldRegistrationId = string.Empty;
+						var oldRegistrationId = String.Empty;
 
 						if(singleResultNotification.RegistrationIds != null && singleResultNotification.RegistrationIds.Count > 0)
 							oldRegistrationId = singleResultNotification.RegistrationIds[0];
-						else if(!string.IsNullOrEmpty(singleResultNotification.To))
+						else if(!String.IsNullOrEmpty(singleResultNotification.To))
 							oldRegistrationId = singleResultNotification.To;
 
 						multicastException.Failed.Add(singleResultNotification,
@@ -175,7 +173,7 @@ namespace PushSharp.Google
 				throw multicastException;
 		}
 
-		private async Task ProcessErrorResponseAsync(HttpResponseMessage httpResponse, GcmNotification notification)
+		private async Task ProcessErrorResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)
 		{
 			String responseBody;
 

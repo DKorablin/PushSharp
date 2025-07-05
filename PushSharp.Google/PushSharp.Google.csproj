@@ -46,12 +46,10 @@
     <Compile Include="FirebaseServiceConnection.cs" />
     <Compile Include="FirebaseSettings.cs" />
     <Compile Include="FirebaseTokenResponse.cs" />
-    <Compile Include="GcmNotification.cs" />
-    <Compile Include="GcmMessageResult.cs" />
-    <Compile Include="GcmConfiguration.cs" />
-    <Compile Include="GcmResponse.cs" />
+    <Compile Include="FirebaseNotification.cs" />
+    <Compile Include="FirebaseMessageResult.cs" />
+    <Compile Include="FirebaseResponse.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="GcmServiceConnection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

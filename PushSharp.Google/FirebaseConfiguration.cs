@@ -40,7 +40,7 @@ namespace PushSharp.Google
 			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL))
 			using(var form = new MultipartFormDataContent())
 			{
-				var authToken = GetMasterToken();
+				var authToken = this.GetMasterToken();
 				form.Add(new StringContent(authToken), "assertion");
 				form.Add(new StringContent("urn:ietf:params:oauth:grant-type:jwt-bearer"), "grant_type");
 				message.Content = form;
@@ -56,10 +56,9 @@ namespace PushSharp.Google
 					this._firebaseToken = JsonConvert.DeserializeObject<FirebaseTokenResponse>(content);
 					this._firebaseTokenExpiration = DateTime.UtcNow.AddSeconds(this._firebaseToken.ExpiresIn - 10);
 
-					if(String.IsNullOrWhiteSpace(this._firebaseToken.AccessToken) || this._firebaseTokenExpiration < DateTime.UtcNow)
-						throw new InvalidOperationException("Couldn't deserialize firebase token response");
-
-					return this._firebaseToken.AccessToken;
+					return String.IsNullOrWhiteSpace(this._firebaseToken.AccessToken) || this._firebaseTokenExpiration < DateTime.UtcNow
+						? throw new InvalidOperationException("Couldn't deserialize firebase token response")
+						: this._firebaseToken.AccessToken;
 				}
 			}
 		}

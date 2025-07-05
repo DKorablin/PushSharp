@@ -44,11 +44,11 @@
     <Compile Include="ApnsTests.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="AdmRealTests.cs" />
-    <Compile Include="GcmRealTests.cs" />
+    <Compile Include="FirebaseRealTests.cs" />
     <Compile Include="BrokerTests.cs" />
     <Compile Include="ApnsRealTest.cs" />
     <Compile Include="WnsRealTests.cs" />
-    <Compile Include="GcmTests.cs" />
+    <Compile Include="FirebaseTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
