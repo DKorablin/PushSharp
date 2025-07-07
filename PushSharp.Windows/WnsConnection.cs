@@ -1,5 +1,5 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,7 +11,7 @@ using System.Net;
 using System.Text;
 using System.IO;
 
-namespace PushSharp.Windows
+namespace AlphaOmega.PushSharp.Windows
 {
     public class WnsServiceConnectionFactory : IServiceConnectionFactory<WnsNotification>
     {

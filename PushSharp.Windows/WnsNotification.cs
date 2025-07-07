@@ -1,7 +1,7 @@
-﻿using PushSharp.Core;
+﻿using AlphaOmega.PushSharp.Core;
 using System.Xml.Linq;
 
-namespace PushSharp.Windows
+namespace AlphaOmega.PushSharp.Windows
 {
     public abstract class WnsNotification : INotification
     {

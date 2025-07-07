@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Firefox
+namespace AlphaOmega.PushSharp.Firefox
 {
     public class FirefoxConfiguration
     {

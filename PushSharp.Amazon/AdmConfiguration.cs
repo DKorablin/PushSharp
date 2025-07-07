@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Amazon
+namespace AlphaOmega.PushSharp.Amazon
 {
     public class AdmConfiguration
     {

@@ -1,168 +1,109 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json.Linq;
-using System.Net;
-using System.Text;
-using System.Collections.Generic;
 
-namespace PushSharp.Apple
+namespace AlphaOmega.PushSharp.Apple
 {
-    public class ApnsNotification : INotification
-    {
-        static readonly object nextIdentifierLock = new object ();
-        static int nextIdentifier = 1;
+	public class ApnsNotification : INotification
+	{
+		public enum ApnPushType
+		{
+			Background,
+			Alert,
+			Voip
+		}
 
-        static int GetNextIdentifier ()
-        {
-            lock (nextIdentifierLock) {
-                if (nextIdentifier >= int.MaxValue - 10)
-                    nextIdentifier = 1;
+		private static readonly Object nextIdentifierLock = new Object();
+		private static Int32 nextIdentifier = 1;
 
-                return nextIdentifier++;
-            }
-        }
+		private static Int32 GetNextIdentifier()
+		{
+			lock(nextIdentifierLock)
+			{
+				if(nextIdentifier >= Int32.MaxValue - 10)
+					nextIdentifier = 1;
 
-        /// <summary>
-        /// DO NOT Call this unless you know what you are doing!
-        /// </summary>
-        public static void ResetIdentifier ()
-        {
-            lock (nextIdentifierLock)
-                nextIdentifier = 0;
-        }
+				return nextIdentifier++;
+			}
+		}
 
-        public object Tag { get; set; }
+		/// <summary>
+		/// DO NOT Call this unless you know what you are doing!
+		/// </summary>
+		public static void ResetIdentifier()
+		{
+			lock(nextIdentifierLock)
+				nextIdentifier = 0;
+		}
 
-        public int Identifier { get; private set; }
+		public Object Tag { get; set; }
 
-        public string DeviceToken { get; set; }
+		public Int32 Identifier { get; private set; }
 
-        public JObject Payload { get; set; }
+		public String DeviceToken { get; set; }
 
-        /// <summary>
-        /// The expiration date after which Apple will no longer store and forward this push notification.
-        /// If no value is provided, an assumed value of one year from now is used.  If you do not wish
-        /// for Apple to store and forward, set this value to Notification.DoNotStore.
-        /// </summary>
-        public DateTime? Expiration { get; set; }
+		public JObject Payload { get; set; }
 
-        public bool LowPriority { get; set; }
+		/// <summary>
+		/// The date at which the notification is no longer valid.
+		/// This value is a UNIX epoch expressed in seconds (UTC).
+		/// If the value is nonzero, APNs stores the notification and tries to deliver it at least once, repeating the attempt as needed until the specified date.
+		/// If the value is 0, APNs attempts to deliver the notification only once and doesn’t store it.
+		/// 
+		/// A single APNs attempt may involve retries over multiple network interfaces and connections of the destination device.
+		/// Often these retries span over some time period, depending on the network characteristics.
+		/// In addition, a push notification may take some time on the network after APNs sends it to the device.
+		/// APNs uses best efforts to honor the expiry date without any guarantee.
+		/// If the value is nonzero, the notification may deliver after the specified timestamp.
+		/// If the value is 0, the notification may deliver with some delay.
+		/// 
+		/// If you omit this header, APNs stores the push according to APNs storage policy.
+		/// </summary>
+		public DateTime? ApnsExpiration { get; set; }
 
-        public const int DEVICE_TOKEN_BINARY_MIN_SIZE = 32;
-        public const int DEVICE_TOKEN_STRING_MIN_SIZE = 64;
-        public const int MAX_PAYLOAD_SIZE = 2048; //will be 4096 soon
-        public static readonly DateTime DoNotStore = DateTime.MinValue;
-        private static readonly DateTime UNIX_EPOCH = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		public Int32? ApnsPriority { get; set; }
 
-        public ApnsNotification () : this (string.Empty, new JObject ())
-        {
-        }
+		/// <summary>The value of this header must accurately reflect the contents of your notification’s payload.</summary>
+		/// <remarks>If there’s a mismatch, or if the header is missing on required systems, APNs may return an error, delay the delivery of the notification, or drop it altogether.</remarks>
+		public ApnPushType ApnsPushType { get; set; } = ApnPushType.Alert;
 
-        public ApnsNotification (string deviceToken) : this (deviceToken, new JObject ())
-        {
-        }
+		/// <summary>A canonical UUID that’s the unique ID for the notification.</summary>
+		/// <remarks>
+		/// If an error occurs when sending the notification, APNs includes this value when reporting the error to your server.
+		/// Canonical UUIDs are 32 lowercase hexadecimal digits, displayed in five groups separated by hyphens in the form 8-4-4-4-12.
+		/// If you omit this header, APNs creates a UUID for you and returns it in its response.
+		/// </remarks>
+		public Guid? ApnsId { get; set; } = null;
 
-        public ApnsNotification (string deviceToken, JObject payload)
-        {
-            if (!string.IsNullOrEmpty (deviceToken) && deviceToken.Length < DEVICE_TOKEN_STRING_MIN_SIZE)
-                throw new NotificationException ("Invalid DeviceToken Length", this);
+		public const Int32 DEVICE_TOKEN_BINARY_MIN_SIZE = 32;
+		public const Int32 DEVICE_TOKEN_STRING_MIN_SIZE = 64;
+		public const Int32 MAX_PAYLOAD_SIZE = 2048; //will be 4096 soon
+		public static readonly DateTime DoNotStore = DateTime.MinValue;
+		private static readonly DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            DeviceToken = deviceToken;
-            Payload = payload;
+		public ApnsNotification() : this(String.Empty, new JObject())
+		{
+		}
 
-            Identifier = GetNextIdentifier ();
-        }
+		public ApnsNotification(String deviceToken) : this(deviceToken, new JObject())
+		{
+		}
 
-        public bool IsDeviceRegistrationIdValid ()
-        {
-            var r = new System.Text.RegularExpressions.Regex (@"^[0-9A-F]+$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            return r.Match (this.DeviceToken).Success;
-        }
+		public ApnsNotification(String deviceToken, JObject payload)
+		{
+			if(!String.IsNullOrEmpty(deviceToken) && deviceToken.Length < DEVICE_TOKEN_STRING_MIN_SIZE)
+				throw new NotificationException("Invalid DeviceToken Length", this);
 
-        public override string ToString ()
-        {
-            try { 
-                if (Payload != null)
-                     return Payload.ToString(Newtonsoft.Json.Formatting.None);
-            } catch {
-            }
+			this.DeviceToken = deviceToken;
+			this.Payload = payload;
 
-            return "{}";
-        }
+			this.Identifier = GetNextIdentifier();
+		}
 
-        public byte[] ToBytes ()
-        {
-            var builder = new List<byte> ();
-
-            // 1 - Device Token
-            if (string.IsNullOrEmpty (this.DeviceToken))
-                throw new NotificationException ("Missing DeviceToken", this);
-
-            if (!IsDeviceRegistrationIdValid ())
-                throw new NotificationException ("Invalid DeviceToken", this);
-
-            // Turn the device token into bytes
-            byte[] deviceToken = new byte[DeviceToken.Length / 2];
-            for (int i = 0; i < deviceToken.Length; i++) {
-                try {
-                    deviceToken [i] = byte.Parse (DeviceToken.Substring (i * 2, 2), System.Globalization.NumberStyles.HexNumber);
-                } catch (Exception) {
-                    throw new NotificationException ("Invalid DeviceToken", this);
-                }
-            }
-
-            if (deviceToken.Length < DEVICE_TOKEN_BINARY_MIN_SIZE)
-                throw new NotificationException ("Invalid DeviceToken Length", this);
-
-            builder.Add (0x01); // Device Token ID
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder (Convert.ToInt16 (deviceToken.Length))));
-            builder.AddRange (deviceToken);
-
-            // 2 - Payload
-            var payload = Encoding.UTF8.GetBytes (ToString ());
-            if (payload.Length > MAX_PAYLOAD_SIZE)
-                throw new NotificationException ("Payload too large (must be " + MAX_PAYLOAD_SIZE + " bytes or smaller", this);
-
-            builder.Add (0x02); // Payload ID
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder (Convert.ToInt16 (payload.Length))));
-            builder.AddRange (payload);
-
-            // 3 - Identifier
-            builder.Add (0x03);
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder ((Int16)4)));
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder (Identifier)));
-
-            // 4 - Expiration
-            // APNS will not store-and-forward a notification with no expiry, so set it one year in the future
-            // if the client does not provide it.
-            int expiryTimeStamp = -1;
-            if (Expiration != DoNotStore) {
-                DateTime concreteExpireDateUtc = (Expiration ?? DateTime.UtcNow.AddMonths (1)).ToUniversalTime ();
-                TimeSpan epochTimeSpan = concreteExpireDateUtc - UNIX_EPOCH;
-                expiryTimeStamp = (int)epochTimeSpan.TotalSeconds;
-            }
-
-            builder.Add (0x04); // 4 - Expiry ID
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder ((Int16)4)));
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder (expiryTimeStamp)));
-
-            // 5 - Priority
-            //TODO: Add priority
-            var priority = LowPriority ? (byte)5 : (byte)10;
-            builder.Add (0x05); // 5 - Priority
-            builder.AddRange (BitConverter.GetBytes (IPAddress.HostToNetworkOrder ((Int16)1)));
-            builder.Add (priority);
-
-            var frameLength = builder.Count;
-
-            builder.Insert (0, 0x02); // COMMAND 2 for new format
-
-            // Insert the frame length
-            builder.InsertRange (1, BitConverter.GetBytes (IPAddress.HostToNetworkOrder ((Int32)frameLength)));
-
-            return builder.ToArray ();
-        }
-
-    }
+		public Boolean IsDeviceRegistrationIdValid()
+		{
+			var r = new System.Text.RegularExpressions.Regex(@"^[0-9A-F]+$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+			return r.Match(this.DeviceToken).Success;
+		}
+	}
 }
-

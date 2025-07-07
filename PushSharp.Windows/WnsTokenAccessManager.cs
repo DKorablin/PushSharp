@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.Http;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace PushSharp.Windows
+namespace AlphaOmega.PushSharp.Windows
 {
     public class WnsAccessTokenManager
     {

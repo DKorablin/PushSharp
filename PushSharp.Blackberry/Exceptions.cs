@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 
-namespace PushSharp.Blackberry
+namespace AlphaOmega.PushSharp.Blackberry
 {
     public class BlackberryNotificationException : NotificationException
     {

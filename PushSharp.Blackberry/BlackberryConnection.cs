@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Xml.Linq;
 using System.Linq;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 
-namespace PushSharp.Blackberry
+namespace AlphaOmega.PushSharp.Blackberry
 {
     public class BlackberryServiceConnectionFactory : IServiceConnectionFactory<BlackberryNotification>
     {

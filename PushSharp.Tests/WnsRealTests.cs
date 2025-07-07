@@ -1,8 +1,8 @@
 ﻿using System.Xml.Linq;
-using PushSharp.Windows;
+using AlphaOmega.PushSharp.Windows;
 using Xunit;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
     [Collection ("Disabled")]
     public class WnsRealTests

@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2B44A8DA-60BC-4577-A2D7-D9D53F164B2E}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>PushSharp.Core</RootNamespace>
+    <RootNamespace>AlphaOmega.PushSharp.Core</RootNamespace>
     <AssemblyName>PushSharp.Core</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
@@ -44,9 +44,6 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="PushHttpClient.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

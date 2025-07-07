@@ -5,7 +5,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
     public class TestApnsServer
     {

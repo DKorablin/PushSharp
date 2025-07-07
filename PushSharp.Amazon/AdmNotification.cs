@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json.Linq;
 
-namespace PushSharp.Amazon
+namespace AlphaOmega.PushSharp.Amazon
 {
     public class AdmNotification : INotification
     {

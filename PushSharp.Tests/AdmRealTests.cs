@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using PushSharp.Amazon;
+using AlphaOmega.PushSharp.Amazon;
 using Xunit;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
     [Collection(Settings.DISABLED)]
     public class AdmRealTests

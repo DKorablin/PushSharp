@@ -1,42 +1,47 @@
 ﻿using System;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
-    public class DeviceSubscriptionExpiredException : NotificationException
-    {
-        public string OldSubscriptionId { get; set; }
-        public string NewSubscriptionId { get; set; }
-        public DateTime ExpiredAt { get; set; }
+	public class DeviceSubscriptionExpiredException : NotificationException
+	{
+		public String OldSubscriptionId { get; set; }
 
-        public DeviceSubscriptionExpiredException(INotification notification) : base("Device Subscription has Expired", notification)
-        {
-            ExpiredAt = DateTime.UtcNow;
-        }
-    }
+		public String NewSubscriptionId { get; set; }
 
-    public class NotificationException : Exception
-    {
-        public NotificationException (string message, INotification notification) : base (message)
-        {
-            Notification = notification;
-        }
+		public DateTime ExpiredAt { get; set; }
 
-        public NotificationException (string message, INotification notification, Exception innerException)
-            : base (message, innerException)
-        {
-            Notification = notification;
-        }
+		public DeviceSubscriptionExpiredException(INotification notification) : base("Device Subscription has Expired", notification)
+			=> this.ExpiredAt = DateTime.UtcNow;
+	}
 
-        public INotification Notification { get; set; }
-    }
+	public class NotificationException<T> : Exception where T : INotification
+	{
+		public T Notification { get; set; }
 
-    public class RetryAfterException : NotificationException
-    {
-        public RetryAfterException (INotification notification, string message, DateTime retryAfterUtc) : base (message, notification)
-        {
-            RetryAfterUtc = retryAfterUtc;
-        }
+		public NotificationException(String message, T notification) : base(message)
+			=> this.Notification = notification;
 
-        public DateTime RetryAfterUtc { get; set; }
-    }
+		public NotificationException(String message, T notification, Exception innerException) : base(message, innerException)
+			=> this.Notification = notification;
+	}
+
+	public class NotificationException : NotificationException<INotification>
+	{
+		public NotificationException(String message, INotification notification) : base(message, notification)
+		{
+		}
+
+		public NotificationException(String message, INotification notification, Exception innerException)
+			: base(message, notification, innerException)
+		{
+		}
+	}
+
+	public class RetryAfterException : NotificationException
+	{
+		public RetryAfterException (INotification notification, String message, DateTime retryAfterUtc) : base (message, notification)
+			=> this.RetryAfterUtc = retryAfterUtc;
+
+		public DateTime RetryAfterUtc { get; set; }
+	}
 }

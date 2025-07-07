@@ -1,7 +1,7 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 
-namespace PushSharp.Firefox
+namespace AlphaOmega.PushSharp.Firefox
 {
     public class FirefoxNotification : INotification
     {        

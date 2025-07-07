@@ -6,218 +6,208 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Net;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
-    public class ServiceBroker<TNotification> : IServiceBroker<TNotification> where TNotification : INotification
-    {
-        static ServiceBroker ()
-        {
-            ServicePointManager.DefaultConnectionLimit = 100;
-            ServicePointManager.Expect100Continue = false;
-        }
+	public class ServiceBroker<TNotification> : IServiceBroker<TNotification> where TNotification : INotification
+	{
+		private readonly BlockingCollection<TNotification> _notifications;
+		private readonly List<ServiceWorker<TNotification>> _workers;
+		private readonly Object _lockWorkers;
 
-        public ServiceBroker (IServiceConnectionFactory<TNotification> connectionFactory)
-        {
-            ServiceConnectionFactory = connectionFactory;
+		private Boolean _running;
 
-            lockWorkers = new object ();
-            workers = new List<ServiceWorker<TNotification>> ();
-            running = false;
+		public event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
+		public event NotificationFailureDelegate<TNotification> OnNotificationFailed;
 
-            notifications = new BlockingCollection<TNotification> ();
-            ScaleSize = 1;
-            //AutoScale = true;
-            //AutoScaleMaxSize = 20;
-        }
+		//public Boolean AutoScale { get; set; }
+		//public Int32 AutoScaleMaxSize { get; set; }
 
-        public event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
-        public event NotificationFailureDelegate<TNotification> OnNotificationFailed;
+		public Int32 ScaleSize { get; private set; }
 
-        //public bool AutoScale { get; set; }
-        //public int AutoScaleMaxSize { get; set; }
-        public int ScaleSize { get; private set; }
+		public IServiceConnectionFactory<TNotification> ServiceConnectionFactory { get; set; }
 
-        public IServiceConnectionFactory<TNotification> ServiceConnectionFactory { get; set; }
+		static ServiceBroker()
+		{
+			ServicePointManager.DefaultConnectionLimit = 100;
+			ServicePointManager.Expect100Continue = false;
+		}
 
-        BlockingCollection<TNotification> notifications;
-        List<ServiceWorker<TNotification>> workers;
-        object lockWorkers;
-        bool running;
+		public ServiceBroker(IServiceConnectionFactory<TNotification> connectionFactory)
+		{
+			this.ServiceConnectionFactory = connectionFactory;
 
-        public virtual void QueueNotification (TNotification notification)
-        {
-            notifications.Add (notification);
-        }
+			this._lockWorkers = new Object();
+			this._workers = new List<ServiceWorker<TNotification>>();
+			this._running = false;
 
-        public IEnumerable<TNotification> TakeMany ()
-        {
-            return notifications.GetConsumingEnumerable ();
-        }
+			this._notifications = new BlockingCollection<TNotification>();
+			this.ScaleSize = 1;
+			//AutoScale = true;
+			//AutoScaleMaxSize = 20;
+		}
 
-        public bool IsCompleted {
-            get { return notifications.IsCompleted; }
-        }
+		public virtual void QueueNotification(TNotification notification)
+			=> this._notifications.Add(notification);
 
-        public void Start ()
-        {
-            if (running)
-                return;
+		public IEnumerable<TNotification> TakeMany()
+			=> this._notifications.GetConsumingEnumerable();
 
-            running = true;
-            ChangeScale (ScaleSize);
-        }
+		public Boolean IsCompleted => this._notifications.IsCompleted;
 
-        public void Stop (bool immediately = false)
-        {
-            if (!running)
-                throw new OperationCanceledException ("ServiceBroker has already been signaled to Stop");
+		public void Start()
+		{
+			if(this._running)
+				return;
 
-            running = false;
+			this._running = true;
+			this.ChangeScale(this.ScaleSize);
+		}
 
-            notifications.CompleteAdding ();
+		public void Stop(Boolean immediately = false)
+		{
+			if(!this._running)
+				throw new OperationCanceledException("ServiceBroker has already been signaled to Stop");
 
-            lock (lockWorkers) {
-                // Kill all workers right away
-                if (immediately)
-                    workers.ForEach (sw => sw.Cancel ());
-					
-                var all = (from sw in workers
-                                       select sw.WorkerTask).ToArray ();
+			this._running = false;
+			this._notifications.CompleteAdding();
 
-                Log.Info ("Stopping: Waiting on Tasks");
+			lock(this._lockWorkers)
+			{
+				// Kill all workers right away
+				if(immediately)
+					this._workers.ForEach(sw => sw.Cancel());
 
-                Task.WaitAll (all);
+				var all = Array.ConvertAll(this._workers.ToArray(), w => w.WorkerTask);
 
-                Log.Info ("Stopping: Done Waiting on Tasks");
+				Log.Info("Stopping: Waiting on Tasks");
+				Task.WaitAll(all);
+				Log.Info("Stopping: Done Waiting on Tasks");
 
-                workers.Clear ();
-            }
-        }
+				this._workers.Clear();
+			}
+		}
 
-        public void ChangeScale (int newScaleSize)
-        {
-            if (newScaleSize <= 0)
-                throw new ArgumentOutOfRangeException ("newScaleSize", "Must be Greater than Zero");
+		public void ChangeScale(Int32 newScaleSize)
+		{
+			if(newScaleSize <= 0)
+				throw new ArgumentOutOfRangeException("newScaleSize", "Must be Greater than Zero");
 
-            ScaleSize = newScaleSize;
+			this.ScaleSize = newScaleSize;
 
-            if (!running)
-                return;
+			if(!this._running)
+				return;
 
-            lock (lockWorkers) {
+			lock(this._lockWorkers)
+			{
+				// Scale down
+				while(this._workers.Count > this.ScaleSize)
+				{
+					this._workers[0].Cancel();
+					this._workers.RemoveAt(0);
+				}
 
-                // Scale down
-                while (workers.Count > ScaleSize) {
-                    workers [0].Cancel ();
-                    workers.RemoveAt (0);
-                }
+				// Scale up
+				while(this._workers.Count < this.ScaleSize)
+				{
+					var worker = new ServiceWorker<TNotification>(this, this.ServiceConnectionFactory.Create());
+					this._workers.Add(worker);
+					worker.Start();
+				}
 
-                // Scale up
-                while (workers.Count < ScaleSize) {
-                    var worker = new ServiceWorker<TNotification> (this, ServiceConnectionFactory.Create ());
-                    workers.Add (worker);
-                    worker.Start ();
-                }
+				Log.Debug("Scaled Changed to: " + this._workers.Count);
+			}
+		}
 
-                Log.Debug ("Scaled Changed to: " + workers.Count);
-            }
-        }
+		public void RaiseNotificationSucceeded(TNotification notification)
+			=> this.OnNotificationSucceeded?.Invoke(notification);
 
-        public void RaiseNotificationSucceeded (TNotification notification)
-        {
-            var evt = OnNotificationSucceeded;
-            if (evt != null)
-                evt (notification);
-        }
+		public void RaiseNotificationFailed(TNotification notification, AggregateException exception)
+			=> OnNotificationFailed?.Invoke(notification, exception);
+	}
 
-        public void RaiseNotificationFailed (TNotification notification, AggregateException exception)
-        {
-            var evt = OnNotificationFailed;
-            if (evt != null)
-                evt (notification, exception);
-        }
-    }
+	class ServiceWorker<TNotification> where TNotification : INotification
+	{
+		public ServiceWorker(IServiceBroker<TNotification> broker, IServiceConnection<TNotification> connection)
+		{
+			this.Broker = broker;
+			this.Connection = connection;
 
-    class ServiceWorker<TNotification> where TNotification : INotification
-    {
-        public ServiceWorker (IServiceBroker<TNotification> broker, IServiceConnection<TNotification> connection)
-        {
-            Broker = broker;
-            Connection = connection;
+			this.CancelTokenSource = new CancellationTokenSource();
+		}
 
-            CancelTokenSource = new CancellationTokenSource ();
-        }
+		public IServiceBroker<TNotification> Broker { get; private set; }
 
-        public IServiceBroker<TNotification> Broker { get; private set; }
+		public IServiceConnection<TNotification> Connection { get; private set; }
 
-        public IServiceConnection<TNotification> Connection { get; private set; }
+		public CancellationTokenSource CancelTokenSource { get; private set; }
 
-        public CancellationTokenSource CancelTokenSource { get; private set; }
+		public Task WorkerTask { get; private set; }
 
-        public Task WorkerTask { get; private set; }
+		public void Start()
+		{
+			this.WorkerTask = Task.Factory.StartNew(async delegate
+			{
+				while(!this.CancelTokenSource.IsCancellationRequested && !this.Broker.IsCompleted)
+				{
+					try
+					{
+						var toSend = new List<Task>();
+						foreach(var n in this.Broker.TakeMany())
+						{
+							var t = this.Connection.Send(n);
+							// Keep the continuation
+							var count = t.ContinueWith(ct =>
+							{
+								var cn = n;
+								var ex = t.Exception;
 
-        public void Start ()
-        {
-            WorkerTask = Task.Factory.StartNew (async delegate {
-                while (!CancelTokenSource.IsCancellationRequested && !Broker.IsCompleted) {
+								if(ex == null)
+									this.Broker.RaiseNotificationSucceeded(cn);
+								else
+									this.Broker.RaiseNotificationFailed(cn, ex);
+							});
 
-                    try {
-                       
-                        var toSend = new List<Task> ();
-                        foreach (var n in Broker.TakeMany ()) {
-                            var t = Connection.Send (n);
-                            // Keep the continuation
-                            var cont = t.ContinueWith (ct => {
-                                var cn = n;
-                                var ex = t.Exception;
+							// Let's wait for the continuation not the task itself
+							toSend.Add(count);
+						}
 
-                                if (ex == null)
-                                    Broker.RaiseNotificationSucceeded (cn);
-                                else
-                                    Broker.RaiseNotificationFailed (cn, ex);                                
-                            });
+						if(toSend.Count <= 0)
+							continue;
 
-                            // Let's wait for the continuation not the task itself
-                            toSend.Add (cont);
-                        }
+						try
+						{
+							Log.Info("Waiting on all tasks {0}", toSend.Count());
+							await Task.WhenAll(toSend).ConfigureAwait(false);
+							Log.Info("All Tasks Finished");
+						} catch(Exception ex)
+						{
+							Log.Error("Waiting on all tasks Failed: {0}", ex);
+						}
+						Log.Info("Passed WhenAll");
 
-                        if (toSend.Count <= 0)
-                            continue;
-                       
-                        try {
-                            Log.Info ("Waiting on all tasks {0}", toSend.Count ());
-                            await Task.WhenAll (toSend).ConfigureAwait (false);
-                            Log.Info ("All Tasks Finished");
-                        } catch (Exception ex) {
-                            Log.Error ("Waiting on all tasks Failed: {0}", ex);
+					} catch(Exception ex)
+					{
+						Log.Error("Broker.Take: {0}", ex);
+					}
+				}
 
-                        }
-                        Log.Info ("Passed WhenAll");
+				if(this.CancelTokenSource.IsCancellationRequested)
+					Log.Info("Cancellation was requested");
+				if(this.Broker.IsCompleted)
+					Log.Info("Broker IsCompleted");
 
-                    } catch (Exception ex) {
-                        Log.Error ("Broker.Take: {0}", ex);
-                    }
-                }
+				Log.Debug("Broker Task Ended");
+			}, this.CancelTokenSource.Token, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
 
-                if (CancelTokenSource.IsCancellationRequested)
-                    Log.Info ("Cancellation was requested");
-                if (Broker.IsCompleted)
-                    Log.Info ("Broker IsCompleted");
+			this.WorkerTask.ContinueWith(t =>
+			{
+				var ex = t.Exception;
+				if(ex != null)
+					Log.Error("ServiceWorker.WorkerTask Error: {0}", ex);
+			}, TaskContinuationOptions.OnlyOnFaulted);
+		}
 
-                Log.Debug ("Broker Task Ended");
-            }, CancelTokenSource.Token, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap ();
-				
-            WorkerTask.ContinueWith (t => {
-                var ex = t.Exception;
-                if (ex != null)
-                    Log.Error ("ServiceWorker.WorkerTask Error: {0}", ex);
-            }, TaskContinuationOptions.OnlyOnFaulted);              
-        }
-
-        public void Cancel ()
-        {
-            CancelTokenSource.Cancel ();
-        }
-    }
+		public void Cancel()
+			=> this.CancelTokenSource.Cancel();
+	}
 }
-

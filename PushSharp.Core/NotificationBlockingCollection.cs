@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
 	public class NotificationBlockingCollection
 	{
@@ -9,4 +9,3 @@ namespace PushSharp.Core
 		}
 	}
 }
-

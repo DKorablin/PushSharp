@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Blackberry
+namespace AlphaOmega.PushSharp.Blackberry
 {
     public class BlackberryConfiguration
     {   

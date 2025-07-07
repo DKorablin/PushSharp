@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushSharp.HuaWay", "PushSharp.HuaWay\PushSharp.HuaWay.csproj", "{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{DD2208F9-C8C1-430A-AB17-5A657733A029}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD2208F9-C8C1-430A-AB17-5A657733A029}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD2208F9-C8C1-430A-AB17-5A657733A029}.Release|Any CPU.Build.0 = Release|Any CPU
+		{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +109,7 @@ Global
 		{DC2F25D9-75BE-4C67-B41D-84B738A16B9F} = {6449DAB1-E76A-4354-B633-CC6AC53BB757}
 		{C75A83BB-7EF1-4CDB-8C52-9E6E3E11341D} = {6449DAB1-E76A-4354-B633-CC6AC53BB757}
 		{DD2208F9-C8C1-430A-AB17-5A657733A029} = {6449DAB1-E76A-4354-B633-CC6AC53BB757}
+		{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2} = {2B7243CB-60A5-4682-802B-B7EC3DEBCF9A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E3FB748-F281-4978-9AA5-427D4011C872}

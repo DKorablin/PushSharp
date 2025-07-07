@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
-using PushSharp.Google;
+using AlphaOmega.PushSharp.Google;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
 	public class Settings
 	{
@@ -16,7 +16,7 @@ namespace PushSharp.Tests
 
 		public static Settings Instance => _instance ?? (_instance = GetSettingsFilePath<Settings>("settings.json", "TEST_CONFIG_JSON"));
 
-		public static FirebaseSettings Firebase => _firebase ?? (_firebase = GetSettingsFilePath<FirebaseSettings>("FirebaseAdminSdk.json","TEST_FIREBASE_JSON"));
+		public static FirebaseSettings Firebase => _firebase ?? (_firebase = GetSettingsFilePath<FirebaseSettings>("Firebase.ServiceAccount.json", "TEST_FIREBASE_JSON"));
 
 		private static T GetSettingsFilePath<T>(String fileName, String environmentKey)
 		{
@@ -30,11 +30,11 @@ namespace PushSharp.Tests
 			var settingsFile = Path.Combine(baseDir, fileName);
 
 			if(!File.Exists(settingsFile))
-				settingsFile = Path.Combine(baseDir, "../", fileName);
+				settingsFile = Path.Combine(baseDir, @"..\", fileName);
 			if(!File.Exists(settingsFile))
-				settingsFile = Path.Combine(baseDir, "../../", fileName);
+				settingsFile = Path.Combine(baseDir, @"..\..\", fileName);
 			if(!File.Exists(settingsFile))
-				settingsFile = Path.Combine(baseDir, "../../../", fileName);
+				settingsFile = Path.Combine(baseDir, @"..\..\..\", fileName);
 
 			return File.Exists(settingsFile)
 				? JsonConvert.DeserializeObject<T>(File.ReadAllText(settingsFile))
@@ -83,5 +83,20 @@ namespace PushSharp.Tests
 
 		[JsonProperty("wns_channel_uris")]
 		public List<String> WnsChannelUris { get; set; }
+
+		[JsonProperty("huaway_client_id")]
+		public String HuaWayClientId { get; set; }
+
+		[JsonProperty("huaway_client_secret")]
+		public String HuaWayClientSecret { get; set; }
+
+		[JsonProperty("huaway_project_id")]
+		public String HuaWayProjectId { get; set; }
+
+		[JsonProperty("huaway_application_id")]
+		public String HuaWayApplicationId { get; set; }
+
+		[JsonProperty("huaway_registration_ids")]
+		public List<String> HuaWayRegistrationIds { get; set; }
 	}
 }

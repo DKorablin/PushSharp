@@ -1,20 +1,23 @@
 ﻿using System;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
-    public interface IServiceBroker<TNotification> where TNotification : INotification
-    {
-        event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
-        event NotificationFailureDelegate<TNotification> OnNotificationFailed;
+	public interface IServiceBroker<TNotification> where TNotification : INotification
+	{
+		event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
 
-        System.Collections.Generic.IEnumerable<TNotification> TakeMany ();
-        bool IsCompleted { get; }
+		event NotificationFailureDelegate<TNotification> OnNotificationFailed;
 
-        void RaiseNotificationSucceeded (TNotification notification);
-        void RaiseNotificationFailed (TNotification notification, AggregateException ex);
+		System.Collections.Generic.IEnumerable<TNotification> TakeMany();
 
-        void Start();
-        void Stop(bool immediately = false);
-    }
+		Boolean IsCompleted { get; }
+
+		void RaiseNotificationSucceeded(TNotification notification);
+
+		void RaiseNotificationFailed(TNotification notification, AggregateException ex);
+
+		void Start();
+
+		void Stop(Boolean immediately = false);
+	}
 }
-

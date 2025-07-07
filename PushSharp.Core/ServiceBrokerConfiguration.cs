@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
 	public class ServiceBrokerConfiguration // : IPushServiceSettings
 	{
@@ -15,13 +15,18 @@ namespace PushSharp.Core
 			//this.IdleTimeout = TimeSpan.FromMinutes (5);
 		}
 
-		public bool AutoScaleChannels { get; set; }
-		public int MaxAutoScaleChannels { get; set; }
-		//public long MinAvgTimeToScaleChannels { get; set; }
-		public int Channels { get; set; }
-		//public int MaxNotificationRequeues { get; set; }
-		//public int NotificationSendTimeout { get; set; }
+		public Boolean AutoScaleChannels { get; set; }
+
+		public Int32 MaxAutoScaleChannels { get; set; }
+
+		//public Int64 MinAvgTimeToScaleChannels { get; set; }
+
+		public Int32 Channels { get; set; }
+
+		//public Int32 MaxNotificationRequeues { get; set; }
+
+		//public Int32 NotificationSendTimeout { get; set; }
+
 		//public TimeSpan IdleTimeout { get;set; }
 	}
 }
-

@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using Xunit;
 
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
 	[Collection ("Core")]
 	public class BrokerTests

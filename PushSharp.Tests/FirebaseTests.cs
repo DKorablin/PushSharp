@@ -1,7 +1,7 @@
-﻿using PushSharp.Google;
+﻿using AlphaOmega.PushSharp.Google;
 using Xunit;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
 	[Collection("Firebase")]
 	public class FirebaseTests
@@ -9,10 +9,8 @@ namespace PushSharp.Tests
 		[Fact]
 		public void FirebaseNotification_Priority_Should_Serialize_As_String_High()
 		{
-			var n = new FirebaseNotification()
-			{
-				Priority = GcmNotificationPriority.High,
-			};
+			var n = new FirebaseNotification();
+			n.Message.Android.Priority = GcmNotificationPriority.High;
 
 			var str = n.GetJson();
 
@@ -22,10 +20,8 @@ namespace PushSharp.Tests
 		[Fact]
 		public void FirebaseNotification_Priority_Should_Serialize_As_String_Normal()
 		{
-			var n = new FirebaseNotification()
-			{
-				Priority = GcmNotificationPriority.Normal,
-			};
+			var n = new FirebaseNotification();
+			n.Message.Android.Priority = GcmNotificationPriority.Normal;
 
 			var str = n.GetJson();
 

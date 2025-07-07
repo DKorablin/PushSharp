@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace PushSharp.Google
+namespace AlphaOmega.PushSharp.Google
 {
     public class FirebaseMessageResult
     {

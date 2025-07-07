@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2468C63B-C964-4FC3-9B16-13DC17CF7D11}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>PushSharp.Amazon</RootNamespace>
+    <RootNamespace>AlphaOmega.PushSharp.Amazon</RootNamespace>
     <AssemblyName>PushSharp.Amazon</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
@@ -49,8 +49,5 @@
       <Project>{2B44A8DA-60BC-4577-A2D7-D9D53F164B2E}</Project>
       <Name>PushSharp.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PushSharp.Windows
+namespace AlphaOmega.PushSharp.Windows
 {
     public class WnsNotificationStatus
     {

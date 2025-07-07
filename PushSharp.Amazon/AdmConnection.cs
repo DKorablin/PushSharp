@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json.Linq;
-using System.Net;
-using PushSharp.Core;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading;
 
-namespace PushSharp.Amazon
+namespace AlphaOmega.PushSharp.Amazon
 {
     public class AdmServiceConnectionFactory : IServiceConnectionFactory<AdmNotification>
     {
@@ -63,7 +60,7 @@ namespace PushSharp.Amazon
         {
             try
             {
-                if (string.IsNullOrEmpty(AccessToken) || Expires <= DateTime.UtcNow) {
+                if (String.IsNullOrEmpty(AccessToken) || Expires <= DateTime.UtcNow) {
                     await UpdateAccessToken ();
                     http.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + AccessToken);
                     //http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
@@ -72,7 +69,7 @@ namespace PushSharp.Amazon
                 var sc = new StringContent(notification.ToJson ());
                 sc.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                var response = await http.PostAsync (string.Format(Configuration.AdmSendUrl, notification.RegistrationId), sc);
+                var response = await http.PostAsync (String.Format(Configuration.AdmSendUrl, notification.RegistrationId), sc);
 
                 // We're done here if it was a success
                 if (response.IsSuccessStatusCode) {                    
@@ -124,7 +121,7 @@ namespace PushSharp.Amazon
         {
             var http = new HttpClient ();
 
-            var param = new Dictionary<string, string> ();
+            var param = new Dictionary<String, String> ();
             param.Add ("grant_type", "client_credentials");
             param.Add ("scope", "messaging:push");
             param.Add ("client_id", Configuration.ClientId);
@@ -145,7 +142,7 @@ namespace PushSharp.Amazon
                 Expires = DateTime.UtcNow.AddSeconds(3540);
 
             if (result.Headers.Contains ("X-Amzn-RequestId"))
-                this.LastAmazonRequestId = string.Join("; ", result.Headers.GetValues("X-Amzn-RequestId"));
+                this.LastAmazonRequestId = String.Join("; ", result.Headers.GetValues("X-Amzn-RequestId"));
 
             LastRequest = DateTime.UtcNow;
         }

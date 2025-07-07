@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace PushSharp.Core
+namespace AlphaOmega.PushSharp.Core
 {
-    public interface INotification
-    {
-        bool IsDeviceRegistrationIdValid ();
-        object Tag { get; set; }
-    }
+	public interface INotification
+	{
+		Boolean IsDeviceRegistrationIdValid();
+		Object Tag { get; set; }
+	}
 }

@@ -2,24 +2,38 @@
 using System.IO;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.OpenSsl;
 
-namespace PushSharp.Google
+namespace AlphaOmega.PushSharp.Google
 {
 	public class FirebaseConfiguration
 	{
 		private const String TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-		private DateTime? _firebaseTokenExpiration;
-		private FirebaseTokenResponse _firebaseToken;
+		private Object _tokenLock = new Object();
+		private DateTime? _tokenExpiration;
+		private FirebaseTokenResponse _token;
 
 		private readonly FirebaseSettings _settings;
 
 		public String FirebaseSendUrl => $"https://fcm.googleapis.com/v1/projects/{this._settings.ProjectId}/messages:send";
+
+		public String AccessToken
+		{
+			get
+			{
+				if(this._tokenExpiration < DateTime.Now)
+					lock(this._tokenLock)
+						if(this._tokenExpiration < DateTime.Now)
+							this.RefreshAccessToken();
+
+				return this._token.AccessToken;
+			}
+		}
 
 		public FirebaseConfiguration(String jsonFileContents)
 		{
@@ -32,38 +46,35 @@ namespace PushSharp.Google
 		public FirebaseConfiguration(FirebaseSettings settings)
 			=> this._settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-		public async Task<String> GetJwtTokenAsync()
+		private void RefreshAccessToken()
 		{
-			if(this._firebaseToken != null && this._firebaseTokenExpiration > DateTime.UtcNow)
-				return _firebaseToken.AccessToken;
-
 			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL))
 			using(var form = new MultipartFormDataContent())
 			{
-				var authToken = this.GetMasterToken();
+				var authToken = this.GetTokenRequest();
 				form.Add(new StringContent(authToken), "assertion");
 				form.Add(new StringContent("urn:ietf:params:oauth:grant-type:jwt-bearer"), "grant_type");
 				message.Content = form;
 
 				using(var client = new HttpClient())
-				using(var response = await client.SendAsync(message))
+				using(var response = client.SendAsync(message).Result)
 				{
-					var content = await response.Content.ReadAsStringAsync();
+					var content = response.Content.ReadAsStringAsync().Result;
 
 					if(!response.IsSuccessStatusCode)
-						throw new HttpRequestException("Firebase error when creating JWT token: " + content);
+					{
+						var exc = new HttpRequestException("Firebase error while requesting JWT token");
+						exc.Data.Add("Response", content);
+						throw exc;
+					}
 
-					this._firebaseToken = JsonConvert.DeserializeObject<FirebaseTokenResponse>(content);
-					this._firebaseTokenExpiration = DateTime.UtcNow.AddSeconds(this._firebaseToken.ExpiresIn - 10);
-
-					return String.IsNullOrWhiteSpace(this._firebaseToken.AccessToken) || this._firebaseTokenExpiration < DateTime.UtcNow
-						? throw new InvalidOperationException("Couldn't deserialize firebase token response")
-						: this._firebaseToken.AccessToken;
+					this._token = JsonConvert.DeserializeObject<FirebaseTokenResponse>(content);
+					this._tokenExpiration = DateTime.UtcNow.AddSeconds(this._token.ExpiresIn - 10);
 				}
 			}
 		}
 
-		private String GetMasterToken()
+		private String GetTokenRequest()
 		{
 			String header = JsonConvert.SerializeObject(new { alg = "RS256", typ = "JWT" });
 			String payload = JsonConvert.SerializeObject(new
@@ -71,8 +82,8 @@ namespace PushSharp.Google
 				iss = this._settings.ClientEmail,
 				aud = this._settings.TokenUri,
 				scope = "https://www.googleapis.com/auth/firebase.messaging",
-				iat = GetEpochTimestamp(),
-				exp = GetEpochTimestamp() + 3600 /* has to be short lived */
+				iat = PushHttpClient.GetEpochTimestamp(),
+				exp = PushHttpClient.GetEpochTimestamp() + 3600 /* has to be short lived */
 			});
 
 			String headerBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(header));
@@ -89,12 +100,6 @@ namespace PushSharp.Google
 			var signatureBase64 = Convert.ToBase64String(signature);
 
 			return $"{unsignedJwtData}.{signatureBase64}";
-		}
-
-		private static Int32 GetEpochTimestamp()
-		{
-			TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
-			return Convert.ToInt32(span.TotalSeconds);
 		}
 
 		private static AsymmetricKeyParameter ParsePkcs8PrivateKeyPem(String key)

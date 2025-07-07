@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using System.Threading.Tasks;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
     public class TestNotification : INotification
 	{

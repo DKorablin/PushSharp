@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A9D99F80-FEEB-4E74-96C5-66F17103C773}</ProjectGuid>
+    <ProjectGuid>{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>AlphaOmega.PushSharp.Apple</RootNamespace>
-    <AssemblyName>PushSharp.Apple</AssemblyName>
+    <RootNamespace>AlphaOmega.PushSharp.HuaWay</RootNamespace>
+    <AssemblyName>PushSharp.HuaWay</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\PushSharp-Signing.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -36,21 +35,22 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Portable.BouncyCastle" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApnsResponse.cs" />
-    <Compile Include="ApnsServiceConnectionFactory.cs" />
-    <Compile Include="ApnsConfiguration.cs" />
-    <Compile Include="ApnsNotification.cs" />
-    <Compile Include="ApnsSettings.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="HuaWayConfiguration.cs" />
+    <Compile Include="HuaWayNotification.cs" />
+    <Compile Include="HuaWayResponse.cs" />
+    <Compile Include="HuaWayServiceConnectionFactory.cs" />
+    <Compile Include="HuaWaySettings.cs" />
+    <Compile Include="TokenRequest.cs" />
+    <Compile Include="TokenResponse.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\PushSharp.Core\PushSharp.Core.csproj">
       <Project>{2B44A8DA-60BC-4577-A2D7-D9D53F164B2E}</Project>
       <Name>PushSharp.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

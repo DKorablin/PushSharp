@@ -1,11 +1,11 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System.Text;
 using System.Globalization;
 
-namespace PushSharp.Blackberry
+namespace AlphaOmega.PushSharp.Blackberry
 {
     public enum QualityOfServiceLevel
     {

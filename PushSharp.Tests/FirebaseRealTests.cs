@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AlphaOmega.PushSharp.Google;
 using Newtonsoft.Json.Linq;
-using PushSharp.Google;
 using Xunit;
 
-namespace PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests
 {
 	[Collection("Real")]
 	public class FirebaseRealTests
@@ -18,8 +16,14 @@ namespace PushSharp.Tests
 
 			var config = new FirebaseConfiguration(Settings.Firebase);
 			var broker = new FirebaseServiceBroker(config);
-			broker.OnNotificationFailed += (notification, exception) => failed++;
-			broker.OnNotificationSucceeded += (notification) => succeeded++;
+			broker.OnNotificationFailed += (notification, exception) =>
+			{
+				failed++;
+			};
+			broker.OnNotificationSucceeded += (notification) =>
+			{
+				succeeded++;
+			};
 
 			broker.Start();
 
@@ -27,13 +31,11 @@ namespace PushSharp.Tests
 			{
 				attempted++;
 
-				broker.QueueNotification(new FirebaseNotification
-				{
-					RegistrationIds = new List<String> {
-						regId
-					},
-					Data = JObject.Parse("{ \"somekey\" : \"somevalue\" }")
-				});
+				var notification = new FirebaseNotification();
+				notification.message.token = regId;
+				notification.message.data = JObject.Parse("{ \"somekey\" : \"somevalue\" }");
+
+				broker.QueueNotification(notification);
 			}
 
 			broker.Stop();

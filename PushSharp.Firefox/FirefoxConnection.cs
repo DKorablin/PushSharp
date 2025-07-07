@@ -1,11 +1,11 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace PushSharp.Firefox
+namespace AlphaOmega.PushSharp.Firefox
 {
     public class FirefoxServiceConnectionFactory : IServiceConnectionFactory<FirefoxNotification>
     {
@@ -38,7 +38,7 @@ namespace PushSharp.Firefox
             var data = notification.ToString ();
 
             http.DefaultRequestHeaders.UserAgent.Clear ();
-            http.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue ("PushSharp", "3.0"));
+            http.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue ("PushSharp", "4.1"));
 
             var result = await http.PutAsync (notification.EndPointUrl, new StringContent (data));
 

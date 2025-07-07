@@ -33,3 +33,5 @@ node_modules/
 .vs/
 
 settings.json
+Firebase.ServiceAccount.json
+*.p12

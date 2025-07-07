@@ -6,19 +6,19 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 
-namespace PushSharp.Google
+namespace AlphaOmega.PushSharp.Google
 {
 	public class FirebaseServiceConnectionFactory : IServiceConnectionFactory<FirebaseNotification>
 	{
-		public FirebaseServiceConnectionFactory(FirebaseConfiguration configuration)
-			=> this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+		private readonly FirebaseConfiguration _configuration;
 
-		public FirebaseConfiguration Configuration { get; }
+		public FirebaseServiceConnectionFactory(FirebaseConfiguration configuration)
+			=> this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
 		public IServiceConnection<FirebaseNotification> Create()
-			=> new FirebaseServiceConnection(this.Configuration);
+			=> new FirebaseServiceConnection(this._configuration);
 	}
 
 	public class FirebaseServiceBroker : ServiceBroker<FirebaseNotification>
@@ -31,26 +31,25 @@ namespace PushSharp.Google
 	public class FirebaseServiceConnection : IServiceConnection<FirebaseNotification>
 	{
 		private readonly HttpClient _client;
-
-		public FirebaseConfiguration Configuration { get; }
+		private readonly FirebaseConfiguration _configuration;
 
 		public FirebaseServiceConnection(FirebaseConfiguration configuration)
 		{
-			this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 			this._client = new HttpClient();
 
 			this._client.DefaultRequestHeaders.UserAgent.Clear();
-			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "3.1"));
+			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "4.1"));
 		}
 
-		public async Task Send(FirebaseNotification notification)
+		async Task IServiceConnection<FirebaseNotification>.Send(FirebaseNotification notification)
 		{
-			var token = await this.Configuration.GetJwtTokenAsync();
+			var token = this._configuration.AccessToken;
 			var json = notification.GetJson();
 			var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
 			this._client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + token);
-			var response = await this._client.PostAsync(this.Configuration.FirebaseSendUrl, content);
+			var response = await this._client.PostAsync(this._configuration.FirebaseSendUrl, content);
 
 			if(response.IsSuccessStatusCode)
 				await this.ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
@@ -66,8 +65,8 @@ namespace PushSharp.Google
 				OriginalNotification = notification
 			};
 
-			var str = await httpResponse.Content.ReadAsStringAsync();
-			var json = JObject.Parse(str);
+			var strResponse = await httpResponse.Content.ReadAsStringAsync();
+			var json = JObject.Parse(strResponse);
 
 			result.NumberOfCanonicalIds = json.Value<Int64>("canonical_ids");
 			result.NumberOfFailures = json.Value<Int64>("failure");
@@ -103,7 +102,7 @@ namespace PushSharp.Google
 			foreach(var r in result.Results)
 			{
 				FirebaseNotification singleResultNotification = FirebaseNotification.ForSingleResult(result, index);
-				singleResultNotification.MessageId = r.MessageId;
+				singleResultNotification.message_id = r.MessageId;
 
 				switch(r.ResponseStatus)
 				{
@@ -117,10 +116,10 @@ namespace PushSharp.Google
 						var newRegistrationId = r.CanonicalRegistrationId;
 						var oldRegistrationId = String.Empty;
 
-						if(singleResultNotification.RegistrationIds?.Count > 0)
-							oldRegistrationId = singleResultNotification.RegistrationIds[0];
-						else if(!String.IsNullOrEmpty(singleResultNotification.To))
-							oldRegistrationId = singleResultNotification.To;
+						if(singleResultNotification.message.token != null)
+							oldRegistrationId = singleResultNotification.message.token;
+						else if(!String.IsNullOrEmpty(singleResultNotification.message.topic))
+							oldRegistrationId = singleResultNotification.message.topic;
 
 						multicastException.Failed.Add(singleResultNotification,
 							new DeviceSubscriptionExpiredException(singleResultNotification)
@@ -137,10 +136,10 @@ namespace PushSharp.Google
 					{
 						var oldRegistrationId = String.Empty;
 
-						if(singleResultNotification.RegistrationIds != null && singleResultNotification.RegistrationIds.Count > 0)
-							oldRegistrationId = singleResultNotification.RegistrationIds[0];
-						else if(!String.IsNullOrEmpty(singleResultNotification.To))
-							oldRegistrationId = singleResultNotification.To;
+						if(singleResultNotification.message.token != null)
+							oldRegistrationId = singleResultNotification.message.token;
+						else if(!String.IsNullOrEmpty(singleResultNotification.message.topic))
+							oldRegistrationId = singleResultNotification.message.topic;
 
 						multicastException.Failed.Add(singleResultNotification,
 							new DeviceSubscriptionExpiredException(singleResultNotification)
@@ -174,13 +173,13 @@ namespace PushSharp.Google
 		}
 
 		private async Task ProcessErrorResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)
-		{
+		{// https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
 			String responseBody;
 
 			try
 			{
 				responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-			} catch { responseBody = null; }//TODO: Need check exact exception to handle
+			} catch { responseBody = null; }//TODO: Need check exact exception(s) to handle
 
 			//401 bad auth token
 			if(httpResponse.StatusCode == HttpStatusCode.Unauthorized)

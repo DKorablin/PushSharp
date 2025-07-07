@@ -1,7 +1,7 @@
 ﻿using System;
-using PushSharp.Core;
+using AlphaOmega.PushSharp.Core;
 
-namespace PushSharp.Apple
+namespace AlphaOmega.PushSharp.Apple
 {
 	public enum ApnsNotificationErrorStatusCode
 	{
@@ -19,82 +19,44 @@ namespace PushSharp.Apple
 		Unknown = 255
 	}
 
-	public enum ApnsHttp2FailureReason
+	public class ApnsNotificationException2 : NotificationException<ApnsNotification>
 	{
-		Unknown,
+		public ApnsResponse Error { get; }
+
+		public ApnsNotificationException2(ApnsResponse response, ApnsNotification notification)
+			: base(response.Error.Reason, notification)
+			=> this.Error = response;
 	}
 
-
-	public class ApnsNotificationException : NotificationException
+	public class ApnsNotificationException : NotificationException<ApnsNotification>
 	{
-		public ApnsNotificationException(byte errorStatusCode, ApnsNotification notification)
+		public ApnsNotificationException(Byte errorStatusCode, ApnsNotification notification)
 			: this(ToErrorStatusCode(errorStatusCode), notification)
 		{ }
 
 		public ApnsNotificationException(ApnsNotificationErrorStatusCode errorStatusCode, ApnsNotification notification)
 			: base("Apns notification error: '" + errorStatusCode + "'", notification)
-		{
-			Notification = notification;
-			ErrorStatusCode = errorStatusCode;
-		}
+			=> this.ErrorStatusCode = errorStatusCode;
 
 		public ApnsNotificationException(ApnsNotificationErrorStatusCode errorStatusCode, ApnsNotification notification, Exception innerException)
 			: base("Apns notification error: '" + errorStatusCode + "'", notification, innerException)
-		{
-			Notification = notification;
-			ErrorStatusCode = errorStatusCode;
-		}
+			=> this.ErrorStatusCode = errorStatusCode;
 
-		public new ApnsNotification Notification { get; set; }
 		public ApnsNotificationErrorStatusCode ErrorStatusCode { get; private set; }
 
-		private static ApnsNotificationErrorStatusCode ToErrorStatusCode(byte errorStatusCode)
-		{
-			var s = ApnsNotificationErrorStatusCode.Unknown;
-			Enum.TryParse<ApnsNotificationErrorStatusCode>(errorStatusCode.ToString(), out s);
-			return s;
-		}
+		private static ApnsNotificationErrorStatusCode ToErrorStatusCode(Byte errorStatusCode)
+			=> Enum.TryParse(errorStatusCode.ToString(), out ApnsNotificationErrorStatusCode result)
+				? result
+				: ApnsNotificationErrorStatusCode.Unknown;
 	}
-
-	/*public class ApnsHttp2NotificationException : NotificationException
-	{
-		public ApnsHttp2NotificationException(byte errorStatusCode, ApnsHttp2Notification notification)
-			: this(ToErrorStatusCode(errorStatusCode), notification)
-		{ }
-
-		public ApnsHttp2NotificationException(ApnsHttp2FailureReason errorStatusCode, ApnsHttp2Notification notification)
-			: base("Apns notification error: '" + errorStatusCode + "'", notification)
-		{
-			Notification = notification;
-			ErrorStatusCode = errorStatusCode;
-		}
-
-		public ApnsHttp2NotificationException(ApnsHttp2FailureReason errorStatusCode, ApnsHttp2Notification notification, Exception innerException)
-			: base("Apns notification error: '" + errorStatusCode + "'", notification, innerException)
-		{
-			Notification = notification;
-			ErrorStatusCode = errorStatusCode;
-		}
-
-		public new ApnsHttp2Notification Notification { get; set; }
-
-		public ApnsHttp2FailureReason ErrorStatusCode { get; private set; }
-
-		private static ApnsHttp2FailureReason ToErrorStatusCode(byte errorStatusCode)
-		{
-			var s = ApnsHttp2FailureReason.Unknown;
-			Enum.TryParse(errorStatusCode.ToString(), out s);
-			return s;
-		}
-	}*/
 
 	public class ApnsConnectionException : Exception
 	{
-		public ApnsConnectionException(string message) : base(message)
+		public ApnsConnectionException(String message) : base(message)
 		{
 		}
 
-		public ApnsConnectionException(string message, Exception innerException) : base(message, innerException)
+		public ApnsConnectionException(String message, Exception innerException) : base(message, innerException)
 		{
 		}
 	}

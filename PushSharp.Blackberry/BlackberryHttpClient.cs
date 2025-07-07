@@ -4,7 +4,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace PushSharp.Blackberry
+namespace AlphaOmega.PushSharp.Blackberry
 {
     public class BlackberryHttpClient : HttpClient
     {
