@@ -6,13 +6,15 @@ namespace AlphaOmega.PushSharp.Apple
 {
 	public class ApnsSettings
 	{
-		private static Dictionary<ApnsServerEnvironment, String> Hosts = new Dictionary<ApnsServerEnvironment, String>() {
+		private static readonly Dictionary<ApnsServerEnvironment, String> Hosts = new Dictionary<ApnsServerEnvironment, String>() {
 			{ ApnsServerEnvironment.Development, "https://api.sandbox.push.apple.com" },
 			{ ApnsServerEnvironment.Production, "https://api.push.apple.com" },
 		};
 
+		/// <summary>The type of server to use to send messages.</summary>
 		public enum ApnsServerEnvironment
 		{
+			/// <summary>Sandbox server</summary>
 			Development,
 			/// <summary>Production server</summary>
 			Production

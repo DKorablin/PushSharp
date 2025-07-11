@@ -42,8 +42,6 @@
     <Compile Include="HuaWayNotification.cs" />
     <Compile Include="HuaWayResponse.cs" />
     <Compile Include="HuaWayServiceConnectionFactory.cs" />
-    <Compile Include="HuaWaySettings.cs" />
-    <Compile Include="TokenRequest.cs" />
     <Compile Include="TokenResponse.cs" />
   </ItemGroup>
   <ItemGroup>

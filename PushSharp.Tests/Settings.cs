@@ -99,7 +99,7 @@ namespace AlphaOmega.PushSharp.Tests
 		[JsonProperty("huaway_project_id")]
 		public String HuaWayProjectId { get; set; }
 
-		[JsonProperty("huaway_application_id")]
+		[JsonProperty("huaway_app_id")]
 		public String HuaWayApplicationId { get; set; }
 
 		[JsonProperty("huaway_registration_ids")]

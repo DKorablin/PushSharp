@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json;
 
@@ -6,31 +8,50 @@ namespace AlphaOmega.PushSharp.HuaWay
 {
 	/// <summary></summary>
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-References-V5/https-send-api-0000001050986197-V5"/>
+	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-Guides-V5/open-platform-oauth-0000001053629189-V5#EN-US_TOPIC_0000001053629189__section12493191334711"/>
 	public class HuaWayConfiguration
 	{
-		private const String TOKEN_URL = "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
+		private const String TOKEN_V3_URL = "https://oauth-login.cloud.huawei.com/oauth2/v3/token";
 
 		private readonly Object _tokenLock = new Object();
 		private TokenResponse _token;
 		private DateTime _tokenExpiration = DateTime.MinValue;
 
-		private readonly HuaWaySettings _settings;
+		#region Settings
+		private readonly String _clientSecret;
+
+		/// <summary>https://push-api.cloud.huawei.com/v2/projectid/messages:send</summary>
+		private readonly String _projectId;
+
+		/// <summary>https://push-api.cloud.huawei.com/v1/appid/messages:send</summary>
+		private readonly String _applicationId;//TODO: Old version. Should migrate to the _projectId (V2 API)
+		#endregion Settings
 
 		public String HuaWaySendUrl
 		{
 			get
 			{
-				if(this._settings.ProjectId != null)
-					return $"https://push-api.cloud.huawei.com/v2/{this._settings.ProjectId}/messages:send";
-				else if(this._settings.ApplicationId != null)
-					return $"https://push-api.cloud.huawei.com/v1/{this._settings.ApplicationId}/messages:send";
+				if(this._projectId != null)
+					return $"https://push-api.cloud.huawei.com/v2/{this._projectId}/messages:send";
+				else if(this._applicationId != null)
+					return $"https://push-api.cloud.huawei.com/v1/{this._applicationId}/messages:send";
 				else
-					throw new InvalidOperationException($"{nameof(this._settings.ProjectId)} or {nameof(this._settings.ApplicationId)} is required.");
+					throw new InvalidOperationException($"{nameof(this._projectId)} or {nameof(this._applicationId)} is required.");
 			}
 		}
 
-		public HuaWayConfiguration(HuaWaySettings settings)
-			=> this._settings = settings ?? throw new ArgumentNullException(nameof(settings));
+		public HuaWayConfiguration(String clientSecret, String projectId, String applicationId)
+		{
+			if(projectId == null && applicationId == null)
+				throw new ArgumentException($"{nameof(projectId)} OR {nameof(applicationId)} is required");
+			if(projectId != null && applicationId != null)
+				throw new ArgumentException($"Only one {nameof(projectId)} OR {nameof(applicationId)} is required");
+
+			this._clientSecret = clientSecret ?? throw new ArgumentNullException(nameof(clientSecret));
+
+			this._projectId = projectId;
+			this._applicationId = applicationId;
+		}
 
 		public String AccessToken
 		{
@@ -47,12 +68,16 @@ namespace AlphaOmega.PushSharp.HuaWay
 
 		internal void RefreshToken()
 		{
-			var requestToken = GetTokenRequest();
-
-			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL))
-			using(var form = new MultipartFormDataContent())
+			Dictionary<String, String> payload = new Dictionary<String, String>()
 			{
-				form.Add(new StringContent(requestToken));
+				{ "grant_type", "client_credentials" },//Set this parameter to client_credentials, which indicates the client credential mode.
+				{ "client_id", this._applicationId ?? this._projectId },//OAuth 2.0 client ID obtained during integration preparations. For an app created in AppGallery Connect, set this parameter to its app ID.
+				{ "client_secret", this._clientSecret }//Client secret allocated to the OAuth 2.0 client ID during integration preparations. For an app created in AppGallery Connect, set this parameter to its app secret.
+			};
+
+			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_V3_URL))
+			using(var form = new FormUrlEncodedContent(payload.ToArray()))
+			{
 				message.Content = form;
 
 				using(var client = new HttpClient())
@@ -71,9 +96,6 @@ namespace AlphaOmega.PushSharp.HuaWay
 					this._tokenExpiration = DateTime.Now.AddMinutes(this._token.expires_in - 1);
 				}
 			}
-
-			String GetTokenRequest()
-				=> JsonConvert.SerializeObject(new TokenRequest() { grant_type = "client_credentials", client_id = this._settings.ClientId, client_secret = this._settings.ClientSecret });
 		}
 	}
 }

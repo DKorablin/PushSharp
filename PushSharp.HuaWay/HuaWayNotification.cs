@@ -17,7 +17,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 			/// If the message body contains message.data and does not contain message.notification or message.android.notification, the message is a data message.
 			/// If a data message is sent to a web app, the originData field in the received data message indicates the content of the data message.
 			/// </example>
-			public JObject data { get; set; }
+			public String data { get; set; }
 
 			/// <summary>Notification message content.</summary>
 			public Notification notification { get; set; }
