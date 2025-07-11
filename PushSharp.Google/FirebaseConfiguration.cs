@@ -14,8 +14,8 @@ namespace AlphaOmega.PushSharp.Google
 	{
 		private const String TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-		private Object _tokenLock = new Object();
-		private DateTime? _tokenExpiration;
+		private readonly Object _tokenLock = new Object();
+		private DateTime _tokenExpiration = DateTime.MinValue;
 		private FirebaseTokenResponse _token;
 
 		private readonly FirebaseSettings _settings;
@@ -82,8 +82,8 @@ namespace AlphaOmega.PushSharp.Google
 				iss = this._settings.ClientEmail,
 				aud = this._settings.TokenUri,
 				scope = "https://www.googleapis.com/auth/firebase.messaging",
-				iat = PushHttpClient.GetEpochTimestamp(),
-				exp = PushHttpClient.GetEpochTimestamp() + 3600 /* has to be short lived */
+				iat = PushHttpClient.GetUnixTimestamp(),
+				exp = PushHttpClient.GetUnixTimestamp() + 3600 /* has to be short lived */
 			});
 
 			String headerBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(header));

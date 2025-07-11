@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -28,6 +29,16 @@ namespace AlphaOmega.PushSharp.Apple
 
 	public class ApnsServiceConnection : IServiceConnection<ApnsNotification>
 	{
+		private readonly struct Headers
+		{
+			public const String ApnsPushType = "apns-push-type";
+			public const String ApnsId = "apns-id";
+			public const String ApnsExpiration = "apns-expiration";
+			public const String ApnsPriority = "apns-priority";
+			public const String ApnsTopic = "apns-topic";
+			public const String ApnsCollapseId = "apns-collapse-id";
+		}
+
 		private readonly HttpClient _client;
 		private readonly ApnsConfiguration _configuration;
 
@@ -35,7 +46,8 @@ namespace AlphaOmega.PushSharp.Apple
 		{
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-			this._client = new HttpClient()
+			var handler = new WinHttpHandler();
+			this._client = new HttpClient(handler)
 			{
 				BaseAddress = new Uri(this._configuration.Settings.Host),
 			};
@@ -47,7 +59,7 @@ namespace AlphaOmega.PushSharp.Apple
 		{
 			var token = this._configuration.AccessToken;
 			var path = $"/3/device/{notification.DeviceToken}";
-			var json = notification.Payload.ToString(Newtonsoft.Json.Formatting.None);
+			var json = notification.Payload.ToString(Formatting.None);
 
 			using(var message = new HttpRequestMessage(HttpMethod.Post, path))
 			{
@@ -57,24 +69,41 @@ namespace AlphaOmega.PushSharp.Apple
 				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 				message.Headers.TryAddWithoutValidation(":method", "POST");
 				message.Headers.TryAddWithoutValidation(":path", path);
-				message.Headers.Add("apns-push-type", notification.ApnsPushType.ToString().ToLowerInvariant()); // required for iOS 13+
+				message.Headers.Add(Headers.ApnsPushType, notification.ApnsPushType.ToString().ToLowerInvariant()); // required for iOS 13+
+
+				if(this._configuration.Settings.AppBundleId != null)
+					message.Headers.Add(Headers.ApnsTopic, this._configuration.Settings.AppBundleId);
 
 				if(notification.ApnsId != null)
-					message.Headers.Add("apns-id", notification.ApnsId.Value.ToString("D"));
+					message.Headers.Add(Headers.ApnsId, notification.ApnsId.Value.ToString("D"));
 				if(notification.ApnsExpiration != null)
-					message.Headers.Add("apns-expiration", notification.ApnsExpiration.Value.Ticks.ToString());
+					message.Headers.Add(Headers.ApnsExpiration, notification.ApnsExpiration.Value.Ticks.ToString());
 				if(notification.ApnsPriority != null)
-					message.Headers.Add("apns-priority", notification.ApnsPriority.ToString());
-				message.Headers.Add("apns-topic", this._configuration.Settings.ApnsTopic);
+					message.Headers.Add(Headers.ApnsPriority, notification.ApnsPriority.ToString());
+				if(notification.ApnsCollapseId != null)
+					message.Headers.Add(Headers.ApnsCollapseId, notification.ApnsCollapseId);
 
-				using(var response = await this._client.SendAsync(message))
+				try
 				{
-					var strResponse = await response.Content.ReadAsStringAsync();
-					if(!response.IsSuccessStatusCode)
+					using(var response = await this._client.SendAsync(message))
 					{
-						var errorResponse = JsonConvert.DeserializeObject<ApnsResponse>(strResponse);
-						throw new ApnsNotificationException2(errorResponse, notification);
+						if(response.IsSuccessStatusCode)
+						{
+							if(notification.ApnsId == null)
+							{
+								String apnsId = response.Headers.GetValues(Headers.ApnsId).Single();
+								notification.ApnsId = Guid.Parse(apnsId);
+							}
+						}else
+						{
+							var strResponse = await response.Content.ReadAsStringAsync();
+							var errorResponse = JsonConvert.DeserializeObject<ApnsResponse>(strResponse);
+							throw new ApnsNotificationException2(response.StatusCode, errorResponse, notification);
+						}
 					}
+				}catch(Exception exc)
+				{
+					throw;
 				}
 			}
 		}

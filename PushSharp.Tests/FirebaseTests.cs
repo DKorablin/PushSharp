@@ -10,7 +10,7 @@ namespace AlphaOmega.PushSharp.Tests
 		public void FirebaseNotification_Priority_Should_Serialize_As_String_High()
 		{
 			var n = new FirebaseNotification();
-			n.Message.Android.Priority = GcmNotificationPriority.High;
+			n.message.android.priority = GcmNotificationPriority.High;
 
 			var str = n.GetJson();
 
@@ -21,7 +21,7 @@ namespace AlphaOmega.PushSharp.Tests
 		public void FirebaseNotification_Priority_Should_Serialize_As_String_Normal()
 		{
 			var n = new FirebaseNotification();
-			n.Message.Android.Priority = GcmNotificationPriority.Normal;
+			n.message.android.priority = GcmNotificationPriority.Normal;
 
 			var str = n.GetJson();
 

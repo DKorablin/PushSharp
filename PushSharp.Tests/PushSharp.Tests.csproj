@@ -42,7 +42,6 @@
     <Compile Include="HuaWayRealTests.cs" />
     <Compile Include="TestServiceConnection.cs" />
     <Compile Include="Servers\TestApnsServer.cs" />
-    <Compile Include="ApnsTests.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="AdmRealTests.cs" />
     <Compile Include="FirebaseRealTests.cs" />

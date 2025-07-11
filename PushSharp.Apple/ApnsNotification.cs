@@ -8,37 +8,95 @@ namespace AlphaOmega.PushSharp.Apple
 	{
 		public enum ApnPushType
 		{
-			Background,
+			/// <summary>The push type for notifications that trigger a user interaction—for example, an alert, badge, or sound.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID as the topic.
+			/// If the notification requires immediate action from the user, set notification priority to 10; otherwise use 5.
+			/// 
+			/// You’re required to use the alert push type on watchOS 6 and later. It’s recommended on macOS, iOS, tvOS, and iPadOS.
+			/// </remarks>
 			Alert,
-			Voip
-		}
 
-		private static readonly Object nextIdentifierLock = new Object();
-		private static Int32 nextIdentifier = 1;
+			/// <summary>The push type for notifications that deliver content in the background, and don’t trigger any user interactions.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID as the topic.
+			/// Always use priority 5. Using priority 10 is an error.
+			/// 
+			/// You’re required to use the background push type on watchOS 6 and later. It’s recommended on macOS, iOS, tvOS, and iPadOS.
+			/// </remarks>
+			Background,
 
-		private static Int32 GetNextIdentifier()
-		{
-			lock(nextIdentifierLock)
-			{
-				if(nextIdentifier >= Int32.MaxValue - 10)
-					nextIdentifier = 1;
+			/// <summary>The push type to reload and update a control.</summary>
+			/// <remarks>When someone interacts with a web server connected to your app, enable a control to update its state using the controls push type.</remarks>
+			Controls,
 
-				return nextIdentifier++;
-			}
-		}
+			/// <summary>The push type for notifications that request a user’s location.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.location-query appended to the end.
+			/// 
+			/// It’s recommended for iOS and iPadOS.
+			/// If the location query requires an immediate response from the Location Push Service Extension, set notification apns-priority to 10; otherwise, use 5.
+			/// The location push type supports only token-based authentication.
+			/// 
+			/// The location push type isn’t available on macOS, tvOS, and watchOS.
+			/// </remarks>
+			Location,
 
-		/// <summary>
-		/// DO NOT Call this unless you know what you are doing!
-		/// </summary>
-		public static void ResetIdentifier()
-		{
-			lock(nextIdentifierLock)
-				nextIdentifier = 0;
+			/// <summary>The push type for notifications that provide information about an incoming Voice-over-IP (VoIP) call.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.voip appended to the end.
+			/// If you’re using certificate-based authentication, you must also register the certificate for VoIP services.
+			/// The topic is then part of the 1.2.840.113635.100.6.3.4 or 1.2.840.113635.100.6.3.6 extension.
+			/// 
+			/// The voip push type isn’t available on watchOS.
+			/// It’s recommended on macOS, iOS, tvOS, and iPadOS.
+			/// </remarks>
+			Voip,
+
+			/// <summary>The push type for notifications that contain update information for a watchOS app’s complications.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.complication appended to the end.
+			/// If you’re using certificate-based authentication, you must also register the certificate for WatchKit services.
+			/// The topic is then part of the 1.2.840.113635.100.6.3.6 extension.
+			/// 
+			/// The complication push type isn’t available on macOS, tvOS, and iPadOS. It’s recommended for watchOS and iOS.
+			/// </remarks>
+			Complication,
+
+			/// <summary>The push type to signal changes to a File Provider extension.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.pushkit.fileprovider appended to the end.
+			/// 
+			/// The fileprovider push type isn’t available on watchOS. It’s recommended on macOS, iOS, tvOS, and iPadOS.
+			/// </remarks>
+			Fileprovider,
+
+			/// <summary>The push type for notifications that tell managed devices to contact the MDM server.</summary>
+			/// <remarks>
+			/// If you set this push type, you must use the topic from the UID attribute in the subject of your MDM push certificate.
+			/// 
+			/// The mdm push type isn’t available on watchOS. It’s recommended on macOS, iOS, tvOS, and iPadOS.
+			/// </remarks>
+			Mdm,
+
+			/// <summary>The push type to signal changes to a live activity session.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.push-type.liveactivity appended to the end.
+			/// 
+			/// The liveactivity push type isn’t available on watchOS, macOS, and tvOS. It’s recommended on iOS and iPadOS.
+			/// </remarks>
+			Liveactivity,
+
+			/// <summary>The push type for notifications that provide information about updates to your application’s push to talk services.</summary>
+			/// <remarks>
+			/// If you set this push type, the apns-topic header field must use your app’s bundle ID with.voip-ptt appended to the end.
+			/// 
+			/// The pushtotalk push type isn’t available on watchOS, macOS, and tvOS. It’s recommended on iOS and iPadOS.
+			/// </remarks>
+			Pushtotalk,
 		}
 
 		public Object Tag { get; set; }
-
-		public Int32 Identifier { get; private set; }
 
 		public String DeviceToken { get; set; }
 
@@ -61,6 +119,14 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </summary>
 		public DateTime? ApnsExpiration { get; set; }
 
+		/// <summary>The priority of the notification.</summary>
+		/// <remarks>
+		/// Specify 10 to send the notification immediately.
+		/// Specify 5 to send the notification based on power considerations on the user’s device.
+		/// Specify 1 to prioritize the device’s power considerations over all other factors for delivery, and prevent awakening the device.
+		/// 
+		/// If you omit this header, APNs sets the notification priority to 10.
+		/// </remarks>
 		public Int32? ApnsPriority { get; set; }
 
 		/// <summary>The value of this header must accurately reflect the contents of your notification’s payload.</summary>
@@ -75,11 +141,13 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </remarks>
 		public Guid? ApnsId { get; set; } = null;
 
-		public const Int32 DEVICE_TOKEN_BINARY_MIN_SIZE = 32;
-		public const Int32 DEVICE_TOKEN_STRING_MIN_SIZE = 64;
-		public const Int32 MAX_PAYLOAD_SIZE = 2048; //will be 4096 soon
-		public static readonly DateTime DoNotStore = DateTime.MinValue;
-		private static readonly DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		/// <summary>An identifier you use to merge multiple notifications into a single notification for the user.</summary>
+		/// <remarks>
+		/// Typically, each notification request displays a new notification on the user’s device.
+		/// When sending the same notification more than once, use the same value in this header to merge the requests.
+		/// The value of this key must not exceed 64 bytes.
+		/// </remarks>
+		public String ApnsCollapseId { get; set; }
 
 		public ApnsNotification() : this(String.Empty, new JObject())
 		{
@@ -91,16 +159,11 @@ namespace AlphaOmega.PushSharp.Apple
 
 		public ApnsNotification(String deviceToken, JObject payload)
 		{
-			if(!String.IsNullOrEmpty(deviceToken) && deviceToken.Length < DEVICE_TOKEN_STRING_MIN_SIZE)
-				throw new NotificationException("Invalid DeviceToken Length", this);
-
 			this.DeviceToken = deviceToken;
 			this.Payload = payload;
-
-			this.Identifier = GetNextIdentifier();
 		}
 
-		public Boolean IsDeviceRegistrationIdValid()
+		Boolean INotification.IsDeviceRegistrationIdValid()
 		{
 			var r = new System.Text.RegularExpressions.Regex(@"^[0-9A-F]+$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 			return r.Match(this.DeviceToken).Success;

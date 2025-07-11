@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using AlphaOmega.PushSharp.Core;
 
 namespace AlphaOmega.PushSharp.Apple
@@ -21,11 +22,14 @@ namespace AlphaOmega.PushSharp.Apple
 
 	public class ApnsNotificationException2 : NotificationException<ApnsNotification>
 	{
+		public HttpStatusCode StatusCode { get; }
 		public ApnsResponse Error { get; }
 
-		public ApnsNotificationException2(ApnsResponse response, ApnsNotification notification)
-			: base(response.Error.Reason, notification)
-			=> this.Error = response;
+		public ApnsNotificationException2(HttpStatusCode statusCode, ApnsResponse error, ApnsNotification notification)
+			: base(error.reason, notification) {
+			this.StatusCode = statusCode;
+			this.Error = error;
+		}
 	}
 
 	public class ApnsNotificationException : NotificationException<ApnsNotification>

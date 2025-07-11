@@ -45,11 +45,17 @@ namespace AlphaOmega.PushSharp.Tests
 		{
 		}
 
-		[JsonProperty("apns_cert_file")]
+		[JsonProperty("apns_p8cert_file")]
 		public String ApnsCertificateFile { get; set; }
 
-		[JsonProperty("apns_cert_pwd")]
-		public String ApnsCertificatePassword { get; set; }
+		[JsonProperty("apns_p8cert_keyId")]
+		public String ApnsCertificateKeyId { get; set; }
+
+		[JsonProperty("apns_teamId")]
+		public String ApnsTeamId { get; set; }
+
+		[JsonProperty("apns_bundleId")]
+		public String ApnsBundleId { get; set; }
 
 		[JsonProperty("apns_device_tokens")]
 		public List<String> ApnsDeviceTokens { get; set; }

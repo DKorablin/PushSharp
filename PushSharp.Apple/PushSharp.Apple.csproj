@@ -10,7 +10,6 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\PushSharp-Signing.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,8 +34,11 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Portable.BouncyCastle" />
+    <PackageReference Include="System.Net.Http.WinHttpHandler" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApnsResponse.cs" />

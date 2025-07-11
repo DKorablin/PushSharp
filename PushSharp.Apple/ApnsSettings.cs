@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
 
 namespace AlphaOmega.PushSharp.Apple
 {
@@ -16,22 +14,23 @@ namespace AlphaOmega.PushSharp.Apple
 			Production
 		}
 
-		/// <summary>Gets the configured APNS server environment</summary>
+		/// <summary>Gets the configured APNS server environment.</summary>
 		/// <value>The server environment.</value>
 		public ApnsServerEnvironment Environment { get; set; }
 
+		/// <summary>Gets the host url to Apple PUSH server.</summary>
 		public virtual String Host
 			=> this.Environment == ApnsServerEnvironment.Production
-				? APNS_PRODUCTION_HOST
-				: APNS_SANDBOX_HOST;
+				? ApnsSettings.APNS_PRODUCTION_HOST
+				: ApnsSettings.APNS_SANDBOX_HOST;
 
-		public String CertificatePassword { get; set; }
+		/// <summary>Private key you downloaded when you created your APNS Auth Key</summary>
+		public String P8Certificate { get; set; }
 
-		public X509Certificate2 Certificate { get; set; }
+		/// <summary>10-character key ID from your Apple Developer account</summary>
+		public String KeyId { get; set; }
 
-		#region New properties
-		public String P8PrivateKey { get; set; }
-		public String P8PrivateKeyId { get; set; }
+		/// <summary>Apple Developer Team ID</summary>
 		public String TeamId { get; set; }
 
 		/// <summary>The topic for the notification.</summary>
@@ -39,49 +38,29 @@ namespace AlphaOmega.PushSharp.Apple
 		/// In general, the topic is your app’s bundle ID/app ID.
 		/// It can have a suffix based on the type of push notification.
 		/// </remarks>
-		public String ApnsTopic { get; set; }
+		public String AppBundleId { get; set; }
 
-		#endregion New properties
-
-		public ApnsSettings(ApnsServerEnvironment environment, String certificatePath, String certificatePassword)
-			: this(environment, File.ReadAllBytes(certificatePath), certificatePassword)
+		/// <summary>Create instance of APNS settings</summary>
+		/// <param name="environment">The environment to use for sending messages.</param>
+		/// <param name="p8CertificatePath">The path to P8 certificate file.</param>
+		/// <param name="keyId">The Key ID of the p8 file.</param>
+		/// <param name="teamId">The team identifier.</param>
+		/// <exception cref="FileNotFoundException">File <paramref name="p8CertificatePath"/> not found</exception>
+		/// <exception cref="ArgumentNullException">All arguments are mandatory</exception>
+		public ApnsSettings(ApnsServerEnvironment environment, String p8CertificatePath, String keyId, String teamId)
 		{
-		}
+			if(String.IsNullOrWhiteSpace(p8CertificatePath))
+				throw new ArgumentNullException(nameof(p8CertificatePath));
+			if(String.IsNullOrWhiteSpace(keyId))
+				throw new ArgumentNullException(nameof(keyId));
 
-		public ApnsSettings(ApnsServerEnvironment environment, Byte[] certificateData, String certificatePassword)
-			: this(environment,
-				new X509Certificate2(certificateData, certificatePassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable),
-				certificatePassword)
-		{
-		}
+			if(!File.Exists(p8CertificatePath))
+				throw new FileNotFoundException("P8 certificate file not found", p8CertificatePath);
 
-		public ApnsSettings(ApnsServerEnvironment environment, X509Certificate2 certificate, String certificatePassword)
-		{
 			this.Environment = environment;
-			this.Certificate = certificate ?? throw new ArgumentNullException(nameof(certificate));
-			this.CertificatePassword = certificatePassword ?? throw new ArgumentNullException(nameof(certificatePassword));
-
-			ApnsSettings.CheckIsApnsCertificate(certificate, environment);
-		}
-
-		private static void CheckIsApnsCertificate(X509Certificate2 certificate, ApnsServerEnvironment environment)
-		{
-			_ = certificate ?? throw new ArgumentNullException(nameof(certificate), "You must provide a Certificate to connect to APNS with!");
-
-			var issuerName = certificate.IssuerName.Name;
-			var commonName = certificate.SubjectName.Name;
-
-			if(!issuerName.Contains("Apple"))
-				throw new ArgumentOutOfRangeException("Your Certificate does not appear to be issued by Apple!  Please check to ensure you have the correct certificate!");
-
-			if(!Regex.IsMatch(commonName, "Apple.*?Push Services") && !commonName.Contains("Website Push ID:"))
-				throw new ArgumentOutOfRangeException("Your Certificate is not a valid certificate for connecting to Apple's APNS servers");
-
-			if(commonName.Contains("Development") && environment != ApnsServerEnvironment.Sandbox)
-				throw new ArgumentOutOfRangeException("You are using a certificate created for connecting only to the Sandbox APNS server but have selected a different server environment to connect to.");
-
-			if(commonName.Contains("Production") && environment != ApnsServerEnvironment.Production)
-				throw new ArgumentOutOfRangeException("You are using a certificate created for connecting only to the Production APNS server but have selected a different server environment to connect to.");
+			this.P8Certificate = File.ReadAllText(p8CertificatePath);
+			this.KeyId = keyId;
+			this.TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
 		}
 	}
 }

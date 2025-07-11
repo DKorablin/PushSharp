@@ -77,9 +77,10 @@ namespace AlphaOmega.PushSharp.Core
 			}
 		}
 
-		public static Int32 GetEpochTimestamp()
+		private static readonly DateTime UNIX_EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		public static Int32 GetUnixTimestamp()
 		{
-			TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1);
+			TimeSpan span = DateTime.UtcNow - UNIX_EPOCH;
 			return Convert.ToInt32(span.TotalSeconds);
 		}
 

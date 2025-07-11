@@ -10,7 +10,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 
 		private readonly Object _tokenLock = new Object();
 		private TokenResponse _token;
-		private DateTime? _tokenExpiration;
+		private DateTime _tokenExpiration = DateTime.MinValue;
 
 		private readonly HuaWaySettings _settings;
 

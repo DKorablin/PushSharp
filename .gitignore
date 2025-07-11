@@ -34,4 +34,5 @@ node_modules/
 
 settings.json
 Firebase.ServiceAccount.json
+*.p8
 *.p12
