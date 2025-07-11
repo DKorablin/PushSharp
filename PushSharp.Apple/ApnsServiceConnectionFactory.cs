@@ -33,10 +33,14 @@ namespace AlphaOmega.PushSharp.Apple
 		{
 			public const String ApnsPushType = "apns-push-type";
 			public const String ApnsId = "apns-id";
+			public const String ApnsUniqueId = "apns-unique-id";
 			public const String ApnsExpiration = "apns-expiration";
 			public const String ApnsPriority = "apns-priority";
 			public const String ApnsTopic = "apns-topic";
 			public const String ApnsCollapseId = "apns-collapse-id";
+
+			public const String Method = ":method";
+			public const String Path = ":path";
 		}
 
 		private readonly HttpClient _client;
@@ -67,8 +71,8 @@ namespace AlphaOmega.PushSharp.Apple
 				message.Content = new StringContent(json);
 
 				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-				message.Headers.TryAddWithoutValidation(":method", "POST");
-				message.Headers.TryAddWithoutValidation(":path", path);
+				message.Headers.TryAddWithoutValidation(Headers.Method, "POST");
+				message.Headers.TryAddWithoutValidation(Headers.Path, path);
 				message.Headers.Add(Headers.ApnsPushType, notification.ApnsPushType.ToString().ToLowerInvariant()); // required for iOS 13+
 
 				if(this._configuration.Settings.AppBundleId != null)
@@ -83,27 +87,21 @@ namespace AlphaOmega.PushSharp.Apple
 				if(notification.ApnsCollapseId != null)
 					message.Headers.Add(Headers.ApnsCollapseId, notification.ApnsCollapseId);
 
-				try
+				using(var response = await this._client.SendAsync(message))
 				{
-					using(var response = await this._client.SendAsync(message))
+					if(response.IsSuccessStatusCode)
 					{
-						if(response.IsSuccessStatusCode)
+						if(notification.ApnsId == null)
 						{
-							if(notification.ApnsId == null)
-							{
-								String apnsId = response.Headers.GetValues(Headers.ApnsId).Single();
-								notification.ApnsId = Guid.Parse(apnsId);
-							}
-						}else
-						{
-							var strResponse = await response.Content.ReadAsStringAsync();
-							var errorResponse = JsonConvert.DeserializeObject<ApnsResponse>(strResponse);
-							throw new ApnsNotificationException2(response.StatusCode, errorResponse, notification);
+							String apnsId = response.Headers.GetValues(Headers.ApnsId).Single();
+							notification.ApnsId = Guid.Parse(apnsId);
 						}
+					} else
+					{
+						var strResponse = await response.Content.ReadAsStringAsync();
+						var errorResponse = JsonConvert.DeserializeObject<ApnsResponse>(strResponse);
+						throw new ApnsNotificationException2(response.StatusCode, errorResponse, notification);
 					}
-				}catch(Exception exc)
-				{
-					throw;
 				}
 			}
 		}

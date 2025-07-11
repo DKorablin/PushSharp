@@ -10,6 +10,8 @@ using Org.BouncyCastle.OpenSsl;
 
 namespace AlphaOmega.PushSharp.Google
 {
+	/// <summary></summary>
+	/// <see href="https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages"/>
 	public class FirebaseConfiguration
 	{
 		private const String TOKEN_URL = "https://oauth2.googleapis.com/token";

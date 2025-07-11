@@ -12,6 +12,8 @@ using Org.BouncyCastle.Security;
 
 namespace AlphaOmega.PushSharp.Apple
 {
+	/// <summary></summary>
+	/// <see href="https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns"/>
 	public class ApnsConfiguration
 	{
 		private readonly Object _tokenLock = new Object();

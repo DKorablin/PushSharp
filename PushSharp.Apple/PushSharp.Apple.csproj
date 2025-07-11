@@ -34,11 +34,9 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Portable.BouncyCastle" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApnsResponse.cs" />

@@ -15,7 +15,7 @@ namespace AlphaOmega.PushSharp.Tests
 			var attempted = 0;
 
 			var settings = new ApnsSettings(
-				ApnsSettings.ApnsServerEnvironment.Sandbox,
+				ApnsSettings.ApnsServerEnvironment.Production,
 				Settings.Instance.ApnsCertificateFile,
 				Settings.Instance.ApnsCertificateKeyId,
 				Settings.Instance.ApnsTeamId)

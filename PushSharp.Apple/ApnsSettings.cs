@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace AlphaOmega.PushSharp.Apple
 {
 	public class ApnsSettings
 	{
-		private const String APNS_SANDBOX_HOST = "https://api.push.apple.com";
-		private const String APNS_PRODUCTION_HOST = "https://api.development.push.apple.com";
+		private static Dictionary<ApnsServerEnvironment, String> Hosts = new Dictionary<ApnsServerEnvironment, String>() {
+			{ ApnsServerEnvironment.Development, "https://api.sandbox.push.apple.com" },
+			{ ApnsServerEnvironment.Production, "https://api.push.apple.com" },
+		};
 
 		public enum ApnsServerEnvironment
 		{
-			Sandbox,
+			Development,
+			/// <summary>Production server</summary>
 			Production
 		}
 
@@ -18,11 +22,12 @@ namespace AlphaOmega.PushSharp.Apple
 		/// <value>The server environment.</value>
 		public ApnsServerEnvironment Environment { get; set; }
 
-		/// <summary>Gets the host url to Apple PUSH server.</summary>
+		/// <summary>Gets or sets for all instances the host url to Apple PUSH notification service.</summary>
 		public virtual String Host
-			=> this.Environment == ApnsServerEnvironment.Production
-				? ApnsSettings.APNS_PRODUCTION_HOST
-				: ApnsSettings.APNS_SANDBOX_HOST;
+		{
+			get => ApnsSettings.Hosts[this.Environment];
+			set => ApnsSettings.Hosts[this.Environment] = value;
+		}
 
 		/// <summary>Private key you downloaded when you created your APNS Auth Key</summary>
 		public String P8Certificate { get; set; }

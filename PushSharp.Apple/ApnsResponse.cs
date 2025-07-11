@@ -77,10 +77,12 @@ namespace AlphaOmega.PushSharp.Apple
 			Shutdown,
 		}
 
-		public Boolean IsSuccess { get; set; }
-
 		/// <summary>The error code (specified as a string) indicating the reason for the failure.</summary>
 		public String reason { get; set; }
+
+		/// <summary>The time, represented in milliseconds since Epoch, at which APNs confirmed the token was no longer valid for the topic.</summary>
+		/// <remarks>This key is included only when the error in the :status field is 410.</remarks>
+		public Int32? timestamp { get; set; }
 
 		public ApnsNotification2ErrorStatusCode? ReasonTyped
 			=> Enum.TryParse<ApnsNotification2ErrorStatusCode>(this.reason, out var result)

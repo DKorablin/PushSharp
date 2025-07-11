@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.HuaWay
 {
+	/// <summary></summary>
+	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-References-V5/https-send-api-0000001050986197-V5"/>
 	public class HuaWayConfiguration
 	{
 		private const String TOKEN_URL = "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
