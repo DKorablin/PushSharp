@@ -118,6 +118,14 @@ jobs:
           Resources\PushSharp-Icon-NuGet-Small.png
           ${{env.SolutionName}}.nuspec
         sparse-checkout-cone-mode: false
+    - name: Build all .NET Framework projects
+      shell: pwsh
+      run: |
+        $files = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.*
+
+        foreach ($file in $files) {
+            Write-Host "Found file $($file.FullName)"
+        }
     - name: Extracting all artifacts
       uses: actions/download-artifact@v4
       with:
