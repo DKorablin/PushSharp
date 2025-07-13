@@ -112,7 +112,7 @@ jobs:
     - name: Deploying artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Net20
+        name: net48
         path: ${{github.workspace}}/bin/*
         if-no-files-found: error
 

@@ -25,14 +25,14 @@
 	</metadata>
 	<files>
 		<file src="readme.md" target="docs" />
-		<file src="bin\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
+		<file src="bin\net48\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
 
-		<file src="bin\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
-		<file src="bin\PushSharp.Apple.dll" target="lib\net48\PushSharp.Apple.dll" />
-		<file src="bin\PushSharp.Blackberry.dll" target="lib\net48\PushSharp.Blackberry.dll" />
-		<file src="bin\PushSharp.Firefox.dll" target="lib\net48\PushSharp.Firefox.dll" />
-		<file src="bin\PushSharp.Google.dll" target="lib\net48\PushSharp.Google.dll" />
-		<file src="bin\PushSharp.HuaWay.dll" target="lib\net48\PushSharp.HuaWay.dll" />
-		<file src="bin\PushSharp.Windows.dll" target="lib\net48\PushSharp.Windows.dll" />
+		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
+		<file src="bin\net48\PushSharp.Apple.dll" target="lib\net48\PushSharp.Apple.dll" />
+		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48\PushSharp.Blackberry.dll" />
+		<file src="bin\net48\PushSharp.Firefox.dll" target="lib\net48\PushSharp.Firefox.dll" />
+		<file src="bin\net48\PushSharp.Google.dll" target="lib\net48\PushSharp.Google.dll" />
+		<file src="bin\net48\PushSharp.HuaWay.dll" target="lib\net48\PushSharp.HuaWay.dll" />
+		<file src="bin\net48\PushSharp.Windows.dll" target="lib\net48\PushSharp.Windows.dll" />
 	</files>
 </package>
