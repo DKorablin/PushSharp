@@ -32,7 +32,7 @@ jobs:
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'Signature.snk'
-        encodedString: ${{secrets.SIGN_KEY}}
+        encodedString: ${{secrets.SIGN_ASM_KEY}}
     - uses: actions/checkout@v4
       with:
         submodules: true
