@@ -1,15 +1,12 @@
 ﻿using System;
 using AlphaOmega.PushSharp.Huawei;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace AlphaOmega.PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests.Real
 {
-	[Collection("Real")]
 	public class HuaweiRealTests
 	{
-		[Fact]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void Huawei_Send_Single()
 		{
 			var succeeded = 0;

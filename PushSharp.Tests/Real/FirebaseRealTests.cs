@@ -2,12 +2,11 @@
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace AlphaOmega.PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests.Real
 {
-	[Collection("Real")]
 	public class FirebaseRealTests
 	{
-		[Fact]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void Firebase_Send_Single()
 		{
 			var succeeded = 0;

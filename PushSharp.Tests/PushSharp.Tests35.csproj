@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;MANUAL_BUILD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -39,15 +39,15 @@
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HuaweiRealTests.cs" />
+    <Compile Include="Real\HuaweiRealTests.cs" />
     <Compile Include="TestServiceConnection.cs" />
     <Compile Include="Servers\TestApnsServer.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="AdmRealTests.cs" />
-    <Compile Include="FirebaseRealTests.cs" />
+    <Compile Include="Real\AdmRealTests.cs" />
+    <Compile Include="Real\FirebaseRealTests.cs" />
     <Compile Include="BrokerTests.cs" />
-    <Compile Include="ApnsRealTest.cs" />
-    <Compile Include="WnsRealTests.cs" />
+    <Compile Include="Real\ApnsRealTest.cs" />
+    <Compile Include="Real\WnsRealTests.cs" />
     <Compile Include="FirebaseTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

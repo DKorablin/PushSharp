@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Xunit;
 
-
 namespace AlphaOmega.PushSharp.Tests
 {
 	[Collection ("Core")]
