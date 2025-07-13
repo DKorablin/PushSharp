@@ -53,7 +53,7 @@ jobs:
     - name: Building PushSharp HuaWay (.NET Framework)
       run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
     - name: Building PushSharp Windows (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.Windows35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Windows\PushSharp.Windows35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Core
       uses: dlemstra/code-sign-action@v1
