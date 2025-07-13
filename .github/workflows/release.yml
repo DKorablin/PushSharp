@@ -9,7 +9,6 @@ env:
 jobs:
   version:
     name: Incrementing version number
-    needs: [test_net_windows,test_net_ubuntu]
     runs-on: ubuntu-latest
     outputs:
       new_version: ${{steps.tag_version.outputs.new_version}}
