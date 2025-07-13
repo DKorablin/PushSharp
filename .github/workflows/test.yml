@@ -22,7 +22,7 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore ${{env.SolutionName}}.sln
     - name: Build solution
-      run: msbuild ${{env.SolutionName}}.sln /p:Configuration=Release
+      run: msbuild -nologo -restore ${{env.SolutionName}}.sln /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
     - name: Run tests
       run: |
         vstest.console.exe ${{github.workspace}}/bin/${{env.SolutionName}}.Tests.dll
