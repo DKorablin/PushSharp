@@ -52,6 +52,8 @@ jobs:
       run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Google\PushSharp.Google35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
     - name: Building PushSharp HuaWay (.NET Framework)
       run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+    - name: Building PushSharp Windows (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.Windows35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Core
       uses: dlemstra/code-sign-action@v1
@@ -109,6 +111,14 @@ jobs:
         recursive: false
         files: |
           ${{github.workspace}}\bin\PushSharp.HuaWay.dll
+    - name: Signing PushSharp Windows
+      uses: dlemstra/code-sign-action@v1
+      with:
+        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
+        password: '${{secrets.SIGN_PE_PASSWORD}}'
+        recursive: false
+        files: |
+          ${{github.workspace}}\bin\PushSharp.Windows.dll
     - name: Deploying artifacts
       uses: actions/upload-artifact@v4
       with:

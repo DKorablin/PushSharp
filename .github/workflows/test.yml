@@ -31,3 +31,5 @@ jobs:
       run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Google\PushSharp.Google35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
     - name: Building PushSharp HuaWay (.NET Framework)
       run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp Windows (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Windows\PushSharp.Windows35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
