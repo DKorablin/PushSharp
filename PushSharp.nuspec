@@ -5,7 +5,7 @@
 		<version>0.0.0.0</version>
 		<authors>Redth,Danila Korablin</authors>
 		<readme>docs\README.md</readme>
-		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.txt</licenseUrl>
+		<license type="expression">Apache-1.0</license>
 		<projectUrl>https://github.com/DKorablin/PushSharp/</projectUrl>
 		<iconUrl>https://github.com/DKorablin/PushSharp/raw/master/Resources/PushSharp-Icon-NuGet-Small.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
