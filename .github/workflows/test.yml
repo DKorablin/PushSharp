@@ -11,20 +11,21 @@ env:
 
 jobs:
   test_net_windows:
-    name: Testing .NET (Windows)
+    name: Testing .NET Framework (Windows)
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 7.0.x
-    - name: Restoring dependencies
-      run: dotnet restore ${{env.SolutionName}}.sln
-    - name: Testing .NET
-      run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal /p:OutputPath="${{github.workspace}}/bin/"
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+    - name: Restore NuGet packages
+      run: nuget restore ${{env.SolutionName}}.sln
+    - name: Build solution
+      run: msbuild ${{env.SolutionName}}.sln /p:Configuration=Release
+    - name: Run tests
+      run: |
+        vstest.console.exe ${{github.workspace}}/bin/${{env.SolutionName}}.Tests.dll
 
   build_net_framework:
     name: Building .NET Framework assemblies
