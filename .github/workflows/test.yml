@@ -24,7 +24,7 @@ jobs:
     - name: Restoring dependencies
       run: dotnet restore ${{env.SolutionName}}.sln
     - name: Testing .NET
-      run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal
+      run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal /p:OutputPath="${{github.workspace}}/bin/"
 
   build_net_framework:
     name: Building .NET Framework assemblies
