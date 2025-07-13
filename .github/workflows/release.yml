@@ -115,6 +115,7 @@ jobs:
       with:
         sparse-checkout: |
           README.md
+          Resources\PushSharp-Icon-NuGet-Small.png
           ${{env.SolutionName}}.nuspec
         sparse-checkout-cone-mode: false
     - name: Extracting all artifacts
