@@ -146,3 +146,5 @@ jobs:
     - name: Removing version tag
       run: |
         git tag -d ${{needs.version.outputs.new_tag}}
+
+        git push origin :refs/tags/"${{needs.version.outputs.new_tag}}"
