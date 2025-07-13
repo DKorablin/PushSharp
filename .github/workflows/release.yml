@@ -115,7 +115,7 @@ jobs:
       with:
         sparse-checkout: |
           README.md
-          .\Resources\PushSharp-Icon-NuGet-Small.png
+          Resources
           ${{env.SolutionName}}.nuspec
         sparse-checkout-cone-mode: false
     - name: Writing to output checked out files
