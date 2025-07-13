@@ -10,14 +10,14 @@
 		<icon>images\icon.png</icon>
 		<iconUrl>https://github.com/DKorablin/PushSharp/raw/master/Resources/PushSharp-Icon-NuGet-Small.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS), Android/Chrome (GCM), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry and Firefox OS</description>
-		<summary>A server-side library for sending Push Notifications to many platforms (APNS, GCM, WNS, ADM)</summary>
+		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry and Firefox OS</description>
+		<summary>A server-side library for sending Push Notifications to many platforms (APNS, FCM, HMS, WNS, ADM)</summary>
 		<releaseNotes>
-			4.1.0 - Complete Rewrite, New API, see project site for more info
+			4.1.0 - Updated APNS for HTTP/2 implementation, Updated Android FCM V1 implementation, Added Huawei (HMS), see project site for more info
 		</releaseNotes>
 		<copyright>2012-2016 Redth, 2025 Danila Korablin</copyright>
 		<language>en-US</language>
-		<tags>APN, APNS, GCM, XMPP, ADM, GCMXMPP, C2DM, PAP, BIS, BEM, Blackberry, iOS, Android, iPad, iPhone, PushSharp, MDM, UWP, WNS, Windows Notification, Amazon, Amazon Device, Push, Push Notifications, Google Cloud, Cloud Messaging, Google Cloud Messaging, OSX, Mac, WindowsPhone, PassKit, HuaWay</tags>
+		<tags>APN, APNS, GCM, FCMV1, XMPP, ADM, GCMXMPP, C2DM, PAP, BIS, BEM, Blackberry, iOS, Android, iPad, iPhone, PushSharp, MDM, UWP, WNS, Windows Notification, Amazon, Amazon Device, Push, Push Notifications, Google Cloud, Cloud Messaging, Google Cloud Messaging, OSX, Mac, WindowsPhone, PassKit, Huawei, HMS</tags>
 		<dependencies>
 			<dependency id="Newtonsoft.Json" version="13.0.3" />
 			<dependency id="Portable.BouncyCastle" version="1.9.0" />
@@ -34,7 +34,7 @@
 		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48\PushSharp.Blackberry.dll" />
 		<file src="bin\net48\PushSharp.Firefox.dll" target="lib\net48\PushSharp.Firefox.dll" />
 		<file src="bin\net48\PushSharp.Google.dll" target="lib\net48\PushSharp.Google.dll" />
-		<file src="bin\net48\PushSharp.HuaWay.dll" target="lib\net48\PushSharp.HuaWay.dll" />
+		<file src="bin\net48\PushSharp.Huawei.dll" target="lib\net48\PushSharp.Huawei.dll" />
 		<file src="bin\net48\PushSharp.Windows.dll" target="lib\net48\PushSharp.Windows.dll" />
 	</files>
 </package>

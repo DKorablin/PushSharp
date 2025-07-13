@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
-	public class HuaWayResponse
+	public class HuaweiResponse
 	{
 		public enum ReturnCode : Int64
 		{

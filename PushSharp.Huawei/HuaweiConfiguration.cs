@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
 	/// <summary></summary>
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-References-V5/https-send-api-0000001050986197-V5"/>
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-Guides-V5/open-platform-oauth-0000001053629189-V5#EN-US_TOPIC_0000001053629189__section12493191334711"/>
-	public class HuaWayConfiguration
+	public class HuaweiConfiguration
 	{
 		private const String TOKEN_V3_URL = "https://oauth-login.cloud.huawei.com/oauth2/v3/token";
 
@@ -29,7 +29,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 		private readonly String _applicationId;//TODO: Old version. Should migrate to the _projectId (V2 API)
 		#endregion Settings
 
-		public String HuaWaySendUrl
+		public String HuaweiSendUrl
 		{
 			get
 			{
@@ -42,7 +42,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 			}
 		}
 
-		public HuaWayConfiguration(String clientSecret, String projectId, String applicationId)
+		public HuaweiConfiguration(String clientSecret, String projectId, String applicationId)
 		{
 			if(projectId == null && applicationId == null)
 				throw new ArgumentException($"{nameof(projectId)} OR {nameof(applicationId)} is required");
@@ -89,7 +89,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 
 					if(!response.IsSuccessStatusCode)
 					{
-						var exc = new HttpRequestException("HuaWay error while requesting JWT token");
+						var exc = new HttpRequestException("Huawei error while requesting JWT token");
 						exc.Data.Add("Response", content);
 						throw exc;
 					}

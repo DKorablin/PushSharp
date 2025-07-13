@@ -33,7 +33,7 @@ namespace AlphaOmega.PushSharp.Tests
 
 				var notification = new FirebaseNotification();
 				notification.message.token = regId;
-				notification.message.data = JObject.Parse("{ \"somekey\" : \"somevalue\" }");
+				notification.message.data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }");
 
 				broker.QueueNotification(notification);
 			}

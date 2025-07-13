@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushSharp.Google35", "PushS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushSharp.Blackberry35", "PushSharp.Blackberry\PushSharp.Blackberry35.csproj", "{9F972AE9-DE47-4C26-AEE0-97E8A14F2E12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushSharp.HuaWay35", "PushSharp.HuaWay\PushSharp.HuaWay35.csproj", "{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushSharp.Huawei35", "PushSharp.Huawei\PushSharp.Huawei35.csproj", "{810A61DE-E2D2-4CEB-9DC4-10FD45860BA2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject

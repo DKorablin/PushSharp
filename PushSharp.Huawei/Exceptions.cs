@@ -1,18 +1,18 @@
 ﻿using System;
 using AlphaOmega.PushSharp.Core;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
-	public class HuaWayException : NotificationException<HuaWayNotification>
+	public class HuaweiException : NotificationException<HuaweiNotification>
 	{
-		public HuaWayResponse Response { get; private set; }
+		public HuaweiResponse Response { get; private set; }
 
-		public HuaWayException(HuaWayNotification notification, HuaWayResponse response)
+		public HuaweiException(HuaweiNotification notification, HuaweiResponse response)
 			: base(response.Message, notification)
 			=> this.Response = response;
 
-		public HuaWayException(HuaWayNotification notification, System.Net.HttpStatusCode statusCode)
-			: base(HuaWayException.GetStatusCodeDescription(statusCode), notification)
+		public HuaweiException(HuaweiNotification notification, System.Net.HttpStatusCode statusCode)
+			: base(HuaweiException.GetStatusCodeDescription(statusCode), notification)
 		{
 		}
 

@@ -6,44 +6,44 @@ using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
-	public class HuaWayServiceConnectionFactory : IServiceConnectionFactory<HuaWayNotification>
+	public class HuaweiServiceConnectionFactory : IServiceConnectionFactory<HuaweiNotification>
 	{
-		private readonly HuaWayConfiguration _configuration;
+		private readonly HuaweiConfiguration _configuration;
 
-		public HuaWayServiceConnectionFactory(HuaWayConfiguration configuration)
+		public HuaweiServiceConnectionFactory(HuaweiConfiguration configuration)
 			=> this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-		public IServiceConnection<HuaWayNotification> Create()
-			=> new HuaWayServiceConnection(this._configuration);
+		public IServiceConnection<HuaweiNotification> Create()
+			=> new HuaweiServiceConnection(this._configuration);
 	}
 
-	public class HuaWayServiceBroker : ServiceBroker<HuaWayNotification>
+	public class HuaweiServiceBroker : ServiceBroker<HuaweiNotification>
 	{
-		public HuaWayServiceBroker(HuaWayConfiguration configuration) : base(new HuaWayServiceConnectionFactory(configuration))
+		public HuaweiServiceBroker(HuaweiConfiguration configuration) : base(new HuaweiServiceConnectionFactory(configuration))
 		{
 		}
 	}
 
-	public class HuaWayServiceConnection : IServiceConnection<HuaWayNotification>
+	public class HuaweiServiceConnection : IServiceConnection<HuaweiNotification>
 	{
 		private readonly HttpClient _client;
-		private readonly HuaWayConfiguration _configuration;
+		private readonly HuaweiConfiguration _configuration;
 
-		public HuaWayServiceConnection(HuaWayConfiguration configuration)
+		public HuaweiServiceConnection(HuaweiConfiguration configuration)
 		{
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 			this._client = new PushSharpHttpClient();
 		}
 
-		async Task IServiceConnection<HuaWayNotification>.Send(HuaWayNotification notification)
+		async Task IServiceConnection<HuaweiNotification>.Send(HuaweiNotification notification)
 			=> await this.SendWithRetry(notification, true);
 
-		private async Task SendWithRetry(HuaWayNotification notification, Boolean withRetryOnTokenExpiration)
+		private async Task SendWithRetry(HuaweiNotification notification, Boolean withRetryOnTokenExpiration)
 		{
 			var token = this._configuration.AccessToken;
-			var path = this._configuration.HuaWaySendUrl;
+			var path = this._configuration.HuaweiSendUrl;
 			var json = notification.GetJson();
 
 			using(var message = new HttpRequestMessage(HttpMethod.Post, path))
@@ -62,7 +62,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 			}
 		}
 
-		private async Task ProcessFailureResponseAsync(HttpResponseMessage httpResponse, HuaWayNotification notification)
+		private async Task ProcessFailureResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification)
 		{
 			String responseBody;
 
@@ -78,7 +78,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 				exc = new UnauthorizedAccessException("Verify the access token in the Authorization parameter in the request HTTP header.");
 				break;
 			default:
-				exc = new HuaWayException(notification, httpResponse.StatusCode);
+				exc = new HuaweiException(notification, httpResponse.StatusCode);
 				break;
 			}
 
@@ -87,26 +87,26 @@ namespace AlphaOmega.PushSharp.HuaWay
 			throw exc;
 		}
 
-		private async Task ProcessSuccessResponseAsync(HttpResponseMessage httpResponse, HuaWayNotification notification, Boolean withRetryOnTokenExpiration)
+		private async Task ProcessSuccessResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification, Boolean withRetryOnTokenExpiration)
 		{
 			var strResponse = await httpResponse.Content.ReadAsStringAsync();
-			var response = JsonConvert.DeserializeObject<HuaWayResponse>(strResponse);
+			var response = JsonConvert.DeserializeObject<HuaweiResponse>(strResponse);
 
 			switch(response.Code)
 			{
-			case HuaWayResponse.ReturnCode.Success:
+			case HuaweiResponse.ReturnCode.Success:
 				return;
-			case HuaWayResponse.ReturnCode.OAuthTokenExpired:
+			case HuaweiResponse.ReturnCode.OAuthTokenExpired:
 				if(withRetryOnTokenExpiration)
 				{
 					await this._configuration.RefreshTokenAsync();
 					await this.SendWithRetry(notification, false);
 				} else
-					throw new HuaWayException(notification, response);
+					throw new HuaweiException(notification, response);
 				break;
 			default:
-				if(Enum.IsDefined(typeof(HuaWayResponse.ReturnCode), response.Code))
-					throw new HuaWayException(notification, response);
+				if(Enum.IsDefined(typeof(HuaweiResponse.ReturnCode), response.Code))
+					throw new HuaweiException(notification, response);
 				else
 				{
 					Exception exc1 = new InvalidOperationException($"{response.Message}. Code: {response.Code}");

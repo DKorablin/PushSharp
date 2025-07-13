@@ -4,9 +4,9 @@ using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
-	public class HuaWayNotification : INotification
+	public class HuaweiNotification : INotification
 	{
 		public class MessageNotification
 		{
@@ -216,12 +216,12 @@ namespace AlphaOmega.PushSharp.HuaWay
 
 					/// <summary>URL of the custom large icon on the right of a notification message.</summary>
 					/// <remarks>
-					/// The function is the same as that of the <see cref="HuaWayNotification.MessageNotification.Notification.image"/> field.
-					/// If the image parameter is set, the value of the <see cref="HuaWayNotification.MessageNotification.Notification.image"/> field is overwritten.
+					/// The function is the same as that of the <see cref="HuaweiNotification.MessageNotification.Notification.image"/> field.
+					/// If the image parameter is set, the value of the <see cref="HuaweiNotification.MessageNotification.Notification.image"/> field is overwritten.
 					/// The URL must be an HTTPS URL.
 					/// </remarks>
 					/// <example>https://example.com/image.png</example>
-					/// <see cref="HuaWayNotification.MessageNotification.Notification.image"/>
+					/// <see cref="HuaweiNotification.MessageNotification.Notification.image"/>
 					public String image { get; set; }
 
 					/// <summary>Notification bar style.</summary>

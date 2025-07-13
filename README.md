@@ -1,7 +1,16 @@
-PushSharp v4.1
-==============
+# PushSharp v4.1
+[![Auto build](https://github.com/DKorablin/PushSharp/actions/workflows/release.yml/badge.svg)](https://github.com/DKorablin/PushSharp/releases/latest)
+[![Nuget](https://img.shields.io/nuget/v/AlphaOmega.PushSharp)](https://www.nuget.org/packages/AlphaOmega.PushSharp)
 
-PushSharp is a server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), HuaWay, Windows/Windows Phone, Amazon (ADM) and Blackberry devices!
+PushSharp is a server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows/Windows Phone, Amazon (ADM) and Blackberry devices!
+
+Improvements:
+1. Added Apple APNS HTTP/2 support (New version)
+2. Added Firebase Cloud Messaging V1 support (New version)
+3. Added Huawei HMS V1 (New) [V2 in progress...]
+4. Changed assembly signing key file for all assemblies. (PublicKeyToken=a8ac5fc45c3adb8d)
+5. Added PE file signing. (S/N: 00c18bc05b61a77408c694bd3542d035)
+6. Added CI/CD pipelines
 
 ## Sample Usage
 
@@ -37,12 +46,12 @@ broker.OnNotificationSucceeded += (notification) =>
 
 broker.Start();
 
-foreach(var dt in Settings.Instance.ApnsDeviceTokens)
+foreach(var dt in MY_DEVICE_TOKEN_IDS)
 {
 	broker.QueueNotification(new ApnsNotification
 	{
 		DeviceToken = dt,
-		Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie!\" } }")
+		Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie\" } }")
 	});
 }
 
@@ -54,7 +63,13 @@ broker.Stop();
 Here is how you would send a Firebase HTTP v1 notification:
 
 ```csharp
-var settings = JsonConvert.DeserializeObject<FirebaseSettings>("{Firebase.ServiceAccount.json}");
+var projectId = "{ProjectId}";
+var privateKey = "{PrivateKey}";
+var clientEmail = "{ClientEmail}";
+var tokenUri = "{TokenUri}";
+
+var settings = new FirebaseSettings(projectId, privateKey, clientEmail, tokenUri);
+// var settings = JsonConvert.DeserializeObject<FirebaseSettings>("{Firebase.ServiceAccount.json}");
 var config = new FirebaseConfiguration(settings);
 
 // Create a new broker
@@ -130,30 +145,32 @@ foreach (var regId in MY_REGISTRATION_IDS) {
 broker.Stop();
 ```
 
-### HuaWay Sample Usage
+### Huawei (HMS) Sample Usage
 
-Here is how you would send a HuaWay notification:
+Here is how you would send a Huawei (HMS) notification:
 
 ```csharp
 var clientSecret = "{ClientSecret}";
 var projectId = "{ProjectId}";
 var applicationId = "{ApplicationId}";
 
-var config = new HuaWayConfiguration(clientSecret, projectId, applicationId);
-var broker = new HuaWayServiceBroker(config);
+var config = new HuaweiConfiguration(clientSecret, projectId, applicationId);
+var broker = new HuaweiServiceBroker(config);
+
 broker.OnNotificationFailed += (notification, exception) =>
 {
 	
 };
+
 broker.OnNotificationSucceeded += (notification) => Console.WriteLine ("Notification Sent!");
 
 broker.Start();
 
-foreach(var regId in Settings.Instance.HuaWayRegistrationIds)
+foreach(var regId in MY_REGISTRATION_IDS)
 {
-	var notification = new HuaWayNotification();
+	var notification = new HuaweiNotification();
 	notification.Message.token = new String[] { regId };
-	notification.Message.data = JObject.Parse("{ \"somekey\" : \"I want cookie!\" }");
+	notification.Message.data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }");
 
 	broker.QueueNotification(notification);
 }

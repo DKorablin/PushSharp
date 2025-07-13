@@ -44,7 +44,7 @@ namespace AlphaOmega.PushSharp.Tests
 				broker.QueueNotification(new ApnsNotification
 				{
 					DeviceToken = dt,
-					Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie!\" } }")
+					Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie\" } }")
 				});
 			}
 

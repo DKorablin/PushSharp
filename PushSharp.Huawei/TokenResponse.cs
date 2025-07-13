@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AlphaOmega.PushSharp.HuaWay
+namespace AlphaOmega.PushSharp.Huawei
 {
 	internal class TokenResponse
 	{

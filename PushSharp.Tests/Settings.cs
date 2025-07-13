@@ -90,19 +90,19 @@ namespace AlphaOmega.PushSharp.Tests
 		[JsonProperty("wns_channel_uris")]
 		public List<String> WnsChannelUris { get; set; }
 
-		[JsonProperty("huaway_client_id")]
-		public String HuaWayClientId { get; set; }
+		[JsonProperty("huawei_client_id")]
+		public String HuaweiClientId { get; set; }
 
-		[JsonProperty("huaway_client_secret")]
-		public String HuaWayClientSecret { get; set; }
+		[JsonProperty("huawei_client_secret")]
+		public String HuaweiClientSecret { get; set; }
 
-		[JsonProperty("huaway_project_id")]
-		public String HuaWayProjectId { get; set; }
+		[JsonProperty("huawei_project_id")]
+		public String HuaweiProjectId { get; set; }
 
-		[JsonProperty("huaway_app_id")]
-		public String HuaWayApplicationId { get; set; }
+		[JsonProperty("huawei_app_id")]
+		public String HuaweiApplicationId { get; set; }
 
-		[JsonProperty("huaway_registration_ids")]
-		public List<String> HuaWayRegistrationIds { get; set; }
+		[JsonProperty("huawei_registration_ids")]
+		public List<String> HuaweiRegistrationIds { get; set; }
 	}
 }
