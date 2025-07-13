@@ -51,12 +51,10 @@ namespace AlphaOmega.PushSharp.Apple
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
 			var handler = new WinHttpHandler();
-			this._client = new HttpClient(handler)
+			this._client = new PushSharpHttpClient(handler)
 			{
 				BaseAddress = new Uri(this._configuration.Settings.Host),
 			};
-			this._client.DefaultRequestHeaders.UserAgent.Clear();
-			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "4.1"));
 		}
 
 		async Task IServiceConnection<ApnsNotification>.Send(ApnsNotification notification)

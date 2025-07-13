@@ -1,9 +1,7 @@
-﻿using System;
-using AlphaOmega.PushSharp.Core;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Net.Http;
-using System.Net;
-using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using AlphaOmega.PushSharp.Core;
 
 namespace AlphaOmega.PushSharp.Firefox
 {
@@ -31,14 +29,11 @@ namespace AlphaOmega.PushSharp.Firefox
 
     public class FirefoxServiceConnection : IServiceConnection<FirefoxNotification>
     {   
-        HttpClient http = new HttpClient ();
+        HttpClient http = new PushSharpHttpClient();
 
         public async Task Send (FirefoxNotification notification)
         {            
             var data = notification.ToString ();
-
-            http.DefaultRequestHeaders.UserAgent.Clear ();
-            http.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue ("PushSharp", "4.1"));
 
             var result = await http.PutAsync (notification.EndPointUrl, new StringContent (data));
 

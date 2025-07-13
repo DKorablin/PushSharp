@@ -34,10 +34,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 		public HuaWayServiceConnection(HuaWayConfiguration configuration)
 		{
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-			this._client = new HttpClient();
-
-			this._client.DefaultRequestHeaders.UserAgent.Clear();
-			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "4.1"));
+			this._client = new PushSharpHttpClient();
 		}
 
 		async Task IServiceConnection<HuaWayNotification>.Send(HuaWayNotification notification)
@@ -46,16 +43,23 @@ namespace AlphaOmega.PushSharp.HuaWay
 		private async Task SendWithRetry(HuaWayNotification notification, Boolean withRetryOnTokenExpiration)
 		{
 			var token = this._configuration.AccessToken;
+			var path = this._configuration.HuaWaySendUrl;
 			var json = notification.GetJson();
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-			this._client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + token);
-			var response = await this._client.PostAsync(this._configuration.HuaWaySendUrl, content);
+			using(var message = new HttpRequestMessage(HttpMethod.Post, path))
+			{
+				message.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-			if(response.IsSuccessStatusCode)
-				await this.ProcessSuccessResponseAsync(response, notification, withRetryOnTokenExpiration).ConfigureAwait(false);
-			else
-				await this.ProcessFailureResponseAsync(response, notification).ConfigureAwait(false);
+				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+				using(var response = await this._client.SendAsync(message))
+				{
+					if(response.IsSuccessStatusCode)
+						await this.ProcessSuccessResponseAsync(response, notification, withRetryOnTokenExpiration).ConfigureAwait(false);
+					else
+						await this.ProcessFailureResponseAsync(response, notification).ConfigureAwait(false);
+				}
+			}
 		}
 
 		private async Task ProcessFailureResponseAsync(HttpResponseMessage httpResponse, HuaWayNotification notification)

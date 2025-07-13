@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
 
 namespace AlphaOmega.PushSharp.Apple
 {
@@ -68,6 +72,67 @@ namespace AlphaOmega.PushSharp.Apple
 			this.P8Certificate = File.ReadAllText(p8CertificatePath);
 			this.KeyId = keyId;
 			this.TeamId = teamId ?? throw new ArgumentNullException(nameof(teamId));
+		}
+
+		private ISigner CreateSigner()
+		{
+			AsymmetricKeyParameter key;
+			using(var reader = new StringReader(this.P8Certificate))
+			{
+				var pemReader = new PemReader(reader);
+				var keyObject = pemReader.ReadObject();
+
+				if(keyObject is AsymmetricCipherKeyPair keyPair)
+					key = keyPair.Private;
+				else if(keyObject is AsymmetricKeyParameter privateKey)
+					key = privateKey;
+				else
+					throw new ApplicationException("Unable to read the private key from p8.");
+			}
+
+			var signer = SignerUtilities.GetSigner("SHA-256withECDSA");
+			signer.Init(true, key);
+			return signer;
+		}
+
+		internal Byte[] SignWithECDsa(Byte[] dataToSign)
+		{
+			var signer = this.CreateSigner();
+			signer.BlockUpdate(dataToSign, 0, dataToSign.Length);
+			Byte[] signatureDer = signer.GenerateSignature();
+
+			// Convert DER-encoded signature to raw R||S per JWT spec
+			return ConvertDerToConcatenated(signatureDer);
+		}
+
+		private static Byte[] ConvertDerToConcatenated(Byte[] derSignature)
+		{
+			const Int32 OutputLength = 64;
+
+			var sig = Org.BouncyCastle.Asn1.Asn1Sequence.GetInstance(derSignature);
+			var r = ((Org.BouncyCastle.Asn1.DerInteger)sig[0]).Value.ToByteArrayUnsigned();
+			var s = ((Org.BouncyCastle.Asn1.DerInteger)sig[1]).Value.ToByteArrayUnsigned();
+
+			Int32 intLength = OutputLength / 2;
+
+			Byte[] result = new Byte[OutputLength];
+			Buffer.BlockCopy(PadToLength(r, intLength), 0, result, 0, intLength);
+			Buffer.BlockCopy(PadToLength(s, intLength), 0, result, intLength, intLength);
+
+			return result;
+		}
+
+		private static Byte[] PadToLength(Byte[] value, Int32 length)
+		{
+			if(value.Length == length)
+				return value;
+
+			if(value.Length > length)
+				throw new InvalidOperationException("Value length exceeds expected length.");
+
+			Byte[] padded = new Byte[length];
+			Buffer.BlockCopy(value, 0, padded, length - value.Length, value.Length);
+			return padded;
 		}
 	}
 }

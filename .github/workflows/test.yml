@@ -1,0 +1,34 @@
+name: Test, Buid
+
+on:
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  SolutionName: ${{github.event.repository.name}}
+
+jobs:
+  build_net_framework:
+    name: Building .NET Framework assemblies
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Restoring NuGet packages
+      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
+    - name: Setup .NET Framework
+      uses: microsoft/setup-msbuild@v2
+    - name: Building PushSharp Amazon (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Amazon\PushSharp.Amazon35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp Apple (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Apple\PushSharp.Apple35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp Blackberry (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Blackberry\PushSharp.Blackberry35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp Firefox (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Firefox\PushSharp.Firefox35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp Google (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Google\PushSharp.Google35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Building PushSharp HuaWay (.NET Framework)
+      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"

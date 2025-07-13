@@ -14,7 +14,7 @@ namespace AlphaOmega.PushSharp.Core
 			=> this.ExpiredAt = DateTime.UtcNow;
 	}
 
-	public class NotificationException<T> : Exception where T : INotification
+	public class NotificationException<T> : ApplicationException where T : INotification
 	{
 		public T Notification { get; set; }
 

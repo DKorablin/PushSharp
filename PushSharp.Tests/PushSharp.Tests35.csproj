@@ -52,27 +52,27 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\PushSharp.Core\PushSharp.Core.csproj">
+    <ProjectReference Include="..\PushSharp.Core\PushSharp.Core35.csproj">
       <Project>{2B44A8DA-60BC-4577-A2D7-D9D53F164B2E}</Project>
       <Name>PushSharp.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PushSharp.Apple\PushSharp.Apple.csproj">
+    <ProjectReference Include="..\PushSharp.Apple\PushSharp.Apple35.csproj">
       <Project>{A9D99F80-FEEB-4E74-96C5-66F17103C773}</Project>
       <Name>PushSharp.Apple</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PushSharp.Amazon\PushSharp.Amazon.csproj">
+    <ProjectReference Include="..\PushSharp.Amazon\PushSharp.Amazon35.csproj">
       <Project>{2468C63B-C964-4FC3-9B16-13DC17CF7D11}</Project>
       <Name>PushSharp.Amazon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PushSharp.Google\PushSharp.Google.csproj">
+    <ProjectReference Include="..\PushSharp.Google\PushSharp.Google35.csproj">
       <Project>{94F16497-471F-433F-A99E-C455FB2D7724}</Project>
       <Name>PushSharp.Google</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PushSharp.HuaWay\PushSharp.HuaWay.csproj">
+    <ProjectReference Include="..\PushSharp.HuaWay\PushSharp.HuaWay35.csproj">
       <Project>{810a61de-e2d2-4ceb-9dc4-10fd45860ba2}</Project>
       <Name>PushSharp.HuaWay</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PushSharp.Windows\PushSharp.Windows.csproj">
+    <ProjectReference Include="..\PushSharp.Windows\PushSharp.Windows35.csproj">
       <Project>{DC80552B-6730-44AA-9B74-1E036BD909C3}</Project>
       <Name>PushSharp.Windows</Name>
     </ProjectReference>

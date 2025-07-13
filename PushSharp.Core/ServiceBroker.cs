@@ -19,9 +19,6 @@ namespace AlphaOmega.PushSharp.Core
 		public event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
 		public event NotificationFailureDelegate<TNotification> OnNotificationFailed;
 
-		//public Boolean AutoScale { get; set; }
-		//public Int32 AutoScaleMaxSize { get; set; }
-
 		public Int32 ScaleSize { get; private set; }
 
 		public IServiceConnectionFactory<TNotification> ServiceConnectionFactory { get; set; }

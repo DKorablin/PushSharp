@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
@@ -31,7 +32,7 @@ namespace AlphaOmega.PushSharp.Google
 				if(this._tokenExpiration < DateTime.Now)
 					lock(this._tokenLock)
 						if(this._tokenExpiration < DateTime.Now)
-							this.RefreshAccessToken();
+							this.RefreshAccessTokenAsync().Wait();
 
 				return this._token.AccessToken;
 			}
@@ -48,7 +49,7 @@ namespace AlphaOmega.PushSharp.Google
 		public FirebaseConfiguration(FirebaseSettings settings)
 			=> this._settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-		private void RefreshAccessToken()
+		private async Task RefreshAccessTokenAsync()
 		{
 			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL))
 			using(var form = new MultipartFormDataContent())
@@ -58,10 +59,10 @@ namespace AlphaOmega.PushSharp.Google
 				form.Add(new StringContent("urn:ietf:params:oauth:grant-type:jwt-bearer"), "grant_type");
 				message.Content = form;
 
-				using(var client = new HttpClient())
-				using(var response = client.SendAsync(message).Result)
+				using(var client = new PushSharpHttpClient())
+				using(var response = await client.SendAsync(message))
 				{
-					var content = response.Content.ReadAsStringAsync().Result;
+					var content = await response.Content.ReadAsStringAsync();
 
 					if(!response.IsSuccessStatusCode)
 					{
@@ -84,8 +85,8 @@ namespace AlphaOmega.PushSharp.Google
 				iss = this._settings.ClientEmail,
 				aud = this._settings.TokenUri,
 				scope = "https://www.googleapis.com/auth/firebase.messaging",
-				iat = PushHttpClient.GetUnixTimestamp(),
-				exp = PushHttpClient.GetUnixTimestamp() + 3600 /* has to be short lived */
+				iat = PushHttpUtils.GetUnixTimestamp(),
+				exp = PushHttpUtils.GetUnixTimestamp() + 3600 /* has to be short lived */
 			});
 
 			String headerBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(header));

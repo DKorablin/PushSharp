@@ -36,25 +36,29 @@ namespace AlphaOmega.PushSharp.Google
 		public FirebaseServiceConnection(FirebaseConfiguration configuration)
 		{
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-			this._client = new HttpClient();
-
-			this._client.DefaultRequestHeaders.UserAgent.Clear();
-			this._client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("PushSharp", "4.1"));
+			this._client = new PushSharpHttpClient();
 		}
 
 		async Task IServiceConnection<FirebaseNotification>.Send(FirebaseNotification notification)
 		{
 			var token = this._configuration.AccessToken;
+			var path = this._configuration.FirebaseSendUrl;
 			var json = notification.GetJson();
-			var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-			this._client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + token);
-			var response = await this._client.PostAsync(this._configuration.FirebaseSendUrl, content);
+			using(var message = new HttpRequestMessage(HttpMethod.Post, path))
+			{
+				message.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-			if(response.IsSuccessStatusCode)
-				await this.ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
-			else
-				await this.ProcessErrorResponseAsync(response, notification).ConfigureAwait(false);
+				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+				using(var response = await this._client.SendAsync(message))
+				{
+					if(response.IsSuccessStatusCode)
+						await this.ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
+					else
+						await this.ProcessErrorResponseAsync(response, notification).ConfigureAwait(false);
+				}
+			}
 		}
 
 		private async Task ProcessOkResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)

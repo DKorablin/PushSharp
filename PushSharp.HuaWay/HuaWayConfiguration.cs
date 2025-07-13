@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.HuaWay
@@ -60,13 +62,13 @@ namespace AlphaOmega.PushSharp.HuaWay
 				if(this._tokenExpiration < DateTime.Now)
 					lock(this._tokenLock)
 						if(this._tokenExpiration < DateTime.Now)
-							this.RefreshToken();
+							this.RefreshTokenAsync().Wait();
 
 				return this._token.access_token;
 			}
 		}
 
-		internal void RefreshToken()
+		internal async Task RefreshTokenAsync()
 		{
 			Dictionary<String, String> payload = new Dictionary<String, String>()
 			{
@@ -80,10 +82,10 @@ namespace AlphaOmega.PushSharp.HuaWay
 			{
 				message.Content = form;
 
-				using(var client = new HttpClient())
-				using(var response = client.SendAsync(message).Result)
+				using(var client = new PushSharpHttpClient())
+				using(var response = await client.SendAsync(message))
 				{
-					String content = response.Content.ReadAsStringAsync().Result;
+					String content = await response.Content.ReadAsStringAsync();
 
 					if(!response.IsSuccessStatusCode)
 					{

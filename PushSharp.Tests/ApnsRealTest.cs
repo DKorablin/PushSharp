@@ -1,4 +1,5 @@
-﻿using AlphaOmega.PushSharp.Apple;
+﻿using System.Threading;
+using AlphaOmega.PushSharp.Apple;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -13,6 +14,7 @@ namespace AlphaOmega.PushSharp.Tests
 			var succeeded = 0;
 			var failed = 0;
 			var attempted = 0;
+			AutoResetEvent evt = new AutoResetEvent(false);
 
 			var settings = new ApnsSettings(
 				ApnsSettings.ApnsServerEnvironment.Production,
