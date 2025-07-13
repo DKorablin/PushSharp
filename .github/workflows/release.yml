@@ -40,20 +40,15 @@ jobs:
       uses: microsoft/setup-msbuild@v2
     - name: Restoring NuGet packages
       run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
-    - name: Building PushSharp Amazon (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Amazon\PushSharp.Amazon35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp Apple (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Apple\PushSharp.Apple35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp Blackberry (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Blackberry\PushSharp.Blackberry35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp Firefox (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Firefox\PushSharp.Firefox35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp Google (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Google\PushSharp.Google35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp HuaWay (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-    - name: Building PushSharp Windows (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Windows\PushSharp.Windows35.csproj" /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+    - name: Build all .NET Framework projects
+      shell: pwsh
+      run: |
+        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj
+
+        foreach ($proj in $csprojFiles) {
+            Write-Host "Building $($proj.FullName)..."
+            msbuild -nologo -restore $proj.FullName /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+        }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Core
       uses: dlemstra/code-sign-action@v1

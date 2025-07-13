@@ -19,17 +19,12 @@ jobs:
       run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
     - name: Setup .NET Framework
       uses: microsoft/setup-msbuild@v2
-    - name: Building PushSharp Amazon (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Amazon\PushSharp.Amazon35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp Apple (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Apple\PushSharp.Apple35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp Blackberry (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Blackberry\PushSharp.Blackberry35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp Firefox (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Firefox\PushSharp.Firefox35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp Google (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Google\PushSharp.Google35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp HuaWay (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.HuaWay\PushSharp.HuaWay35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
-    - name: Building PushSharp Windows (.NET Framework)
-      run: MSBuild -nologo -restore "${{github.workspace}}\PushSharp.Windows\PushSharp.Windows35.csproj" /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+    - name: Build all .NET Framework projects
+      shell: pwsh
+      run: |
+        $csprojFiles = Get-ChildItem -Path . -Recurse -Filter *35.csproj
+
+        foreach ($proj in $csprojFiles) {
+            Write-Host "Building $($proj.FullName)..."
+            msbuild -nologo -restore $proj.FullName /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
+        }
