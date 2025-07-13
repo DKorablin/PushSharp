@@ -1,11 +1,53 @@
-PushSharp v4.0
+PushSharp v4.1
 ==============
 
-# Development version still not finished
-
-PushSharp is a server-side library for sending Push Notifications to iOS/OSX (APNS), Android/Chrome (GCM/FCM), Windows/Windows Phone, Amazon (ADM) and Blackberry devices!
+PushSharp is a server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), HuaWay, Windows/Windows Phone, Amazon (ADM) and Blackberry devices!
 
 ## Sample Usage
+
+### APNS HTTP/2 Sample usage
+
+```csharp
+var environment = ApnsSettings.ApnsServerEnvironment.Production;
+var p8CertificatePath = "{P8CertificateFilePath}";
+var p8CertificatePassword = "{P8CertificatePassword}";
+var keyId = "{KeyId}";
+var teamId = "{TeamId}";
+var bundleId = "{com.company.appName}";
+
+var settings = new ApnsSettings(
+	environment,
+	p8CertificatePath,
+	p8CertificatePassword,
+	keyId)
+{
+	AppBundleId = bundleId,
+};
+
+var config = new ApnsConfiguration(settings);
+var broker = new ApnsServiceBroker(config);
+broker.OnNotificationFailed += (notification, exception) =>
+{
+
+};
+broker.OnNotificationSucceeded += (notification) =>
+{
+
+};
+
+broker.Start();
+
+foreach(var dt in Settings.Instance.ApnsDeviceTokens)
+{
+	broker.QueueNotification(new ApnsNotification
+	{
+		DeviceToken = dt,
+		Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie!\" } }")
+	});
+}
+
+broker.Stop();
+```
 
 ### Firebase HTTP v1 Sample Usage
 
@@ -77,7 +119,7 @@ foreach (var regId in MY_REGISTRATION_IDS) {
 	// Queue a notification to send
 	var notification = new FirebaseNotification();
 	notification.message.token = regId;
-	notification.message.data = JObject.Parse("{ \"somekey\" : \"somevalue\" }");
+	notification.message.data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }");
 
 	broker.QueueNotification(notification);
 }
@@ -93,15 +135,11 @@ broker.Stop();
 Here is how you would send a HuaWay notification:
 
 ```csharp
-var settings = new HuaWaySettings()
-{
-	ApplicationId = "{ApplicationId}",
-	ClientId = "{ClientId}",
-	ClientSecret = "{ClientSecret}",
-	ProjectId = "{ProjectId}",
-};
+var clientSecret = "{ClientSecret}";
+var projectId = "{ProjectId}";
+var applicationId = "{ApplicationId}";
 
-var config = new HuaWayConfiguration(settings);
+var config = new HuaWayConfiguration(clientSecret, projectId, applicationId);
 var broker = new HuaWayServiceBroker(config);
 broker.OnNotificationFailed += (notification, exception) =>
 {
@@ -113,11 +151,9 @@ broker.Start();
 
 foreach(var regId in Settings.Instance.HuaWayRegistrationIds)
 {
-	attempted++;
-
 	var notification = new HuaWayNotification();
 	notification.Message.token = new String[] { regId };
-	notification.Message.data = JObject.Parse("{ \"somekey\" : \"somevalue\" }");
+	notification.Message.data = JObject.Parse("{ \"somekey\" : \"I want cookie!\" }");
 
 	broker.QueueNotification(notification);
 }
