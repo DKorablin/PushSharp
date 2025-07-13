@@ -50,7 +50,7 @@ jobs:
             msbuild -nologo -restore $proj.FullName /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
         }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
-    - name: Signing PushSharp Core
+    - name: Signing PushSharp Assemblies
       uses: dlemstra/code-sign-action@v1
       with:
         certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
@@ -58,61 +58,12 @@ jobs:
         recursive: false
         files: |
           ${{github.workspace}}\bin\PushSharp.Core.dll
-    - name: Signing PushSharp Amazon
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Amazon.dll
-    - name: Signing PushSharp Apple
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Apple.dll
-    - name: Signing PushSharp Blackberry
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Blackberry.dll
-    - name: Signing PushSharp Firefox
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Firefox.dll
-    - name: Signing PushSharp Google
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Google.dll
-    - name: Signing PushSharp HuaWay
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.HuaWay.dll
-    - name: Signing PushSharp Windows
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
           ${{github.workspace}}\bin\PushSharp.Windows.dll
     - name: Deploying artifacts
       uses: actions/upload-artifact@v4
