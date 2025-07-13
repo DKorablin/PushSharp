@@ -25,7 +25,7 @@
 	</metadata>
 	<files>
 		<file src="readme.md" target="docs" />
-		<file src="bin\Release\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
+		<file src="bin\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
 
 		<file src="bin\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
 		<file src="bin\PushSharp.Apple.dll" target="lib\net48\PushSharp.Apple.dll" />
