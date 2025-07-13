@@ -129,15 +129,14 @@ jobs:
       run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
   failure_cleanup:
-  #error: tag '${{needs.version.outputs.new_tag}}' not found.
+  #error: tag '${{needs.version.outputs.new_tag}}' not found. (We can't specify other steps because release is already deployed and cleanup will fail)
     name: Remove version tag on failure
     needs:
       - version
       - build_net_framework
-      - deploy_nuget
     if: |
       always() &&
-      (needs.build_net_framework.result != 'success' || needs.deploy_nuget.result != 'success')
+      needs.build_net_framework.result != 'success'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
