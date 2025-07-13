@@ -7,6 +7,7 @@
 		<readme>docs\README.md</readme>
 		<license type="expression">Apache-1.0</license>
 		<projectUrl>https://github.com/DKorablin/PushSharp/</projectUrl>
+		<icon>images\icon.png</icon>
 		<iconUrl>https://github.com/DKorablin/PushSharp/raw/master/Resources/PushSharp-Icon-NuGet-Small.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS), Android/Chrome (GCM), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry and Firefox OS</description>
@@ -25,8 +26,9 @@
 	</metadata>
 	<files>
 		<file src="readme.md" target="docs" />
+		<file src="Resources\PushSharp-Icon-NuGet-Small.png" target="images\icon.png" />
+		
 		<file src="bin\net48\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
-
 		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
 		<file src="bin\net48\PushSharp.Apple.dll" target="lib\net48\PushSharp.Apple.dll" />
 		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48\PushSharp.Blackberry.dll" />
