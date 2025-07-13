@@ -20,7 +20,7 @@ jobs:
       uses: mathieudutour/github-tag-action@v6.2
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        custom_tag: 4.1.0
+        #custom_tag: 4.1.0
 
   build_net_framework:
     name: Building .NET Framework assemblies
