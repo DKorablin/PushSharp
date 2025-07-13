@@ -63,7 +63,7 @@ jobs:
           ${{github.workspace}}\bin\PushSharp.Blackberry.dll
           ${{github.workspace}}\bin\PushSharp.Firefox.dll
           ${{github.workspace}}\bin\PushSharp.Google.dll
-          ${{github.workspace}}\bin\PushSharp.Huawey.dll
+          ${{github.workspace}}\bin\PushSharp.Huawei.dll
           ${{github.workspace}}\bin\PushSharp.Windows.dll
     - name: Deploying artifacts
       uses: actions/upload-artifact@v4
