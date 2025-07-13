@@ -25,7 +25,7 @@
 	</metadata>
 	<files>
 		<file src="readme.md" target="docs" />
-		<file src="Resources\PushSharp-Icon-NuGet-Small.png" target="images\icon.png" />
+		<file src="PushSharp-Icon-NuGet-Small.png" target="images\icon.png" />
 		
 		<file src="bin\net48\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
 		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
