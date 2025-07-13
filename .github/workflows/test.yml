@@ -20,7 +20,9 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v2
     - name: Restore NuGet packages
-      run: nuget restore ${{env.SolutionName}}.sln
+      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
+    - name: Setup .NET Framework
+      uses: microsoft/setup-msbuild@v2
     - name: Build solution
       run: msbuild -nologo -restore ${{env.SolutionName}}.sln /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
     - name: Run tests
