@@ -85,8 +85,8 @@ namespace AlphaOmega.PushSharp.Google
 				iss = this._settings.ClientEmail,
 				aud = this._settings.TokenUri,
 				scope = "https://www.googleapis.com/auth/firebase.messaging",
-				iat = PushHttpUtils.GetUnixTimestamp(),
-				exp = PushHttpUtils.GetUnixTimestamp() + 3600 /* has to be short lived */
+				iat = PushSharpHttpClient.GetUnixTimestamp(),
+				exp = PushSharpHttpClient.GetUnixTimestamp() + 3600 /* has to be short lived */
 			});
 
 			String headerBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(header));

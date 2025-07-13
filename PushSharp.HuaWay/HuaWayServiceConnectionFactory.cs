@@ -99,7 +99,7 @@ namespace AlphaOmega.PushSharp.HuaWay
 			case HuaWayResponse.ReturnCode.OAuthTokenExpired:
 				if(withRetryOnTokenExpiration)
 				{
-					this._configuration.RefreshToken();
+					await this._configuration.RefreshTokenAsync();
 					await this.SendWithRetry(notification, false);
 				} else
 					throw new HuaWayException(notification, response);
