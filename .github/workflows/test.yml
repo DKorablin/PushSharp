@@ -27,7 +27,7 @@ jobs:
 
   build_net_framework:
     name: Building .NET Framework assemblies
-    needs: [test_net_ubuntu]
+    needs: [test_net_windows]
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
