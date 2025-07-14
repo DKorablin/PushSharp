@@ -181,7 +181,7 @@ jobs:
 
   failure_cleanup:
   #error: tag '${{needs.version.outputs.new_tag}}' not found.
-    name: Remove version tag on failure
+    name: Removing version tag on failure
     needs:
       - version
       - build_net
