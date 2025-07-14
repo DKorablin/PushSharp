@@ -12,15 +12,22 @@
 		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry and Firefox OS</description>
 		<summary>A server-side library for sending Push Notifications to many platforms (APNS, FCM, HMS, WNS, ADM)</summary>
 		<releaseNotes>
-			4.1.* - Updated APNS for HTTP/2 implementation, Updated Android FCM V1 implementation, Added Huawei (HMS), see project site for more info
+			4.1.* - Updated APNS for HTTP/2 implementation, Updated Android FCM V1 implementation, Added Huawei (HMS), Added .NET Standard 2.0 build, see project site for more info
 		</releaseNotes>
 		<copyright>2012-2016 Redth, 2025 Danila Korablin</copyright>
 		<language>en-US</language>
 		<tags>APN, APNS, GCM, FCMV1, XMPP, ADM, GCMXMPP, C2DM, PAP, BIS, BEM, Blackberry, iOS, Android, iPad, iPhone, PushSharp, MDM, UWP, WNS, Windows Notification, Amazon, Amazon Device, Push, Push Notifications, Google Cloud, Cloud Messaging, Google Cloud Messaging, OSX, Mac, WindowsPhone, PassKit, Huawei, HMS</tags>
 		<dependencies>
-			<dependency id="Newtonsoft.Json" version="13.0.3" />
-			<dependency id="Portable.BouncyCastle" version="1.9.0" />
-			<dependency id="System.Net.Http.WinHttpHandler" version="9.0.7"/>
+			<group targetFramework=".NETFramework4.8">
+				<dependency id="Newtonsoft.Json" version="13.0.3" />
+				<dependency id="Portable.BouncyCastle" version="1.9.0" />
+				<dependency id="System.Net.Http.WinHttpHandler" version="9.0.7"/>
+			</group>
+			<group targetFramework=".NETStandard2.0">
+				<dependency id="Newtonsoft.Json" version="13.0.3" />
+				<dependency id="Portable.BouncyCastle" version="1.9.0" />
+				<dependency id="System.Net.Http.WinHttpHandler" version="9.0.7"/>
+			</group>
 		</dependencies>
 	</metadata>
 	<files>

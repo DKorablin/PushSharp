@@ -8,9 +8,11 @@ Improvements:
 1. Added Apple APNS HTTP/2 support (New version)
 2. Added Firebase Cloud Messaging V1 support (New version)
 3. Added Huawei HMS V1 (New) [V2 in progress...]
-4. Changed assembly signing key file for all assemblies. (PublicKeyToken=a8ac5fc45c3adb8d)
-5. Added PE file signing. (S/N: 00c18bc05b61a77408c694bd3542d035)
-6. Added CI/CD pipelines
+4. Updated .NET Framework from v4.5 to v4.8
+5. Added .NET Standard v2.0
+6. Changed assembly signing key file for all assemblies. (PublicKeyToken=a8ac5fc45c3adb8d)
+7. Added PE file signing. (S/N: 00c18bc05b61a77408c694bd3542d035)
+8. Added CI/CD pipelines
 
 ## Sample Usage
 
