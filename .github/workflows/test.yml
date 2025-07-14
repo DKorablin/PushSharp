@@ -23,7 +23,7 @@ jobs:
     - name: Restoring dependencies
       run: dotnet restore ${{env.SolutionName}}.sln
     - name: Testing .NET
-      run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal
+      run: dotnet test ${{github.workspace}}\PushSharp.Tests\PushSharp.Tests.csproj --no-build --verbosity normal
 
   build_net_framework:
     name: Building .NET Framework assemblies
