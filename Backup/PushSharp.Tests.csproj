@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<RootNamespace>AlphaOmega.PushSharp.Tests</RootNamespace>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<Configuration>Debug</Configuration>
+		<Deterministic>false</Deterministic>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<OutputPath>..\bin\</OutputPath>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="SonarAnalyzer.CSharp" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.runner.visualstudio" />
+		<PackageReference Include="Newtonsoft.Json" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\PushSharp.Core\PushSharp.Core.csproj" />
+	  <ProjectReference Include="..\PushSharp.Apple\PushSharp.Apple.csproj" />
+	  <ProjectReference Include="..\PushSharp.Amazon\PushSharp.Amazon.csproj" />
+	  <ProjectReference Include="..\PushSharp.Google\PushSharp.Google.csproj" />
+	  <ProjectReference Include="..\PushSharp.Huawei\PushSharp.Huawei.csproj" />
+	  <ProjectReference Include="..\PushSharp.Windows\PushSharp.Windows.csproj" />
+	</ItemGroup>
+</Project>

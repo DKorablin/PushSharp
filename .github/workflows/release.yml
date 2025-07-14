@@ -72,6 +72,43 @@ jobs:
         path: ${{github.workspace}}/bin/*
         if-no-files-found: error
 
+  build_net:
+    name: Building .NET assemblies
+    needs: [version]
+    runs-on: windows-latest
+    steps:
+    - name: Decoding SNK
+      id: sign_key_file
+      uses: timheuer/base64-to-file@v1.2
+      with:
+        fileName: 'Signature.snk'
+        encodedString: ${{secrets.SIGN_KEY}}
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+    - name: Restoring dependencies
+      run: dotnet restore ${{env.SolutionName}}.sln
+    - name: Build all .NET Framework projects
+      shell: pwsh
+      run: |
+        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj |
+        Where-Object { $_.Name -notmatch '35\.csproj$' }
+
+        foreach ($proj in $csprojFiles) {
+            Write-Host "Building $($proj.FullName)..."
+            dotnet build $($proj.FullName) --configuration Release --no-restore /p:OutputPath="../bin/" /p:SignAssembly=true /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}" /p:AssemblyVersion=${{needs.version.outputs.new_version}} /p:FileVersion=${{needs.version.outputs.new_version}} /p:InformationalVersion=${{needs.version.outputs.new_version}}
+        }
+    - name: Deploying artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: NetStandard20
+        path: ${{github.workspace}}/bin/*
+        if-no-files-found: error
+
   deploy_release:
     name: Deploying release
     needs:
@@ -119,8 +156,8 @@ jobs:
       run: nuget pack ${{env.SolutionName}}.nuspec -Version ${{needs.version.outputs.new_version}} -OutputDirectory nupkg
     - name: Deploying to GitHub
       run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/DKorablin/index.json
-    - name: Deploying to NuGet
-      run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+    #- name: Deploying to NuGet
+    #  run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
   failure_cleanup:
   #error: tag '${{needs.version.outputs.new_tag}}' not found.

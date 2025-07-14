@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Threading;
@@ -39,8 +38,6 @@ namespace AlphaOmega.PushSharp.Core
 
 			this._notifications = new BlockingCollection<TNotification>();
 			this.ScaleSize = 1;
-			//AutoScale = true;
-			//AutoScaleMaxSize = 20;
 		}
 
 		public virtual void QueueNotification(TNotification notification)
@@ -126,7 +123,7 @@ namespace AlphaOmega.PushSharp.Core
 	{
 		public ServiceWorker(IServiceBroker<TNotification> broker, IServiceConnection<TNotification> connection)
 		{
-			this.Broker = broker;
+			this.Broker = broker ?? throw new ArgumentNullException(nameof(broker));
 			this.Connection = connection;
 
 			this.CancelTokenSource = new CancellationTokenSource();
@@ -156,12 +153,12 @@ namespace AlphaOmega.PushSharp.Core
 							var count = t.ContinueWith(ct =>
 							{
 								var cn = n;
-								var ex = t.Exception;
+								var exc = t.Exception;
 
-								if(ex == null)
+								if(exc == null)
 									this.Broker.RaiseNotificationSucceeded(cn);
 								else
-									this.Broker.RaiseNotificationFailed(cn, ex);
+									this.Broker.RaiseNotificationFailed(cn, exc);
 							});
 
 							// Let's wait for the continuation not the task itself
@@ -173,7 +170,7 @@ namespace AlphaOmega.PushSharp.Core
 
 						try
 						{
-							Log.Info("Waiting on all tasks {0}", toSend.Count());
+							Log.Info("Waiting on all tasks {0}", toSend.Count);
 							await Task.WhenAll(toSend).ConfigureAwait(false);
 							Log.Info("All Tasks Finished");
 						} catch(Exception ex)

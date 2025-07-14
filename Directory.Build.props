@@ -1,11 +1,12 @@
 <Project>
 	<PropertyGroup Condition="'$(TargetFramework)' == ''">
-		<TargetFramework>net20</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Version)' == ''">
-		<Version>3.0.0.0</Version>
+		<Version>4.1.0.0</Version>
 	</PropertyGroup>
 	<PropertyGroup>
+		<BaseOutputPath>..\bin\</BaseOutputPath>
 		<OutputPath>..\bin</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\..\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
 	</PropertyGroup>

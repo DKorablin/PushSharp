@@ -14,7 +14,7 @@ namespace AlphaOmega.PushSharp.Core
 
 		void RaiseNotificationSucceeded(TNotification notification);
 
-		void RaiseNotificationFailed(TNotification notification, AggregateException ex);
+		void RaiseNotificationFailed(TNotification notification, AggregateException exception);
 
 		void Start();
 

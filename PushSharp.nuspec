@@ -26,14 +26,23 @@
 	<files>
 		<file src="readme.md" target="docs" />
 		<file src="Resources\PushSharp-Icon-NuGet-Small.png" target="images\icon.png" />
-		
-		<file src="bin\net48\PushSharp.Core.dll" target="lib\net48\PushSharp.Core.dll" />
-		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48\PushSharp.Amazon.dll" />
-		<file src="bin\net48\PushSharp.Apple.dll" target="lib\net48\PushSharp.Apple.dll" />
-		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48\PushSharp.Blackberry.dll" />
-		<file src="bin\net48\PushSharp.Firefox.dll" target="lib\net48\PushSharp.Firefox.dll" />
-		<file src="bin\net48\PushSharp.Google.dll" target="lib\net48\PushSharp.Google.dll" />
-		<file src="bin\net48\PushSharp.Huawei.dll" target="lib\net48\PushSharp.Huawei.dll" />
-		<file src="bin\net48\PushSharp.Windows.dll" target="lib\net48\PushSharp.Windows.dll" />
+		<!--.NET Framework-->
+		<file src="bin\net48\PushSharp.Core.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Apple.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Firefox.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Google.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Huawei.dll" target="lib\net48" />
+		<file src="bin\net48\PushSharp.Windows.dll" target="lib\net48" />
+		<!--.NET Standard-->
+		<file src="bin\netstandard20\PushSharp.Core.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Amazon.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Apple.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Blackberry.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Firefox.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Google.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Huawei.dll" target="lib\netstandard2.0" />
+		<file src="bin\netstandard20\PushSharp.Windows.dll" target="lib\netstandard2.0" />
 	</files>
 </package>
