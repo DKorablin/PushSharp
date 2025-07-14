@@ -21,7 +21,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restoring NuGet packages
-      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
+      run: dotnet restore ${{env.SolutionName}}.sln
+    - name: Building .NET
+      run: dotnet build ${{env.SolutionName}}.sln
     - name: Testing .NET
       run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal
 
