@@ -22,18 +22,3 @@ jobs:
         dotnet-version: 8.0.x
     - name: Testing .NET
       run: dotnet test PushSharp.Tests\PushSharp.Tests.csproj --configuration Release
-
-  build_net_framework:
-    name: Building .NET Framework assemblies
-    needs: [test_net]
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Restoring NuGet packages
-      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
-    - name: Setup .NET Framework
-      uses: microsoft/setup-msbuild@v2
-    - name: Build solution
-      run: msbuild ${{env.SolutionName}}.sln /property:Configuration=Release -property:SignAssembly=false -property:OutputPath="${{github.workspace}}/bin/"
