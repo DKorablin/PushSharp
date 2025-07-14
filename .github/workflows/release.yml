@@ -92,11 +92,14 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restoring dependencies
       run: dotnet restore ${{env.SolutionName}}.sln
-    - name: Build all .NET Framework projects
+    - name: Building .NET projects
       shell: pwsh
       run: |
-        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj |
-        Where-Object { $_.Name -notmatch '35\.csproj$' }
+        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj |
+        Where-Object {
+          $_.Name -notmatch '35\.csproj$' -and
+          $_.Name -notmatch 'Tests\.csproj$'
+        }
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
