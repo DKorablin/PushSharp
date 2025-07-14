@@ -21,21 +21,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restoring NuGet packages
-      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
-    - name: Building .NET projects
-      shell: pwsh
-      run: |
-        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj |
-        Where-Object {
-          $_.Name -notmatch '35\.csproj$'
-        }
-
-        foreach ($proj in $csprojFiles) {
-            Write-Host "Building $($proj.FullName)..."
-            dotnet build $($proj.FullName) --no-restore
-        }
+      run: dotnet restore ${{env.SolutionName}}.sln
     - name: Testing .NET
-      run: dotnet test PushSharp.Tests\PushSharp.Tests.csproj --no-build --verbosity normal
+      run: dotnet test PushSharp.Tests\PushSharp.Tests.csproj --verbosity normal
 
   build_net_framework:
     name: Building .NET Framework assemblies

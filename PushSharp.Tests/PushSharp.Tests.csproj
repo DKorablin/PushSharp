@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0;netstandard2.0</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<RootNamespace>AlphaOmega.PushSharp.Tests</RootNamespace>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<Configuration>Debug</Configuration>
 		<Deterministic>false</Deterministic>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,7 +17,7 @@
 		<!--PackageReference Include="SonarAnalyzer.CSharp" /-->
 		<PackageReference Include="xunit" />
 		<PackageReference Include="xunit.runner.visualstudio" />
-		<PackageReference Include="Newtonsoft.Json" />
+		<!--PackageReference Include="Newtonsoft.Json" /-->
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PushSharp.Core\PushSharp.Core.csproj" />
