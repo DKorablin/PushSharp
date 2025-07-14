@@ -40,7 +40,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
     - name: Restoring NuGet packages
       run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
-    - name: Build all .NET Framework projects
+    - name: Build .NET Framework projects
       shell: pwsh
       run: |
         $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj
@@ -82,7 +82,7 @@ jobs:
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'Signature.snk'
-        encodedString: ${{secrets.SIGN_KEY}}
+        encodedString: ${{secrets.SIGN_ASM_KEY}}
     - uses: actions/checkout@v4
       with:
         submodules: true
