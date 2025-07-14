@@ -13,7 +13,6 @@ namespace AlphaOmega.PushSharp.Tests
 #else
 		public const String AUTOBUILD_DISABLED = "Real tests disabled on CI/CD";
 #endif
-		public const String REMOVED = "Removed";
 
 		private static Settings _instance;
 		private static FirebaseSettings _firebase;
