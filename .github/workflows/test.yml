@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restoring NuGet packages
-      run: dotnet restore ${{env.SolutionName}}.sln
+      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
     - name: Building .NET projects
       shell: pwsh
       run: |
