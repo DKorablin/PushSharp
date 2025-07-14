@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Testing .NET
-      run: dotnet test PushSharp.Tests\PushSharp.Tests.csproj --verbosity normal --configuration Release
+      run: dotnet test PushSharp.Tests/PushSharp.Tests.csproj --verbosity normal --configuration Release
 
   build_net_framework:
     name: Building .NET Framework assemblies
