@@ -9,9 +9,9 @@ env:
   SolutionName: ${{github.event.repository.name}}
 
 jobs:
-  test_net_ubuntu:
+  test_net_windows:
     name: Testing .NET (Ubuntu)
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
       with:
