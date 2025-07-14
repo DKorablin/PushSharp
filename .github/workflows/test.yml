@@ -35,7 +35,7 @@ jobs:
             dotnet build $($proj.FullName) --no-restore
         }
     - name: Testing .NET
-      run: dotnet test ${{env.SolutionName}}.sln --no-build --verbosity normal
+      run: dotnet test PushSharp.Tests\PushSharp.Tests.csproj --no-build --verbosity normal
 
   build_net_framework:
     name: Building .NET Framework assemblies

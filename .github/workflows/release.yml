@@ -97,8 +97,7 @@ jobs:
       run: |
         $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj |
         Where-Object {
-          $_.Name -notmatch '35\.csproj$' -and
-          $_.Name -notmatch 'Tests\.csproj$'
+          $_.Name -notmatch '(35|Tests)\.csproj$'
         }
 
         foreach ($proj in $csprojFiles) {
