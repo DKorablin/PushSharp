@@ -7,6 +7,7 @@
 		<Configuration>Debug</Configuration>
 		<Deterministic>false</Deterministic>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,8 +16,12 @@
 
 	<ItemGroup>
 		<!--PackageReference Include="SonarAnalyzer.CSharp" /-->
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="xunit" />
-		<PackageReference Include="xunit.runner.visualstudio" />
+		<PackageReference Include="xunit.runner.visualstudio">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 		<!--PackageReference Include="Newtonsoft.Json" /-->
 	</ItemGroup>
 	<ItemGroup>

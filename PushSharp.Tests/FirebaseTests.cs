@@ -14,7 +14,7 @@ namespace AlphaOmega.PushSharp.Tests
 
 			var str = n.GetJson();
 
-			Assert.Contains(str, "high");
+			Assert.Contains("high", str);
 		}
 
 		[Fact]
@@ -25,7 +25,7 @@ namespace AlphaOmega.PushSharp.Tests
 
 			var str = n.GetJson();
 
-			Assert.Contains(str, "normal");
+			Assert.Contains("normal", str);
 		}
 	}
 }

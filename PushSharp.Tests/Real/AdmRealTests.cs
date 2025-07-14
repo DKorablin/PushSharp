@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AlphaOmega.PushSharp.Amazon;
 using Xunit;
 
@@ -9,6 +10,8 @@ namespace AlphaOmega.PushSharp.Tests.Real
 		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void ADM_Send_Single()
 		{
+			Assert.Equal(Settings.AUTOBUILD_DISABLED, null);
+
 			var succeeded = 0;
 			var failed = 0;
 			var attempted = 0;

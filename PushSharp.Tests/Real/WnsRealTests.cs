@@ -49,7 +49,7 @@ namespace AlphaOmega.PushSharp.Tests.Real
 			Assert.Equal (0, failed);
 		}
 
-		[Fact]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void WNS_Send_Mutiple ()
 		{
 			var succeeded = 0;
