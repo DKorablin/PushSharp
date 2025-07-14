@@ -10,7 +10,7 @@ env:
 
 jobs:
   test_net_windows:
-    name: Testing .NET (Ubuntu)
+    name: Testing .NET (Windows)
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
