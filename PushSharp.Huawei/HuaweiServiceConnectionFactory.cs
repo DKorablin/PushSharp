@@ -8,29 +8,40 @@ using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.Huawei
 {
+	/// <summary>The Huawei service connection factory.</summary>
 	public class HuaweiServiceConnectionFactory : IServiceConnectionFactory<HuaweiNotification>
 	{
 		private readonly HuaweiConfiguration _configuration;
 
+		/// <summary>Create instance of Huawei service connection factory.</summary>
+		/// <param name="configuration">The Huawei service configuration information.</param>
+		/// <exception cref="ArgumentNullException">Configuration is required to connect to Huawei server(s).</exception>
 		public HuaweiServiceConnectionFactory(HuaweiConfiguration configuration)
 			=> this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-		public IServiceConnection<HuaweiNotification> Create()
+		IServiceConnection<HuaweiNotification> IServiceConnectionFactory<HuaweiNotification>.Create()
 			=> new HuaweiServiceConnection(this._configuration);
 	}
 
+	/// <summary>The Huawei service broker.</summary>
 	public class HuaweiServiceBroker : ServiceBroker<HuaweiNotification>
 	{
+		/// <summary>Create instance of Huawei service broker.</summary>
+		/// <param name="configuration">The Huawei service configuration information.</param>
 		public HuaweiServiceBroker(HuaweiConfiguration configuration) : base(new HuaweiServiceConnectionFactory(configuration))
 		{
 		}
 	}
 
+	/// <summary>The Huawei service connection that is responsible for message processing between client and Huawei server(s).</summary>
 	public class HuaweiServiceConnection : IServiceConnection<HuaweiNotification>
 	{
 		private readonly HttpClient _client;
 		private readonly HuaweiConfiguration _configuration;
 
+		/// <summary>Create instance of Huawei service connection.</summary>
+		/// <param name="configuration">The connection configuration information.</param>
+		/// <exception cref="ArgumentNullException">Configuration is required to connect to Huawei server(s).</exception>
 		public HuaweiServiceConnection(HuaweiConfiguration configuration)
 		{
 			this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

@@ -3,14 +3,22 @@ using AlphaOmega.PushSharp.Core;
 
 namespace AlphaOmega.PushSharp.Huawei
 {
+	/// <summary>The Huawei unhandled exception information.</summary>
 	public class HuaweiException : NotificationException<HuaweiNotification>
 	{
+		/// <summary>Strongly typed response received from server.</summary>
 		public HuaweiResponse Response { get; private set; }
 
+		/// <summary>Create instance of <see cref="HuaweiException"/> with notification information and strongly typed server response.</summary>
+		/// <param name="notification">PUSH notification information.</param>
+		/// <param name="response">Strongly typed response information.</param>
 		public HuaweiException(HuaweiNotification notification, HuaweiResponse response)
 			: base(response.Message, notification)
 			=> this.Response = response;
 
+		/// <summary>Create instance of <see cref="HuaweiException"/> with notification information and HTTP status code.</summary>
+		/// <param name="notification">PUSH notification information.</param>
+		/// <param name="statusCode">HTTP status code received from server.</param>
 		public HuaweiException(HuaweiNotification notification, System.Net.HttpStatusCode statusCode)
 			: base(HuaweiException.GetStatusCodeDescription(statusCode), notification)
 		{
