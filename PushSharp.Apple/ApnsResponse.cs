@@ -15,16 +15,16 @@ namespace AlphaOmega.PushSharp.Apple
 			/// <remarks>Verify that the request contains a valid token and that the token matches the environment.</remarks>
 			BadDeviceToken,
 
-			/// <summary>The apns-expiration value is invalid.</summary>
+			/// <summary>The APNS-expiration value is invalid.</summary>
 			BadExpirationDate,
 
-			/// <summary>The apns-id value is invalid.</summary>
+			/// <summary>The APNS-id value is invalid.</summary>
 			BadMessageId,
 
-			/// <summary>The apns-priority value is invalid.</summary>
+			/// <summary>The APNS-priority value is invalid.</summary>
 			BadPriority,
 
-			/// <summary>The apns-topic value is invalid.</summary>
+			/// <summary>The APNS-topic value is invalid.</summary>
 			BadTopic,
 
 			/// <summary>The device token doesn't match the specified topic.</summary>
@@ -36,15 +36,15 @@ namespace AlphaOmega.PushSharp.Apple
 			/// <summary>Idle timeout.</summary>
 			IdleTimeout,
 
-			/// <summary>The apns-push-type value is invalid.</summary>
+			/// <summary>The APNS-push-type value is invalid.</summary>
 			InvalidPushType,
 
 			/// <summary>The device token isn’t specified in the request :path.</summary>
 			/// <remarks>Verify that the :path header contains the device token.</remarks>
 			MissingDeviceToken,
 
-			/// <summary>The apns-topic header of the request isn’t specified and is required.</summary>
-			/// <remarks>The apns-topic header is mandatory when the client is connected using a certificate that supports multiple topics.</remarks>
+			/// <summary>The APNS-topic header of the request isn’t specified and is required.</summary>
+			/// <remarks>The APNS-topic header is mandatory when the client is connected using a certificate that supports multiple topics.</remarks>
 			MissingTopic,
 
 			/// <summary>The message payload is empty.</summary>
@@ -115,6 +115,7 @@ namespace AlphaOmega.PushSharp.Apple
 		/// <remarks>This key is included only when the error in the :status field is 410.</remarks>
 		public Int32? timestamp { get; set; }
 
+		/// <summary>Strongly typed APNS error reason.</summary>
 		public ApnsNotification2ErrorStatusCode? ReasonTyped
 			=> Enum.TryParse<ApnsNotification2ErrorStatusCode>(this.reason, out var result)
 				? result
