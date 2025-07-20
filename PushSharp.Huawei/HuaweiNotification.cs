@@ -55,7 +55,7 @@ namespace AlphaOmega.PushSharp.Huawei
 			/// A Boolean expression of target topics can be specified to send messages based on a combination of condition expressions.
 			/// Syntax and restrictions:
 			/// Boolean operation
-			/// &&: logical AND
+			/// &amp;&amp;: logical AND
 			/// ||: logical OR
 			/// !: logical NOT
 			/// (): priority control
@@ -63,7 +63,7 @@ namespace AlphaOmega.PushSharp.Huawei
 			/// Restrictions:
 			/// A maximum of five topics can be included in the expression.
 			/// Example:
-			/// "'TopicA' in topics && ('TopicB' in topics || 'TopicC' in topics)"
+			/// "'TopicA' in topics &amp;&amp; ('TopicB' in topics || 'TopicC' in topics)"
 			/// The preceding expression indicates that messages are sent to devices that subscribe to topics A and B or topic C. Devices that subscribe to a single topic do not receive the messages.
 			/// </example>
 			public String condition { get; set; }
@@ -140,6 +140,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				/// <summary>Android notification message structure.</summary>
 				public AndroidNotification notification { get; set; }
 
+				/// <summary>Android notification message structure.</summary>
 				public class AndroidNotification
 				{
 					/// <summary>[mandatory] Title of an Android notification message.</summary>
