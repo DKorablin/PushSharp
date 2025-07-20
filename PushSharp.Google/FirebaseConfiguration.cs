@@ -11,11 +11,13 @@ using Org.BouncyCastle.OpenSsl;
 
 namespace AlphaOmega.PushSharp.Google
 {
-	/// <summary></summary>
+	/// <summary>The configuration instance to connect and send PUSH message to Firebase server(s).</summary>
 	/// <see href="https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages"/>
 	public class FirebaseConfiguration
 	{
+#pragma warning disable S1075
 		private const String TOKEN_URL = "https://oauth2.googleapis.com/token";
+#pragma warning restore S1075
 
 		private readonly Object _tokenLock = new Object();
 		private DateTime _tokenExpiration = DateTime.MinValue;
@@ -23,21 +25,26 @@ namespace AlphaOmega.PushSharp.Google
 
 		private readonly FirebaseSettings _settings;
 
+		/// <summary>The Firebase PUSH message send Url.</summary>
 		public String FirebaseSendUrl => $"https://fcm.googleapis.com/v1/projects/{this._settings.ProjectId}/messages:send";
 
+		/// <summary>The access token that is used to send PUSH messages based on settings information.</summary>
 		public String AccessToken
 		{
 			get
 			{
-				if(this._tokenExpiration < DateTime.Now)
+				if(this._tokenExpiration < DateTime.UtcNow)
 					lock(this._tokenLock)
-						if(this._tokenExpiration < DateTime.Now)
+						if(this._tokenExpiration < DateTime.UtcNow)
 							this.RefreshAccessTokenAsync().Wait();
 
 				return this._token.AccessToken;
 			}
 		}
 
+		/// <summary>Create instance of Firebase configuration instance.</summary>
+		/// <param name="jsonFileContents">The JSON file contents with Firebase service account information.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="jsonFileContents"/> is required.</exception>
 		public FirebaseConfiguration(String jsonFileContents)
 		{
 			if(String.IsNullOrWhiteSpace(jsonFileContents))
@@ -46,6 +53,9 @@ namespace AlphaOmega.PushSharp.Google
 			this._settings = JsonConvert.DeserializeObject<FirebaseSettings>(jsonFileContents);
 		}
 
+		/// <summary>Create instance of Firebase configuration instance.</summary>
+		/// <param name="settings">The Firebase service account settings information.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="settings"/> is required.</exception>
 		public FirebaseConfiguration(FirebaseSettings settings)
 			=> this._settings = settings ?? throw new ArgumentNullException(nameof(settings));
 

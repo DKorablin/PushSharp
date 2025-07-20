@@ -6,8 +6,10 @@ using Newtonsoft.Json.Linq;
 
 namespace AlphaOmega.PushSharp.Huawei
 {
+	/// <summary>The Huawei PUSH notification information.</summary>
 	public class HuaweiNotification : INotification
 	{
+		/// <summary>The strongly typed PUSH notification object.</summary>
 		public class MessageNotification
 		{
 			/// <summary>Custom message payload.</summary>
@@ -66,6 +68,7 @@ namespace AlphaOmega.PushSharp.Huawei
 			/// </example>
 			public String condition { get; set; }
 
+			/// <summary>Notification message content.</summary>
 			public class Notification
 			{
 				/// <summary>Notification message title.</summary>
@@ -86,6 +89,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				public String image { get; set; }
 			}
 
+			/// <summary>Android message push control.</summary>
 			public class AndroidConfig
 			{
 				/// <summary>
@@ -111,7 +115,10 @@ namespace AlphaOmega.PushSharp.Huawei
 				public String ttl { get; set; }
 
 				/// <summary>Tag of a message in a batch delivery task.</summary>
-				/// <remarks>The tag is returned to your server when Push Kit sends the message receipt. Your server can analyze message delivery statistics based on bi_tag.</remarks>
+				/// <remarks>
+				/// The tag is returned to your server when Push Kit sends the message receipt.
+				/// Your server can analyze message delivery statistics based on bi_tag.
+				/// </remarks>
 				public String bi_tag { get; set; }
 
 				/// <summary>Unique receipt ID that associates with the receipt URL and configuration of the downlink message.</summary>
@@ -201,8 +208,8 @@ namespace AlphaOmega.PushSharp.Huawei
 
 					/// <summary>
 					/// Multi-language parameter.
-					/// body_loc_key and title_loc_key are read from multi_lang_key first.
-					/// If they are not read from multi_lang_key, they will be read from the local character string of the APK.
+					/// body_loc_key and <see cref="title_loc_key"/> are read from <see cref="multi_lang_key"/> first.
+					/// If they are not read from <see cref="multi_lang_key"/>, they will be read from the local character string of the APK.
 					/// </summary>
 					/// <remarks>A maximum of three languages can be set.</remarks>
 					public Object multi_lang_key { get; set; }
@@ -235,7 +242,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					/// <summary>Android notification message title in large text style.</summary>
 					/// <remarks>
 					/// This parameter is mandatory when style is set to 1.
-					/// When the notification bar is displayed after big_title is set, big_title instead of title is used.
+					/// When the notification bar is displayed after <see cref="big_title"/> is set, <see cref="big_title"/> instead of title is used.
 					/// </remarks>
 					/// <see cref="style"/>
 					public String big_title { get; set; }
@@ -243,7 +250,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					/// <summary>Android notification message body in large text style.</summary>
 					/// <remarks>
 					/// This parameter is mandatory when style is set to 1.
-					/// When the notification bar is displayed after big_body is set, big_body instead of body is used.
+					/// When the notification bar is displayed after <see cref="big_body"/> is set, <see cref="big_body"/> instead of body is used.
 					/// </remarks>
 					/// <see cref="style"/>
 					public String big_body { get; set; }
@@ -334,6 +341,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					/// <example>"buttons":[{"name":"Open app","action_type":"1"}]</example>
 					public Button[] buttons { get; set; }
 
+					/// <summary>Action buttons of a notification message.</summary>
 					public class Button
 					{
 						/// <summary>[mandatory] Button name, which cannot exceed 40 characters.</summary>
@@ -366,13 +374,15 @@ namespace AlphaOmega.PushSharp.Huawei
 						public String intent { get; set; }
 
 						/// <summary>
-						/// When action_type is set to 0 or 1, this parameter is used to transparently transmit data to an app after a button is tapped. The parameter is optional and its value must be key-value pairs in format of {"key1":"value1","key2":"value2",...}.
+						/// When action_type is set to 0 or 1, this parameter is used to transparently transmit data to an app after a button is tapped.
+						/// The parameter is optional and its value must be key-value pairs in format of {"key1":"value1","key2":"value2",...}.
 						/// When action_type is set to 4, this parameter indicates content to be shared and is mandatory.
 						/// </summary>
 						/// <remarks>The maximum length is 1024 characters.</remarks>
 						public String data { get; set; }
 					}
 
+					/// <summary>Message tapping action.</summary>
 					public class ClickAction
 					{
 						/// <summary>[Mandatory] Message tapping action type.</summary>
@@ -400,15 +410,15 @@ namespace AlphaOmega.PushSharp.Huawei
 					}
 
 					/// <remarks>
-					/// To display the badge number after messages are received, class is mandatory, and add_num and set_num are optional.
-					/// If both of add_num and set_num are left empty, the badge number increases by 1 by default.
+					/// To display the badge number after messages are received, class is mandatory, and <see cref="add_num"/> and <see cref="set_num"/> are optional.
+					/// If both of <see cref="add_num"/> and <see cref="set_num"/> are left empty, the badge number increases by 1 by default.
 					/// </remarks>
 					public class BadgeNotification
 					{
 						/// <summary>Accumulative badge number, which is an integer ranging from 1 to 99.</summary>
 						/// <example>
 						/// A user has N unread messages on an app.
-						/// If add_num is set to 3, the number displayed on the app badge increases by 3 each time a message that contains add_num is received, that is, N+3.
+						/// If <see cref="add_num"/> is set to 3, the number displayed on the app badge increases by 3 each time a message that contains <see cref="add_num"/> is received, that is, N+3.
 						/// </example>
 						public Int32? add_num { get; set; }
 
@@ -420,11 +430,12 @@ namespace AlphaOmega.PushSharp.Huawei
 						/// <summary>Badge number, which is an integer ranging from 0 to 99.</summary>
 						/// <example>
 						/// If set_num is set to 10, the number displayed on the app badge is 10 no matter how many messages are received.
-						/// If both set_num and add_num are set, the value of set_num prevails.
+						/// If both <see cref="set_num"/> and <see cref="add_num"/> are set, the value of <see cref="set_num"/> prevails.
 						/// </example>
 						public Int32? set_num { get; set; }
 					}
 
+					/// <summary>Custom breathing light color.</summary>
 					public class LightSettings
 					{
 						/// <summary>[mandatory] Breathing light color.</summary>
@@ -443,6 +454,7 @@ namespace AlphaOmega.PushSharp.Huawei
 						public String light_off_duration { get; set; }
 					}
 
+					/// <summary>[mandatory] Breathing light color.</summary>
 					public class Color
 					{
 						/// <summary>Alpha setting of the RGB color.</summary>
@@ -464,6 +476,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				}
 			}
 
+			/// <summary>iOS message push control.</summary>
 			public class ApnsConfig
 			{
 				/// <summary>APNs message headers.</summary>
@@ -471,14 +484,15 @@ namespace AlphaOmega.PushSharp.Huawei
 
 				/// <summary>APNs message payload.</summary>
 				/// <remarks>
-				/// If title and body are set in the message payload, the values of the message.notification.title and message.notification.body fields are overwritten.
-				/// Before a message is sent, you must set at least one of title and body and at least one of message.notification.title and message.notification.body.
+				/// If title and body are set in the message payload, the values of the <see cref="MessageNotification.Notification.title"/> and <see cref="MessageNotification.Notification.body"/> fields are overwritten.
+				/// Before a message is sent, you must set at least one of title and body and at least one of <see cref="MessageNotification.Notification.title"/> and <see cref="MessageNotification.Notification.body"/>.
 				/// </remarks>
 				public JObject payload { get; set; }
 
 				/// <summary>HMS parameter for APNs.</summary>
 				public HmsOptions hms_options { get; set; }
 
+				/// <summary>HMS parameter for APNs.</summary>
 				public class HmsOptions
 				{
 					/// <summary>Target user type.</summary>
@@ -491,6 +505,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				}
 			}
 
+			/// <summary>Web app message push control.</summary>
 			public class WebPushConfig
 			{
 				/// <summary>Headers of a message sent through the WebPush agent.</summary>
@@ -502,6 +517,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				/// <summary>WebPush agent parameter.</summary>
 				public HmsOptions hms_options { get; set; }
 
+				/// <summary>Headers of a message sent through the WebPush agent.</summary>
 				public class Headers
 				{
 					/// <summary>Message cache time, in seconds, for example, 20, 20s, or 20S.</summary>
@@ -511,16 +527,17 @@ namespace AlphaOmega.PushSharp.Huawei
 					public String topic { get; set; }
 				}
 
+				/// <summary>Structure of a notification message sent through the WebPush agent.</summary>
 				public class WebNotification
 				{
-					/// <summary>Title of a web app notification message. If the title parameter is set, the value of the message.notification.title field is overwritten.</summary>
-					/// <remarks>Before a message is sent, you must set at least one of title and message.notification.title.</remarks>
+					/// <summary>Title of a web app notification message. If the title parameter is set, the value of the <see cref="MessageNotification.Notification.title"/> field is overwritten.</summary>
+					/// <remarks>Before a message is sent, you must set at least one of title and <see cref="MessageNotification.Notification.title"/>.</remarks>
 					public String title { get; set; }
 
 					/// <summary>Body of a web app notification message.</summary>
 					/// <remarks>
-					/// If the body parameter is set, the value of the message.notification.body field is overwritten
-					/// Before a message is sent, you must set at least one of body and message.notification.body.
+					/// If the body parameter is set, the value of the <see cref="MessageNotification.Notification.body"/> field is overwritten
+					/// Before a message is sent, you must set at least one of body and <see cref="MessageNotification.Notification.body"/>.
 					/// </remarks>
 					public String body { get; set; }
 
@@ -570,6 +587,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					/// <summary>Message action.</summary>
 					public WebActions[] actions { get; set; }
 
+					/// <summary>Message action.</summary>
 					public class WebActions
 					{
 						/// <summary>Action name.</summary>
@@ -583,6 +601,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					}
 				}
 
+				/// <summary>WebPush agent parameter.</summary>
 				public class HmsOptions
 				{
 					/// <summary>Default URI for redirection when no action is performed.</summary>
@@ -592,7 +611,7 @@ namespace AlphaOmega.PushSharp.Huawei
 		}
 
 		[JsonIgnore]
-		public Object Tag { get; set; }
+		Object INotification.Tag { get; set; }
 
 		/// <summary>Message structure, which must contain the valid message payload and valid sending object.</summary>
 		[JsonProperty("message")]
@@ -604,9 +623,11 @@ namespace AlphaOmega.PushSharp.Huawei
 		[DefaultValue(false)]
 		public Boolean? ValidateOnly { get; set; }
 
-		public Boolean IsDeviceRegistrationIdValid()
+		Boolean INotification.IsDeviceRegistrationIdValid()
 			=> this.Message?.token?.Length > 0 && !String.IsNullOrWhiteSpace(this.Message.token[0]);
 
+		/// <summary>Gets current state of the object as JSON string.</summary>
+		/// <returns>The JSON string.</returns>
 		public String GetJson()
 			=> JsonConvert.SerializeObject(this, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 	}

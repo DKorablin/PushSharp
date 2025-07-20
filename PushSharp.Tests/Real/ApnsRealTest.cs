@@ -13,16 +13,13 @@ namespace AlphaOmega.PushSharp.Tests.Real
 			var succeeded = 0;
 			var failed = 0;
 			var attempted = 0;
-			AutoResetEvent evt = new AutoResetEvent(false);
 
 			var settings = new ApnsSettings(
 				ApnsSettings.ApnsServerEnvironment.Production,
 				Settings.Instance.ApnsCertificateFile,
 				Settings.Instance.ApnsCertificateKeyId,
-				Settings.Instance.ApnsTeamId)
-			{
-				AppBundleId = Settings.Instance.ApnsBundleId,
-			};
+				Settings.Instance.ApnsTeamId,
+				Settings.Instance.ApnsBundleId);
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);
@@ -40,9 +37,8 @@ namespace AlphaOmega.PushSharp.Tests.Real
 			foreach(var dt in Settings.Instance.ApnsDeviceTokens)
 			{
 				attempted++;
-				broker.QueueNotification(new ApnsNotification
+				broker.QueueNotification(new ApnsNotification(dt)
 				{
-					DeviceToken = dt,
 					Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"I want cookie\" } }")
 				});
 			}

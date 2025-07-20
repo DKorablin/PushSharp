@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.Huawei
 {
+	/// <summary>The Huawei response object.</summary>
 	public class HuaweiResponse
 	{
+		/// <summary>The return code from Huawei server(s).</summary>
 		public enum ReturnCode : Int64
 		{
 			/// <summary>Success</summary>
@@ -91,12 +93,15 @@ namespace AlphaOmega.PushSharp.Huawei
 			InternalError = 81000001,
 		}
 
+		/// <summary>The strongly typed response status code.</summary>
 		[JsonProperty("code")]
 		public ReturnCode Code { get; set; }
 
+		/// <summary>The response user message.</summary>
 		[JsonProperty("msg")]
 		public String Message { get; set; }
 
+		/// <summary>The request identifier.</summary>
 		[JsonProperty("requestId")]
 		public String RequestId { get; set; }
 	}

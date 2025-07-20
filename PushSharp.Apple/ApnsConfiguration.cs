@@ -5,30 +5,34 @@ using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.Apple
 {
-	/// <summary></summary>
+	/// <summary>The configuration instance to connect and send PUSH message to APNS server(s).</summary>
 	/// <see href="https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns"/>
 	public class ApnsConfiguration
 	{
 		private readonly Object _tokenLock = new Object();
 		private DateTime _tokenExpiration = DateTime.MinValue;
-		private const Int32 TokenExpirationMinutes = 60;
 		private String _token;
 
+		/// <summary>The APNS connection settings.</summary>
 		public ApnsSettings Settings { get; }
 
+		/// <summary>The access token that is used to send PUSH messages based on settings information.</summary>
 		public String AccessToken
 		{
 			get
 			{
-				if(this._tokenExpiration < DateTime.Now)
+				if(this._tokenExpiration < DateTime.UtcNow)
 					lock(this._tokenLock)
-						if(this._tokenExpiration < DateTime.Now)
+						if(this._tokenExpiration < DateTime.UtcNow)
 							this.RefreshAccessToken();
 
 				return this._token;
 			}
 		}
 
+		/// <summary>Create instance of APNS configuration instance.</summary>
+		/// <param name="settings">The settings instance.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="settings"/> is required.</exception>
 		public ApnsConfiguration(ApnsSettings settings)
 			=> this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -46,7 +50,7 @@ namespace AlphaOmega.PushSharp.Apple
 			String encodedSignature = Base64UrlEncode(signatureBytes);
 
 			this._token = dataToSign + "." + encodedSignature;
-			this._tokenExpiration = DateTime.UtcNow.AddMinutes(TokenExpirationMinutes);
+			this._tokenExpiration = DateTime.UtcNow.AddMinutes(ApnsSettings.TokenExpirationMinutes);
 		}
 
 		private static String Base64UrlEncode(String str)

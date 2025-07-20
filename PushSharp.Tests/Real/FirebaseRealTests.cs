@@ -31,6 +31,7 @@ namespace AlphaOmega.PushSharp.Tests.Real
 				attempted++;
 
 				var notification = new FirebaseNotification();
+				notification.validate_only = true;
 				notification.message.token = regId;
 				notification.message.data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }");
 

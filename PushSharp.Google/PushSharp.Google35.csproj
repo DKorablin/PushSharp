@@ -26,7 +26,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
+    <DocumentationFile>..\bin\PushSharp.Google.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,8 +45,7 @@
     <Compile Include="FirebaseSettings.cs" />
     <Compile Include="FirebaseTokenResponse.cs" />
     <Compile Include="FirebaseNotification.cs" />
-    <Compile Include="FirebaseMessageResult.cs" />
-    <Compile Include="FirebaseResponse.cs" />
+    <Compile Include="FirebaseMessageResponse.cs" />
     <Compile Include="Exceptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

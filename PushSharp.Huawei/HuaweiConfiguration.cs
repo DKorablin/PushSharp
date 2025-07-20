@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace AlphaOmega.PushSharp.Huawei
 {
-	/// <summary></summary>
+	/// <summary>The Huawei configuration information for sending push messages using Huawei server(s).</summary>
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-References-V5/https-send-api-0000001050986197-V5"/>
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-Guides-V5/open-platform-oauth-0000001053629189-V5#EN-US_TOPIC_0000001053629189__section12493191334711"/>
 	public class HuaweiConfiguration
@@ -29,6 +29,7 @@ namespace AlphaOmega.PushSharp.Huawei
 		private readonly String _applicationId;//TODO: Old version. Should migrate to the _projectId (V2 API)
 		#endregion Settings
 
+		/// <summary>Absolute url to send PUSh messages using configuration parameters.</summary>
 		public String HuaweiSendUrl
 		{
 			get
@@ -42,6 +43,12 @@ namespace AlphaOmega.PushSharp.Huawei
 			}
 		}
 
+		/// <summary>Create instance of <see cref="HuaweiConfiguration"/> with required parameters.</summary>
+		/// <param name="clientSecret">The client secret.</param>
+		/// <param name="projectId">The project identifier (V2 PUSH endpoint).</param>
+		/// <param name="applicationId">The application identifier (V1 PUSH endpoint).</param>
+		/// <exception cref="ArgumentException">The <paramref name="projectId"/> OR <paramref name="applicationId"/> are required for valid configuration.</exception>
+		/// <exception cref="ArgumentNullException">The <paramref name="clientSecret"/> is required.</exception>
 		public HuaweiConfiguration(String clientSecret, String projectId, String applicationId)
 		{
 			if(projectId == null && applicationId == null)
@@ -55,13 +62,14 @@ namespace AlphaOmega.PushSharp.Huawei
 			this._applicationId = applicationId;
 		}
 
+		/// <summary>The last used and valid access token to send PUSH messages.</summary>
 		public String AccessToken
 		{
 			get
 			{
-				if(this._tokenExpiration < DateTime.Now)
+				if(this._tokenExpiration < DateTime.UtcNow)
 					lock(this._tokenLock)
-						if(this._tokenExpiration < DateTime.Now)
+						if(this._tokenExpiration < DateTime.UtcNow)
 							this.RefreshTokenAsync().Wait();
 
 				return this._token.access_token;
@@ -95,7 +103,7 @@ namespace AlphaOmega.PushSharp.Huawei
 					}
 
 					this._token = JsonConvert.DeserializeObject<TokenResponse>(content);
-					this._tokenExpiration = DateTime.Now.AddMinutes(this._token.expires_in - 1);
+					this._tokenExpiration = DateTime.UtcNow.AddMinutes(this._token.expires_in - 1);
 				}
 			}
 		}

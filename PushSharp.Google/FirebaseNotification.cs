@@ -6,8 +6,10 @@ using AlphaOmega.PushSharp.Core;
 
 namespace AlphaOmega.PushSharp.Google
 {
+	/// <summary>The Firebase notification object.</summary>
 	public class FirebaseNotification : INotification
 	{
+		/// <summary>Message to send by Firebase Cloud Messaging Service.</summary>
 		public class MessageNotification
 		{
 			/// <summary>Output Only. The identifier of the message sent, in the format of projects/*/messages/{message_id}.</summary>
@@ -27,14 +29,16 @@ namespace AlphaOmega.PushSharp.Google
 			/// <summary>Input only. Android specific options for messages sent through FCM connection server.</summary>
 			public AndroidConfig android { get; set; } = new AndroidConfig();
 
+			#region Union field target can be only one of the following:
 			/// <summary>Registration token to send a message to.</summary>
 			public String token { get; set; }
 
 			/// <summary>Topic name to send a message to, e.g. "weather". Note: "/topics/" prefix should not be provided.</summary>
 			public String topic { get; set; }
 
-			/// <summary>Condition to send a message to, e.g. "'foo' in topics && 'bar' in topics".</summary>
+			/// <summary>Condition to send a message to, e.g. "'foo' in topics &amp;&amp; 'bar' in topics".</summary>
 			public String condition { get; set; }
+			#endregion End of list of possible types for union field target.
 
 			/// <summary>Basic notification template to use across all platforms</summary>
 			public class Notification
@@ -234,52 +238,25 @@ namespace AlphaOmega.PushSharp.Google
 			}
 		}
 
-		public static FirebaseNotification ForSingleResult(FirebaseResponse response, Int32 resultIndex)
-		{
-			var result = new FirebaseNotification
-			{
-				Tag = response.OriginalNotification.Tag,
-				message_id = response.OriginalNotification.message_id,
-			};
-
-			result.message.data = response.OriginalNotification.message.data;
-			result.message.token = response.OriginalNotification.message.token;
-			result.message.topic = response.OriginalNotification.message.topic;
-			result.message.android.collapse_key = response.OriginalNotification.message.android.collapse_key;
-			result.message.android.priority = response.OriginalNotification.message.android.priority;
-
-			return result;
-		}
-
-		public static FirebaseNotification ForSingleRegistrationId(FirebaseNotification msg, String token)
-		{
-			var result = new FirebaseNotification
-			{
-				Tag = msg.Tag,
-				message_id = msg.message_id,
-			};
-
-			result.message.data = msg.message.data;
-			result.message.token = token;
-			result.message.topic = null;
-			result.message.condition = null;
-
-			result.message.android.collapse_key = msg.message.android.collapse_key;
-			result.message.android.priority = msg.message.android.priority;
-
-			return result;
-		}
-
+		/// <inheritdoc/>
 		[JsonIgnore]
 		public Object Tag { get; set; }
 
+		/// <summary>Flag for testing the request without actually delivering the message.</summary>
+		public Boolean? validate_only { get; set; }
+
+		/// <summary>Message to send.</summary>
 		public MessageNotification message { get; set; } = new MessageNotification();
 
+		/// <summary>The output notification message identifier.</summary>
+		[JsonIgnore]
 		public String message_id { get; internal set; }
 
-		public Boolean IsDeviceRegistrationIdValid()
+		Boolean INotification.IsDeviceRegistrationIdValid()
 			=> !String.IsNullOrWhiteSpace(this.message.token);
 
+		/// <summary>Gets notification in JSON format.</summary>
+		/// <returns>String representation in JSON format.</returns>
 		public String GetJson()
 			=> JsonConvert.SerializeObject(this, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 	}

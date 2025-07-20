@@ -4,8 +4,10 @@ using Newtonsoft.Json.Linq;
 
 namespace AlphaOmega.PushSharp.Apple
 {
+	/// <summary>The APNS notification object.</summary>
 	public class ApnsNotification : INotification
 	{
+		/// <summary>The type of APNS PUSH message to send.</summary>
 		public enum ApnPushType
 		{
 			/// <summary>The push type for notifications that trigger a user interaction—for example, an alert, badge, or sound.</summary>
@@ -96,17 +98,19 @@ namespace AlphaOmega.PushSharp.Apple
 			Pushtotalk,
 		}
 
-		public Object Tag { get; set; }
+		Object INotification.Tag { get; set; }
 
-		public String DeviceToken { get; set; }
+		/// <summary>The user device token identifier.</summary>
+		public String DeviceToken { get; }
 
+		/// <summary>The custom payload that is sent with PUSH notification.</summary>
 		public JObject Payload { get; set; }
 
 		/// <summary>
 		/// The date at which the notification is no longer valid.
 		/// This value is a UNIX epoch expressed in seconds (UTC).
 		/// If the value is nonzero, APNs stores the notification and tries to deliver it at least once, repeating the attempt as needed until the specified date.
-		/// If the value is 0, APNs attempts to deliver the notification only once and doesn’t store it.
+		/// If the value is 0, APNs attempts to deliver the notification only once and doesn't store it.
 		/// 
 		/// A single APNs attempt may involve retries over multiple network interfaces and connections of the destination device.
 		/// Often these retries span over some time period, depending on the network characteristics.
@@ -141,6 +145,10 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </remarks>
 		public Guid? ApnsId { get; set; } = null;
 
+		/// <summary>An identifier that is only available in the Development environment.</summary>
+		/// <remarks>Use this to query Delivery Log information for the corresponding notification in Push Notifications Console.</remarks>
+		public String ApnsUniqueId { get; internal set; }
+
 		/// <summary>An identifier you use to merge multiple notifications into a single notification for the user.</summary>
 		/// <remarks>
 		/// Typically, each notification request displays a new notification on the user’s device.
@@ -149,18 +157,20 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </remarks>
 		public String ApnsCollapseId { get; set; }
 
-		public ApnsNotification() : this(String.Empty, new JObject())
-		{
-		}
-
+		/// <summary>Create instance of APNS notification with device token.</summary>
+		/// <param name="deviceToken">The target device token.</param>
 		public ApnsNotification(String deviceToken) : this(deviceToken, new JObject())
 		{
 		}
 
+		/// <summary>Create instance of APNS notification with device token and custom payload.</summary>
+		/// <param name="deviceToken">The target device token.</param>
+		/// <param name="payload">The custom payload for notification that should be processed by client device.</param>
+		/// <exception cref="ArgumentNullException">The <paramref name="deviceToken"/> and <paramref name="payload"/> are required.</exception>
 		public ApnsNotification(String deviceToken, JObject payload)
 		{
-			this.DeviceToken = deviceToken;
-			this.Payload = payload;
+			this.DeviceToken = deviceToken ?? throw new ArgumentNullException(nameof(deviceToken));
+			this.Payload = payload ?? throw new ArgumentNullException(nameof(payload));
 		}
 
 		Boolean INotification.IsDeviceRegistrationIdValid()
