@@ -13,7 +13,7 @@ namespace AlphaOmega.PushSharp.Tests
 	{
 		private readonly List<String> messages = new List<String>();
 
-		[Fact]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void ApnsNotification_ShouldReportFail_WhenServerUnreachable()
 		{
 			Log.AddTraceListener(new TestLogger(messages));

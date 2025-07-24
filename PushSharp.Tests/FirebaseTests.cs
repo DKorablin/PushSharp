@@ -35,7 +35,7 @@ namespace AlphaOmega.PushSharp.Tests
 			Assert.Contains("normal", str);
 		}
 
-		[Fact]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void FirebaseNotification_ShouldReportFail_WhenServerUnreachable()
 		{
 			Log.AddTraceListener(new TestLogger(messages));

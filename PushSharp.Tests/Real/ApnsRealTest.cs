@@ -12,7 +12,7 @@ namespace AlphaOmega.PushSharp.Tests.Real
 	{
 		private List<String> messages = new List<String>();
 
-		[Fact()]
+		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void APNS_Send_Single()
 		{
 			Log.AddTraceListener(new TestLogger(messages));
