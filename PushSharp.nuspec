@@ -34,6 +34,7 @@
 		<file src="readme.md" target="docs" />
 		<file src="Resources\PushSharp-Icon-NuGet-Small.png" target="images\icon.png" />
 		<!--Documentation-->
+		<file src="bin\net48\PushSharp.Core.xml" target="xml" />
 		<file src="bin\net48\PushSharp.Apple.xml" target="xml" />
 		<file src="bin\net48\PushSharp.Google.xml" target="xml" />
 		<file src="bin\net48\PushSharp.Huawei.xml" target="xml" />
