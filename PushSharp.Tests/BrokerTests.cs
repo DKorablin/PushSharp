@@ -27,8 +27,6 @@ namespace AlphaOmega.PushSharp.Tests
 			broker.Start();
 			broker.ChangeScale(1);
 
-			var c = Log.StartCounter();
-
 			for(Int32 i = 1; i <= 1000; i++)
 			{
 				attempted++;
@@ -36,8 +34,6 @@ namespace AlphaOmega.PushSharp.Tests
 			}
 
 			broker.Stop();
-
-			c.StopAndLog("Test Took {0} ms");
 
 			Assert.Equal(attempted, succeeded);
 			Assert.Equal(0, failed);
@@ -66,8 +62,6 @@ namespace AlphaOmega.PushSharp.Tests
 			broker.Start();
 			broker.ChangeScale(1);
 
-			var c = Log.StartCounter();
-
 			for(Int32 i = 1; i <= count; i++)
 			{
 				attempted++;
@@ -79,8 +73,6 @@ namespace AlphaOmega.PushSharp.Tests
 			}
 
 			broker.Stop();
-
-			c.StopAndLog("Test Took {0} ms");
 
 			Assert.Equal(attempted - failIds.Length, succeeded);
 			Assert.Equal(failIds.Length, failed);

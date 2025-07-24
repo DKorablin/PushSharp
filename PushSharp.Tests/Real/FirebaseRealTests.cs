@@ -1,4 +1,5 @@
 ﻿using AlphaOmega.PushSharp.Google;
+using AlphaOmega.PushSharp.Tests.Utils;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

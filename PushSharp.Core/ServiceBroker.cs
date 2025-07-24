@@ -4,9 +4,12 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
 using System.Net;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace AlphaOmega.PushSharp.Core
 {
+	/// <inheritdoc/>
 	public class ServiceBroker<TNotification> : IServiceBroker<TNotification> where TNotification : INotification
 	{
 		private readonly BlockingCollection<TNotification> _notifications;
@@ -15,11 +18,17 @@ namespace AlphaOmega.PushSharp.Core
 
 		private Boolean _running;
 
+		/// <inheritdoc/>
 		public event NotificationSuccessDelegate<TNotification> OnNotificationSucceeded;
+
+		/// <inheritdoc/>
 		public event NotificationFailureDelegate<TNotification> OnNotificationFailed;
 
-		public Int32 ScaleSize { get; private set; }
+		/// <summary>The size of parallel workers.</summary>
+		[DefaultValue(1)]
+		public UInt32 ScaleSize { get; private set; } = 1;
 
+		/// <summary>Gets the service connection instance that is responsible for message distribution.</summary>
 		public IServiceConnectionFactory<TNotification> ServiceConnectionFactory { get; set; }
 
 		static ServiceBroker()
@@ -28,28 +37,30 @@ namespace AlphaOmega.PushSharp.Core
 			ServicePointManager.Expect100Continue = false;
 		}
 
+		/// <summary>Create instance of <see cref="ServiceBroker&lt;TNotification&gt;"/> with push server connection factory.</summary>
+		/// <param name="connectionFactory">The connection factory instance.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="connectionFactory"/> is required.</exception>
 		public ServiceBroker(IServiceConnectionFactory<TNotification> connectionFactory)
 		{
-			this.ServiceConnectionFactory = connectionFactory;
+			this.ServiceConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
 			this._lockWorkers = new Object();
 			this._workers = new List<ServiceWorker<TNotification>>();
 			this._running = false;
 
 			this._notifications = new BlockingCollection<TNotification>();
-			this.ScaleSize = 1;
 		}
 
+		/// <summary>Adds new push notification message to send.</summary>
+		/// <param name="notification">The notification to send to the user.</param>
 		public virtual void QueueNotification(TNotification notification)
 			=> this._notifications.Add(notification);
 
-		public IEnumerable<TNotification> TakeMany()
-			=> this._notifications.GetConsumingEnumerable();
-
-		public Boolean IsCompleted => this._notifications.IsCompleted;
-
+		/// <inheritdoc/>
 		public void Start()
 		{
+			Log.Trace.TraceEvent(TraceEventType.Start, 109, "Starting Service Broker...");
+
 			if(this._running)
 				return;
 
@@ -57,8 +68,11 @@ namespace AlphaOmega.PushSharp.Core
 			this.ChangeScale(this.ScaleSize);
 		}
 
+		/// <inheritdoc/>
 		public void Stop(Boolean immediately = false)
 		{
+			Log.Trace.TraceEvent(TraceEventType.Stop, 112, $"Stopping Service Broker... {nameof(this._running)}={this._running}; {nameof(immediately)}={immediately};");
+
 			if(!this._running)
 				throw new OperationCanceledException("ServiceBroker has already been signaled to Stop");
 
@@ -73,18 +87,23 @@ namespace AlphaOmega.PushSharp.Core
 
 				var all = Array.ConvertAll(this._workers.ToArray(), w => w.WorkerTask);
 
-				Log.Info("Stopping: Waiting on Tasks");
+				Log.Trace.TraceEvent(TraceEventType.Stop, 113, "Waiting for all tasks ({0}) to finish", all.Length);
 				Task.WaitAll(all);
-				Log.Info("Stopping: Done Waiting on Tasks");
+				Log.Trace.TraceEvent(TraceEventType.Stop, 114, "All tasks completed successfully");
 
 				this._workers.Clear();
 			}
 		}
 
-		public void ChangeScale(Int32 newScaleSize)
+		/// <summary>Change count of workers to use for notifications distribution.</summary>
+		/// <param name="newScaleSize">The new scale size.</param>
+		/// <exception cref="ArgumentOutOfRangeException">The size should be more that 0.</exception>
+		public void ChangeScale(UInt32 newScaleSize)
 		{
 			if(newScaleSize <= 0)
-				throw new ArgumentOutOfRangeException("newScaleSize", "Must be Greater than Zero");
+				throw new ArgumentOutOfRangeException(nameof(newScaleSize), "Must be Greater than Zero");
+
+			Log.Trace.TraceEvent(TraceEventType.Verbose, 110, $"Changing workers scale... {nameof(this._running)}={this._running}; {nameof(newScaleSize)}={newScaleSize};");
 
 			this.ScaleSize = newScaleSize;
 
@@ -108,14 +127,19 @@ namespace AlphaOmega.PushSharp.Core
 					worker.Start();
 				}
 
-				Log.Debug("Scaled Changed to: " + this._workers.Count);
+				Log.Trace.TraceEvent(TraceEventType.Verbose, 111, "Scaled Changed to: {0}", this._workers.Count);
 			}
 		}
 
-		public void RaiseNotificationSucceeded(TNotification notification)
+		IEnumerable<TNotification> IServiceBroker<TNotification>.TakeMany()
+			=> this._notifications.GetConsumingEnumerable();
+
+		Boolean IServiceBroker<TNotification>.IsCompleted => this._notifications.IsCompleted;
+
+		void IServiceBroker<TNotification>.RaiseNotificationSucceeded(TNotification notification)
 			=> this.OnNotificationSucceeded?.Invoke(notification);
 
-		public void RaiseNotificationFailed(TNotification notification, AggregateException exception)
+		void IServiceBroker<TNotification>.RaiseNotificationFailed(TNotification notification, AggregateException exception)
 			=> OnNotificationFailed?.Invoke(notification, exception);
 	}
 
@@ -158,7 +182,10 @@ namespace AlphaOmega.PushSharp.Core
 								if(exc == null)
 									this.Broker.RaiseNotificationSucceeded(cn);
 								else
+								{
+									Log.Trace.TraceData(TraceEventType.Error, 108, exc);
 									this.Broker.RaiseNotificationFailed(cn, exc);
+								}
 							});
 
 							// Let's wait for the continuation not the task itself
@@ -170,35 +197,29 @@ namespace AlphaOmega.PushSharp.Core
 
 						try
 						{
-							Log.Info("Waiting on all tasks {0}", toSend.Count);
+							Log.Trace.TraceInformation("Waiting for all tasks ({0}) to finish", toSend.Count);
 							await Task.WhenAll(toSend).ConfigureAwait(false);
-							Log.Info("All Tasks Finished");
-						} catch(Exception ex)
+							Log.Trace.TraceInformation("All tasks completed successfully");
+						} catch(Exception exc)
 						{
-							Log.Error("Waiting on all tasks Failed: {0}", ex);
+							Log.Trace.TraceData(TraceEventType.Error, 102, exc);
 						}
-						Log.Info("Passed WhenAll");
-
-					} catch(Exception ex)
+					} catch(Exception exc)
 					{
-						Log.Error("Broker.Take: {0}", ex);
+						Log.Trace.TraceData(TraceEventType.Error, 103, exc);
 					}
 				}
 
 				if(this.CancelTokenSource.IsCancellationRequested)
-					Log.Info("Cancellation was requested");
+					Trace.TraceInformation("Cancellation was requested");
 				if(this.Broker.IsCompleted)
-					Log.Info("Broker IsCompleted");
+					Trace.TraceInformation("Broker IsCompleted");
 
-				Log.Debug("Broker Task Ended");
+				Log.Trace.TraceEvent(TraceEventType.Verbose, 115, "Broker Task Ended");
 			}, this.CancelTokenSource.Token, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
 
-			this.WorkerTask.ContinueWith(t =>
-			{
-				var ex = t.Exception;
-				if(ex != null)
-					Log.Error("ServiceWorker.WorkerTask Error: {0}", ex);
-			}, TaskContinuationOptions.OnlyOnFaulted);
+			this.WorkerTask.ContinueWith(t => Log.Trace.TraceData(TraceEventType.Error, 104, t.Exception),
+			TaskContinuationOptions.OnlyOnFaulted);
 		}
 
 		public void Cancel()

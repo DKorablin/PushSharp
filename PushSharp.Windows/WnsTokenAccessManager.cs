@@ -10,7 +10,7 @@ namespace AlphaOmega.PushSharp.Windows
     public class WnsAccessTokenManager
     {
         Task renewAccessTokenTask = null;
-        string accessToken = null;
+        String accessToken = null;
         HttpClient http;
 
         public WnsAccessTokenManager (WnsConfiguration configuration)
@@ -21,15 +21,15 @@ namespace AlphaOmega.PushSharp.Windows
 
         public WnsConfiguration Configuration { get; private set; }
 
-        public async Task<string> GetAccessToken ()
+        public async Task<String> GetAccessToken ()
         {
             if (accessToken == null) {
                 if (renewAccessTokenTask == null) {
-                    Log.Info ("Renewing Access Token");
+                    Log.Trace.TraceInformation("Renewing Access Token");
                     renewAccessTokenTask = RenewAccessToken ();
                     await renewAccessTokenTask;
                 } else {
-                    Log.Info ("Waiting for access token");
+                    Log.Trace.TraceInformation("Waiting for access token");
                     await renewAccessTokenTask;
                 }
             }
@@ -37,7 +37,7 @@ namespace AlphaOmega.PushSharp.Windows
             return accessToken;
         }
 
-        public void InvalidateAccessToken (string currentAccessToken)
+        public void InvalidateAccessToken (String currentAccessToken)
         {
             if (accessToken == currentAccessToken)
                 accessToken = null;
@@ -45,7 +45,7 @@ namespace AlphaOmega.PushSharp.Windows
 
         async Task RenewAccessToken ()
         {
-            var p = new Dictionary<string, string> {
+            var p = new Dictionary<String, String> {
                 { "grant_type", "client_credentials" },
                 { "client_id", Configuration.PackageSecurityIdentifier },
                 { "client_secret", Configuration.ClientSecret },
@@ -56,17 +56,17 @@ namespace AlphaOmega.PushSharp.Windows
 
             var data = await result.Content.ReadAsStringAsync ();
 
-            var token = string.Empty;
-            var tokenType = string.Empty;
+            var token = String.Empty;
+            var tokenType = String.Empty;
 
             try {
                 var json = JObject.Parse (data);
-                token = json.Value<string> ("access_token");
-                tokenType = json.Value<string> ("token_type");
+                token = json.Value<String> ("access_token");
+                tokenType = json.Value<String> ("token_type");
             } catch {
             }
 
-            if (!string.IsNullOrEmpty (token) && !string.IsNullOrEmpty (tokenType)) {
+            if (!String.IsNullOrEmpty (token) && !String.IsNullOrEmpty (tokenType)) {
                 accessToken = token;
             } else {
                 accessToken = null;

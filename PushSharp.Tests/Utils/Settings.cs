@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System.IO;
 using AlphaOmega.PushSharp.Google;
 
-namespace AlphaOmega.PushSharp.Tests
+namespace AlphaOmega.PushSharp.Tests.Utils
 {
 	public class Settings
 	{
@@ -14,12 +14,9 @@ namespace AlphaOmega.PushSharp.Tests
 		public const String AUTOBUILD_DISABLED = "Real tests disabled on CI/CD";
 #endif
 
-		private static Settings _instance;
-		private static FirebaseSettings _firebase;
+		public static Settings Instance => GetSettingsFilePath<Settings>("settings.json", "TEST_CONFIG_JSON");
 
-		public static Settings Instance => _instance ?? (_instance = GetSettingsFilePath<Settings>("settings.json", "TEST_CONFIG_JSON"));
-
-		public static FirebaseSettings Firebase => _firebase ?? (_firebase = GetSettingsFilePath<FirebaseSettings>("Firebase.ServiceAccount.json", "TEST_FIREBASE_JSON"));
+		public static FirebaseSettings Firebase => GetSettingsFilePath<FirebaseSettings>("Firebase.ServiceAccount.json", "TEST_FIREBASE_JSON");
 
 		private static T GetSettingsFilePath<T>(String fileName, String environmentKey)
 		{

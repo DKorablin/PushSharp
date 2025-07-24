@@ -18,9 +18,13 @@ namespace AlphaOmega.PushSharp.Google
 		[JsonProperty("client_email")]
 		public String ClientEmail { get; set; }
 
-		/// <summary>The token url.</summary>
+		/// <summary>The token url that is used to create access token.</summary>
 		[JsonProperty("token_uri")]
 		public String TokenUri { get; set; }
+
+		/// <summary>The Firebase PUSH message send Url.</summary>
+		[JsonIgnore]
+		public String MessageSendUri { get; set; }
 
 		/// <summary>Create empty instance of <see cref="FirebaseSettings"/></summary>
 		public FirebaseSettings()
@@ -39,6 +43,8 @@ namespace AlphaOmega.PushSharp.Google
 			this.PrivateKey = privateKey ?? throw new ArgumentNullException(nameof(privateKey));
 			this.ClientEmail = clientEmail ?? throw new ArgumentNullException(nameof(clientEmail));
 			this.TokenUri = tokenUri ?? throw new ArgumentNullException(nameof(tokenUri));
+
+			this.MessageSendUri = $"https://fcm.googleapis.com/v1/projects/{this.ProjectId}/messages:send";
 		}
 	}
 }

@@ -34,21 +34,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="Microsoft.NET.Test.Sdk" />
-	<PackageReference Include="xunit" />
-	<PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApnsTests.cs" />
     <Compile Include="Real\HuaweiRealTests.cs" />
     <Compile Include="TestServiceConnection.cs" />
     <Compile Include="Servers\TestApnsServer.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Utils\Settings.cs" />
     <Compile Include="Real\AdmRealTests.cs" />
     <Compile Include="Real\FirebaseRealTests.cs" />
     <Compile Include="BrokerTests.cs" />
     <Compile Include="Real\ApnsRealTest.cs" />
     <Compile Include="Real\WnsRealTests.cs" />
     <Compile Include="FirebaseTests.cs" />
+    <Compile Include="Utils\TestLogger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

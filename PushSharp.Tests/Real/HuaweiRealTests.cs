@@ -1,5 +1,6 @@
 ﻿using System;
 using AlphaOmega.PushSharp.Huawei;
+using AlphaOmega.PushSharp.Tests.Utils;
 using Xunit;
 
 namespace AlphaOmega.PushSharp.Tests.Real

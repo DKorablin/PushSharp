@@ -52,7 +52,7 @@ namespace AlphaOmega.PushSharp.Google
 		async Task IServiceConnection<FirebaseNotification>.Send(FirebaseNotification notification)
 		{
 			var token = this._configuration.AccessToken;
-			var path = this._configuration.FirebaseSendUrl;
+			var path = this._configuration.Settings.MessageSendUri;
 			var json = notification.GetJson();
 
 			using(var message = new HttpRequestMessage(HttpMethod.Post, path))

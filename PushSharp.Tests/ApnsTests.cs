@@ -6,16 +6,18 @@ using AlphaOmega.PushSharp.Tests.Utils;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace AlphaOmega.PushSharp.Tests.Real
+namespace AlphaOmega.PushSharp.Tests
 {
-	public class ApnsRealTest
+	[Collection("Apns")]
+	public class ApnsTests
 	{
-		private List<String> messages = new List<String>();
+		private readonly List<String> messages = new List<String>();
 
-		[Fact()]
-		public void APNS_Send_Single()
+		[Fact]
+		public void ApnsNotification_ShouldReportFail_WhenServerUnreachable()
 		{
 			Log.AddTraceListener(new TestLogger(messages));
+
 			var succeeded = 0;
 			var failed = 0;
 			var attempted = 0;
@@ -25,7 +27,10 @@ namespace AlphaOmega.PushSharp.Tests.Real
 				Settings.Instance.ApnsCertificateFile,
 				Settings.Instance.ApnsCertificateKeyId,
 				Settings.Instance.ApnsTeamId,
-				Settings.Instance.ApnsBundleId);
+				Settings.Instance.ApnsBundleId)
+			{
+				Host = "null://localhost:433",
+			};
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);
@@ -53,8 +58,8 @@ namespace AlphaOmega.PushSharp.Tests.Real
 
 			Log.Trace.Flush();
 
-			Assert.Equal(attempted, succeeded);
-			Assert.Equal(0, failed);
+			Assert.Equal(0, succeeded);
+			Assert.Equal(attempted, failed);
 		}
 	}
 }

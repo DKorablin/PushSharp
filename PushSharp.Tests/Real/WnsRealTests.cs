@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using AlphaOmega.PushSharp.Tests.Utils;
 using AlphaOmega.PushSharp.Windows;
 using Xunit;
 

@@ -15,18 +15,12 @@ namespace AlphaOmega.PushSharp.Google
 	/// <see href="https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages"/>
 	public class FirebaseConfiguration
 	{
-#pragma warning disable S1075
-		private const String TOKEN_URL = "https://oauth2.googleapis.com/token";
-#pragma warning restore S1075
-
 		private readonly Object _tokenLock = new Object();
 		private DateTime _tokenExpiration = DateTime.MinValue;
 		private FirebaseTokenResponse _token;
 
-		private readonly FirebaseSettings _settings;
-
-		/// <summary>The Firebase PUSH message send Url.</summary>
-		public String FirebaseSendUrl => $"https://fcm.googleapis.com/v1/projects/{this._settings.ProjectId}/messages:send";
+		/// <summary>The Firebase connection settings.</summary>
+		public FirebaseSettings Settings { get; }
 
 		/// <summary>The access token that is used to send PUSH messages based on settings information.</summary>
 		public String AccessToken
@@ -50,18 +44,18 @@ namespace AlphaOmega.PushSharp.Google
 			if(String.IsNullOrWhiteSpace(jsonFileContents))
 				throw new ArgumentNullException(nameof(jsonFileContents));
 
-			this._settings = JsonConvert.DeserializeObject<FirebaseSettings>(jsonFileContents);
+			this.Settings = JsonConvert.DeserializeObject<FirebaseSettings>(jsonFileContents);
 		}
 
 		/// <summary>Create instance of Firebase configuration instance.</summary>
 		/// <param name="settings">The Firebase service account settings information.</param>
 		/// <exception cref="ArgumentNullException">The <paramref name="settings"/> is required.</exception>
 		public FirebaseConfiguration(FirebaseSettings settings)
-			=> this._settings = settings ?? throw new ArgumentNullException(nameof(settings));
+			=> this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
 		private async Task RefreshAccessTokenAsync()
 		{
-			using(var message = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL))
+			using(var message = new HttpRequestMessage(HttpMethod.Post, this.Settings.TokenUri))
 			using(var form = new MultipartFormDataContent())
 			{
 				var authToken = this.GetTokenRequest();
@@ -92,8 +86,8 @@ namespace AlphaOmega.PushSharp.Google
 			String header = JsonConvert.SerializeObject(new { alg = "RS256", typ = "JWT" });
 			String payload = JsonConvert.SerializeObject(new
 			{
-				iss = this._settings.ClientEmail,
-				aud = this._settings.TokenUri,
+				iss = this.Settings.ClientEmail,
+				aud = this.Settings.TokenUri,
 				scope = "https://www.googleapis.com/auth/firebase.messaging",
 				iat = PushSharpHttpClient.GetUnixTimestamp(),
 				exp = PushSharpHttpClient.GetUnixTimestamp() + 3600 /* has to be short lived */
@@ -104,7 +98,7 @@ namespace AlphaOmega.PushSharp.Google
 			String unsignedJwtData = $"{headerBase64}.{payloadBase64}";
 			Byte[] unsignedJwtBytes = Encoding.UTF8.GetBytes(unsignedJwtData);
 
-			var privateKey = ParsePkcs8PrivateKeyPem(this._settings.PrivateKey);
+			var privateKey = ParsePkcs8PrivateKeyPem(this.Settings.PrivateKey);
 			var signer = new RsaDigestSigner(new Org.BouncyCastle.Crypto.Digests.Sha256Digest());
 			signer.Init(true, privateKey);
 			signer.BlockUpdate(unsignedJwtBytes, 0, unsignedJwtBytes.Length);

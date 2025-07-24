@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AlphaOmega.PushSharp.Amazon;
+using AlphaOmega.PushSharp.Tests.Utils;
 using Xunit;
 
 namespace AlphaOmega.PushSharp.Tests.Real
@@ -28,7 +29,7 @@ namespace AlphaOmega.PushSharp.Tests.Real
 				broker.QueueNotification(new AdmNotification
 				{
 					RegistrationId = regId,
-					Data = new Dictionary<string, string> {
+					Data = new Dictionary<String, String> {
 						{ "somekey", "somevalue" }
 					}
 				});
