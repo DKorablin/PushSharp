@@ -15,6 +15,8 @@ namespace AlphaOmega.PushSharp.Apple
 			{ ApnsServerEnvironment.Production, "https://api.push.apple.com" },
 		};
 
+		private ISigner _p8Signer;
+
 		/// <summary>The type of server to use to send messages.</summary>
 		public enum ApnsServerEnvironment
 		{
@@ -55,6 +57,8 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </remarks>
 		public String AppBundleId { get; }
 
+		private ISigner P8Signer => this._p8Signer ?? (this._p8Signer = this.CreateSigner());
+
 		/// <summary>Create instance of APNS settings</summary>
 		/// <param name="environment">The environment to use for sending messages.</param>
 		/// <param name="p8CertificatePath">The path to P8 certificate file.</param>
@@ -82,6 +86,9 @@ namespace AlphaOmega.PushSharp.Apple
 			this.KeyId = keyId;
 			this.TeamId = teamId;
 			this.AppBundleId = bundleId;
+
+			// Testing logic
+			_ = this.CreateSigner();
 		}
 
 		private ISigner CreateSigner()
@@ -97,17 +104,21 @@ namespace AlphaOmega.PushSharp.Apple
 				else if(keyObject is AsymmetricKeyParameter privateKey)
 					key = privateKey;
 				else
-					throw new InvalidOperationException("Unable to read the private key from p8.");
+				{
+					Exception exc = new InvalidOperationException("Unable to read the private key from p8.");
+					exc.Data.Add(nameof(keyObject), keyObject?.ToString() ?? "null");
+					throw exc;
+				}
 			}
 
-			var signer = SignerUtilities.GetSigner("SHA-256withECDSA");
+			ISigner signer = SignerUtilities.GetSigner("SHA-256withECDSA");
 			signer.Init(true, key);
 			return signer;
 		}
 
 		internal Byte[] SignWithECDsa(Byte[] dataToSign)
 		{
-			var signer = this.CreateSigner();
+			var signer = this.P8Signer;
 			signer.BlockUpdate(dataToSign, 0, dataToSign.Length);
 			Byte[] signatureDer = signer.GenerateSignature();
 
