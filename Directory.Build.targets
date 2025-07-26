@@ -30,7 +30,7 @@
 				<_Parameter1_TypeName>System.Boolean</_Parameter1_TypeName>
 			</AssemblyAttributes>
 			<AssemblyAttributes Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-				<_Parameter1>AlphaOmega.PushSharp.Tests</_Parameter1>
+				<_Parameter1>PushSharp.Tests</_Parameter1>
 			</AssemblyAttributes>
 		</ItemGroup>
 		<ItemGroup Condition="'$(TargetFramework)' != 'net20'">
