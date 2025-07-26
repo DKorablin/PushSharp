@@ -3,7 +3,6 @@ name: Test, Buid
 on:
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
 
 env:
   SolutionName: ${{github.event.repository.name}}
