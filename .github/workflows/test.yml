@@ -1,10 +1,10 @@
 name: Test, Buid
 
 on:
+  workflow_dispatch:
+
   pull_request:
     branches: [ "master" ]
-
-  workflow_dispatch:
 
 env:
   SolutionName: ${{github.event.repository.name}}
