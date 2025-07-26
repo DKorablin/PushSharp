@@ -36,7 +36,7 @@
 		<ItemGroup Condition="'$(TargetFramework)' != 'net20'">
 			<AssemblyAttributes Include="AssemblyMetadata">
 				<_Parameter1>ProjectUrl</_Parameter1>
-				<_Parameter2>https://github.com/DKorablin/Plugin.CryptoUI</_Parameter2>
+				<_Parameter2>https://github.com/DKorablin/PushSharp</_Parameter2>
 			</AssemblyAttributes>
 		</ItemGroup>
 		<MakeDir Directories="$(IntermediateOutputPath)" />

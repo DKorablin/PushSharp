@@ -14,7 +14,5 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup><!--PackageReference Include="SonarAnalyzer.CSharp" /-->
-	
-	  <Folder Include="Properties\" />
 	</ItemGroup>
 </Project>

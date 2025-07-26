@@ -6,7 +6,7 @@
 		<authors>Redth,Danila Korablin</authors>
 		<readme>docs\README.md</readme>
 		<license type="expression">Apache-1.0</license>
-		<projectUrl>https://github.com/DKorablin/PushSharp/</projectUrl>
+		<projectUrl>https://github.com/DKorablin/PushSharp</projectUrl>
 		<icon>images\icon.png</icon>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry</description>
