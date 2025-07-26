@@ -20,7 +20,6 @@ Improvements:
 
 ```csharp
 var environment = ApnsSettings.ApnsServerEnvironment.Production;
-var p8CertificatePath = "{P8CertificateFilePath}";
 var p8CertificatePassword = "{P8CertificatePassword}";
 var keyId = "{KeyId}";
 var teamId = "{TeamId}";
@@ -34,6 +33,7 @@ var settings = new ApnsSettings(
 {
 	AppBundleId = bundleId,
 };
+settings.LoadP8CertificateFromFile("{P8CertificateFilePath}");
 
 var config = new ApnsConfiguration(settings);
 var broker = new ApnsServiceBroker(config);
