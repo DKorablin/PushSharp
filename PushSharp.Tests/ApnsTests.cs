@@ -54,7 +54,7 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 
 			broker.Start();
 
-			foreach(var dt in Settings.Instance.ApnsDeviceTokens)
+			foreach(var dt in new String[] { "deviceToken1", "deviceToken2", })
 			{
 				attempted++;
 				broker.QueueNotification(new ApnsNotification(dt)

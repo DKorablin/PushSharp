@@ -62,7 +62,7 @@ namespace AlphaOmega.PushSharp.Tests
 
 			broker.Start();
 
-			foreach(var regId in Settings.Instance.GcmRegistrationIds)
+			foreach(var regId in new String[] { "deviceToken1", "deviceToken2", })
 			{
 				attempted++;
 
