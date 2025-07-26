@@ -10,6 +10,16 @@ namespace AlphaOmega.PushSharp.Tests
 {
 	public class ApnsTests
 	{
+		const String TestCert = @"-----BEGIN PRIVATE KEY-----
+MIIBQgIBADATBgcqhkjOPQIBBggqhkjOPQMBBwSCASYwggEiAgEBBCBMVEQzbhtz
+WvE/uCMg6vZq2/8I9dqCfUk6q+jhaHStiaCB+jCB9wIBATAsBgcqhkjOPQEBAiEA
+/////wAAAAEAAAAAAAAAAAAAAAD///////////////8wWwQg/////wAAAAEAAAAA
+AAAAAAAAAAD///////////////wEIFrGNdiqOpPns+u9VXaYhrxlHQawzFOw9jvO
+PD4n0mBLAxUAxJ02CIbnBJNqZnjhE50mt4GffpAEQQRrF9Hy4SxCR/i85uVjpEDy
+dwN9gS3rM6D0oTlF2JjClk/jQuL+Gn+bjufrSnwPnhYrzjNXazFezsu2QGg3v1H1
+AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
+-----END PRIVATE KEY-----";
+
 		private readonly List<String> messages = new List<String>();
 
 		[Fact]
@@ -23,13 +33,13 @@ namespace AlphaOmega.PushSharp.Tests
 
 			var settings = new ApnsSettings(
 				ApnsSettings.ApnsServerEnvironment.Development,
-				Settings.Instance.ApnsCertificateKeyId,
-				Settings.Instance.ApnsTeamId,
-				Settings.Instance.ApnsBundleId)
+				nameof(ApnsSettings.KeyId),
+				nameof(ApnsSettings.TeamId),
+				nameof(ApnsSettings.AppBundleId))
 			{
 				Host = "null://localhost:433",
 			};
-			settings.LoadP8CertificateFromFile(Settings.Instance.ApnsCertificateFile);
+			settings.P8Certificate = TestCert;
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);
@@ -64,18 +74,14 @@ namespace AlphaOmega.PushSharp.Tests
 		[Fact]
 		public void Apns_Settings_Should_ReadCertificate()
 		{
-			const String TestCert = @"-----BEGIN PRIVATE KEY-----
-MIIBQgIBADATBgcqhkjOPQIBBggqhkjOPQMBBwSCASYwggEiAgEBBCBMVEQzbhtz
-WvE/uCMg6vZq2/8I9dqCfUk6q+jhaHStiaCB+jCB9wIBATAsBgcqhkjOPQEBAiEA
-/////wAAAAEAAAAAAAAAAAAAAAD///////////////8wWwQg/////wAAAAEAAAAA
-AAAAAAAAAAD///////////////wEIFrGNdiqOpPns+u9VXaYhrxlHQawzFOw9jvO
-PD4n0mBLAxUAxJ02CIbnBJNqZnjhE50mt4GffpAEQQRrF9Hy4SxCR/i85uVjpEDy
-dwN9gS3rM6D0oTlF2JjClk/jQuL+Gn+bjufrSnwPnhYrzjNXazFezsu2QGg3v1H1
-AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
------END PRIVATE KEY-----";
-
-			var settings = new ApnsSettings(ApnsSettings.ApnsServerEnvironment.Development, nameof(ApnsSettings.KeyId), nameof(ApnsSettings.TeamId), nameof(ApnsSettings.TeamId));
-			settings.P8Certificate = TestCert;
+			var settings = new ApnsSettings(
+				ApnsSettings.ApnsServerEnvironment.Development,
+				nameof(ApnsSettings.KeyId),
+				nameof(ApnsSettings.TeamId),
+				nameof(ApnsSettings.TeamId))
+			{
+				P8Certificate = TestCert,
+			};
 
 			Assert.NotNull(settings.P8Signer);
 

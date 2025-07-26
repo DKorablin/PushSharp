@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 using AlphaOmega.PushSharp.Google;
+using AlphaOmega.PushSharp.Apple;
 
 namespace AlphaOmega.PushSharp.Tests.Utils
 {
@@ -49,16 +50,16 @@ namespace AlphaOmega.PushSharp.Tests.Utils
 		public String ApnsCertificateFile { get; set; }
 
 		[JsonProperty("apns_p8cert_keyId")]
-		public String ApnsCertificateKeyId { get; set; }
+		public String ApnsCertificateKeyId { get; set; } = nameof(ApnsSettings.KeyId);
 
 		[JsonProperty("apns_teamId")]
-		public String ApnsTeamId { get; set; }
+		public String ApnsTeamId { get; set; } = nameof(ApnsSettings.TeamId);
 
 		[JsonProperty("apns_bundleId")]
-		public String ApnsBundleId { get; set; }
+		public String ApnsBundleId { get; set; } = nameof(ApnsSettings.AppBundleId);
 
 		[JsonProperty("apns_device_tokens")]
-		public List<String> ApnsDeviceTokens { get; set; }
+		public List<String> ApnsDeviceTokens { get; set; } = new List<String>();
 
 		[JsonProperty("gcm_auth_token")]
 		public String GcmAuthToken { get; set; }

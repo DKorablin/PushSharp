@@ -43,9 +43,11 @@ namespace AlphaOmega.PushSharp.Tests
 			var failed = 0;
 			var attempted = 0;
 
-			var settings = Settings.Firebase;
-			settings.TokenUri = "null://localhost:433";
-			settings.MessageSendUri = "null://localhost:433";
+			var settings = new FirebaseSettings(nameof(FirebaseSettings.ProjectId), nameof(FirebaseSettings.PrivateKey), nameof(FirebaseSettings.ClientEmail), nameof(FirebaseSettings.TokenUri))
+			{
+				TokenUri = "null://localhost:433",
+				MessageSendUri = "null://localhost:433",
+			};
 
 			var config = new FirebaseConfiguration(Settings.Firebase);
 			var broker = new FirebaseServiceBroker(config);
