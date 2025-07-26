@@ -29,7 +29,6 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 
 			var succeeded = 0;
 			var failed = 0;
-			var attempted = 0;
 
 			var settings = new ApnsSettings(
 				ApnsSettings.ApnsServerEnvironment.Development,
@@ -65,6 +64,9 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 			broker.Stop();
 
 			Log.Trace.Flush();
+
+			Assert.Equal(0, succeeded);
+			Assert.Equal(0, failed);
 		}
 
 		[Fact]

@@ -81,8 +81,8 @@ namespace AlphaOmega.PushSharp.Tests
 
 			broker.Stop();
 
-			/*Assert.Equal(0, succeeded);
-			Assert.Equal(attempted, failed);*/
+			Assert.Equal(0, succeeded);
+			Assert.Equal(attempted, failed);
 		}
 	}
 }
