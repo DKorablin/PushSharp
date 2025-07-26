@@ -1,7 +1,7 @@
 # PushSharp v4.1
 [![Auto build](https://github.com/DKorablin/PushSharp/actions/workflows/release.yml/badge.svg)](https://github.com/DKorablin/PushSharp/releases/latest)
 [![Nuget](https://img.shields.io/nuget/v/AlphaOmega.PushSharp)](https://www.nuget.org/packages/AlphaOmega.PushSharp)
-
+ 
 PushSharp is a server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows/Windows Phone, Amazon (ADM) and Blackberry devices!
 
 Improvements:
