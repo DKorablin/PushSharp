@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json.Linq;
@@ -56,7 +57,7 @@ namespace AlphaOmega.PushSharp.Amazon
 
         readonly HttpClient http = new HttpClient ();
 
-        public async Task Send (AdmNotification notification)
+        public async Task Send (AdmNotification notification, CancellationToken cancellationToken)
         {
             try
             {
@@ -69,10 +70,10 @@ namespace AlphaOmega.PushSharp.Amazon
                 var sc = new StringContent(notification.ToJson ());
                 sc.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                var response = await http.PostAsync (String.Format(Configuration.AdmSendUrl, notification.RegistrationId), sc);
+                var response = await http.PostAsync (String.Format(Configuration.AdmSendUrl, notification.RegistrationId), sc, cancellationToken);
 
                 // We're done here if it was a success
-                if (response.IsSuccessStatusCode) {                    
+                if (response.IsSuccessStatusCode) {
                     return;
                 }
 

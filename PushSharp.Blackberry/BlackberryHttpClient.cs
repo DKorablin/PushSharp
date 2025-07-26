@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace AlphaOmega.PushSharp.Blackberry
 {
@@ -23,7 +24,7 @@ namespace AlphaOmega.PushSharp.Blackberry
             this.DefaultRequestHeaders.Remove("connection");
         }
 
-        public Task<HttpResponseMessage> PostNotification (BlackberryNotification notification)
+        public Task<HttpResponseMessage> PostNotification (BlackberryNotification notification, CancellationToken cancellationToken)
         {
             var c = new MultipartContent ("related", Configuration.Boundary);
             c.Headers.Remove("Content-Type");
@@ -42,7 +43,7 @@ namespace AlphaOmega.PushSharp.Blackberry
 
             c.Add(bc);
 
-            return PostAsync (Configuration.SendUrl, c);
+            return PostAsync (Configuration.SendUrl, c, cancellationToken);
         }
     }
 

@@ -66,10 +66,15 @@ namespace AlphaOmega.PushSharp.Tests
 			{
 				attempted++;
 
-				var notification = new FirebaseNotification();
-				notification.validate_only = true;
-				notification.message.token = regId;
-				notification.message.data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }");
+				var notification = new FirebaseNotification()
+				{
+					validate_only = true,
+					message =
+					{
+						token = regId,
+						data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }"),
+					},
+				};
 
 				broker.QueueNotification(notification);
 			}

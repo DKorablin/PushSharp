@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
@@ -48,10 +49,10 @@ namespace AlphaOmega.PushSharp.Huawei
 			this._client = new PushSharpHttpClient();
 		}
 
-		async Task IServiceConnection<HuaweiNotification>.Send(HuaweiNotification notification)
-			=> await this.SendWithRetry(notification, true);
+		async Task IServiceConnection<HuaweiNotification>.Send(HuaweiNotification notification, CancellationToken cancallationToken)
+			=> await this.SendWithRetry(notification, true, cancallationToken);
 
-		private async Task SendWithRetry(HuaweiNotification notification, Boolean withRetryOnTokenExpiration)
+		private async Task SendWithRetry(HuaweiNotification notification, Boolean withRetryOnTokenExpiration, CancellationToken cancellationToken)
 		{
 			var token = this._configuration.AccessToken;
 			var path = this._configuration.HuaweiSendUrl;
@@ -63,10 +64,10 @@ namespace AlphaOmega.PushSharp.Huawei
 
 				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-				using(var response = await this._client.SendAsync(message))
+				using(var response = await this._client.SendAsync(message, cancellationToken))
 				{
 					if(response.IsSuccessStatusCode)
-						await this.ProcessSuccessResponseAsync(response, notification, withRetryOnTokenExpiration).ConfigureAwait(false);
+						await this.ProcessSuccessResponseAsync(response, notification, withRetryOnTokenExpiration, cancellationToken).ConfigureAwait(false);
 					else
 						await this.ProcessFailureResponseAsync(response, notification).ConfigureAwait(false);
 				}
@@ -98,7 +99,7 @@ namespace AlphaOmega.PushSharp.Huawei
 			throw exc;
 		}
 
-		private async Task ProcessSuccessResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification, Boolean withRetryOnTokenExpiration)
+		private async Task ProcessSuccessResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification, Boolean withRetryOnTokenExpiration, CancellationToken cancallationToken)
 		{
 			var strResponse = await httpResponse.Content.ReadAsStringAsync();
 			var response = JsonConvert.DeserializeObject<HuaweiResponse>(strResponse);
@@ -111,7 +112,7 @@ namespace AlphaOmega.PushSharp.Huawei
 				if(withRetryOnTokenExpiration)
 				{
 					await this._configuration.RefreshTokenAsync();
-					await this.SendWithRetry(notification, false);
+					await this.SendWithRetry(notification, false, cancallationToken);
 				} else
 					throw new HuaweiException(notification, response);
 				break;

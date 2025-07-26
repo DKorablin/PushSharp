@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
@@ -125,9 +126,9 @@ namespace AlphaOmega.PushSharp.Apple
 			};
 		}
 
-		async Task IServiceConnection<ApnsNotification>.Send(ApnsNotification notification)
+		async Task IServiceConnection<ApnsNotification>.Send(ApnsNotification notification, CancellationToken cancellationToken)
 		{
-			var token = this._configuration.AccessToken;
+			var accessToken = this._configuration.AccessToken;
 			var path = $"/3/device/{notification.DeviceToken}";
 			var json = notification.Payload.ToString(Formatting.None);
 
@@ -136,7 +137,7 @@ namespace AlphaOmega.PushSharp.Apple
 				message.Version = new Version(2, 0);
 				message.Content = new StringContent(json);
 
-				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 				message.Headers.TryAddWithoutValidation(RequestHeaders.Method, "POST");
 				message.Headers.TryAddWithoutValidation(RequestHeaders.Path, path);
 				message.Headers.Add(RequestHeaders.ApnsPushType, notification.ApnsPushType.ToString().ToLowerInvariant()); // required for iOS 13+
@@ -153,7 +154,7 @@ namespace AlphaOmega.PushSharp.Apple
 				if(notification.ApnsCollapseId != null)
 					message.Headers.Add(RequestHeaders.ApnsCollapseId, notification.ApnsCollapseId);
 
-				using(var response = await this._client.SendAsync(message))
+				using(var response = await this._client.SendAsync(message, cancellationToken))
 				{
 					if(response.IsSuccessStatusCode)
 						this.ProcessOkResponse(response, notification);

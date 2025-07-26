@@ -172,7 +172,7 @@ namespace AlphaOmega.PushSharp.Core
 						var toSend = new List<Task>();
 						foreach(var n in this.Broker.TakeMany())
 						{
-							var t = this.Connection.Send(n);
+							var t = this.Connection.Send(n, this.CancelTokenSource.Token);
 							// Keep the continuation
 							var count = t.ContinueWith(ct =>
 							{

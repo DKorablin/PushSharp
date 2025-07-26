@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlphaOmega.PushSharp.Core
@@ -20,7 +21,8 @@ namespace AlphaOmega.PushSharp.Core
 	{
 		/// <summary>Send notification message to push server.</summary>
 		/// <param name="notification">The notification message instance.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The async operation result.</returns>
-		Task Send(TNotification notification);
+		Task Send(TNotification notification, CancellationToken cancellationToken);
 	}
 }

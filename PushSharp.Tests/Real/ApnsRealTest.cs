@@ -10,7 +10,7 @@ namespace AlphaOmega.PushSharp.Tests.Real
 {
 	public class ApnsRealTest
 	{
-		private List<String> messages = new List<String>();
+		private readonly List<String> messages = new List<String>();
 
 		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
 		public void APNS_Send_Single()

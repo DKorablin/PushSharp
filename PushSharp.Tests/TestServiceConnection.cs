@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 
@@ -45,7 +46,7 @@ namespace AlphaOmega.PushSharp.Tests
 
 	public class TestServiceConnection : IServiceConnection<TestNotification>
 	{
-		public async Task Send(TestNotification notification)
+		public async Task Send(TestNotification notification, CancellationToken cancellationToken)
 		{
 			var id = notification.TestId;
 

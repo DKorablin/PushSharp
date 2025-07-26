@@ -1,15 +1,14 @@
 ﻿using System;
-using AlphaOmega.PushSharp.Core;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using System.Xml;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using AlphaOmega.PushSharp.Core;
 
 namespace AlphaOmega.PushSharp.Windows
 {
@@ -49,15 +48,15 @@ namespace AlphaOmega.PushSharp.Windows
         public WnsAccessTokenManager AccessTokenManager { get; private set; }
         public WnsConfiguration Configuration { get; private set; }
 
-        public async Task Send (WnsNotification notification)
-        {           
+        public async Task Send (WnsNotification notification, CancellationToken cancellationToken)
+        {
             // Get or renew our access token
             var accessToken = await AccessTokenManager.GetAccessToken ();
 
             //https://cloud.notify.windows.com/?token=.....
             //Authorization: Bearer {AccessToken}
             //
-                        
+
             // Not sure how to do this in httpclient
             var http = new HttpClient ();
             http.DefaultRequestHeaders.ExpectContinue = false; //Disable expect-100 to improve latency
@@ -109,7 +108,7 @@ namespace AlphaOmega.PushSharp.Windows
                     "text/xml");
             }
 
-            var result = await http.PostAsync (notification.ChannelUri, content);
+            var result = await http.PostAsync (notification.ChannelUri, content, cancellationToken);
 
             var status = ParseStatus (result, notification);
 

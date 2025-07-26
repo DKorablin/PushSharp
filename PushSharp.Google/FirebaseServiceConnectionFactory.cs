@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using AlphaOmega.PushSharp.Core;
 using Newtonsoft.Json;
@@ -49,9 +50,9 @@ namespace AlphaOmega.PushSharp.Google
 			this._client = new PushSharpHttpClient();
 		}
 
-		async Task IServiceConnection<FirebaseNotification>.Send(FirebaseNotification notification)
+		async Task IServiceConnection<FirebaseNotification>.Send(FirebaseNotification notification, CancellationToken cancellationToken)
 		{
-			var token = this._configuration.AccessToken;
+			var accessToken = this._configuration.AccessToken;
 			var path = this._configuration.Settings.MessageSendUri;
 			var json = notification.GetJson();
 
@@ -59,9 +60,9 @@ namespace AlphaOmega.PushSharp.Google
 			{
 				message.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-				using(var response = await this._client.SendAsync(message))
+				using(var response = await this._client.SendAsync(message, cancellationToken))
 				{
 					if(response.IsSuccessStatusCode)
 						await ProcessOkResponseAsync(response, notification).ConfigureAwait(false);

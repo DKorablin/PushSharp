@@ -38,8 +38,8 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 				nameof(ApnsSettings.AppBundleId))
 			{
 				Host = "null://localhost:433",
+				P8Certificate = TestCert,
 			};
-			settings.P8Certificate = TestCert;
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);
@@ -87,7 +87,7 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 
 			var configuration = new ApnsConfiguration(settings);
 			var accessToken = configuration.AccessToken;
-			Assert.True(!String.IsNullOrWhiteSpace(accessToken));
+			Assert.False(String.IsNullOrWhiteSpace(accessToken));
 		}
 	}
 }

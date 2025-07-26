@@ -4,6 +4,7 @@ using System.Net;
 using System.Xml.Linq;
 using System.Linq;
 using AlphaOmega.PushSharp.Core;
+using System.Threading;
 
 namespace AlphaOmega.PushSharp.Blackberry
 {
@@ -41,9 +42,9 @@ namespace AlphaOmega.PushSharp.Blackberry
 
         readonly BlackberryHttpClient http;
 
-        public async Task Send (BlackberryNotification notification)
-        {                        
-            var response = await http.PostNotification (notification);
+        async Task IServiceConnection<BlackberryNotification>.Send (BlackberryNotification notification, CancellationToken cancelationToken)
+        {
+            var response = await http.PostNotification (notification, cancelationToken);
             var description = string.Empty;
 
             var status = new BlackberryMessageStatus
