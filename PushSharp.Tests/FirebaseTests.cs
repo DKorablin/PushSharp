@@ -49,7 +49,7 @@ namespace AlphaOmega.PushSharp.Tests
 				MessageSendUri = "null://localhost:433",
 			};
 
-			var config = new FirebaseConfiguration(Settings.Firebase);
+			var config = new FirebaseConfiguration(settings);
 			var broker = new FirebaseServiceBroker(config);
 			broker.OnNotificationFailed += (notification, exception) =>
 			{
@@ -60,29 +60,15 @@ namespace AlphaOmega.PushSharp.Tests
 				succeeded++;
 			};
 
-			broker.Start();
-
-			foreach(var regId in new String[] { "deviceToken1", "deviceToken2", })
+			try
 			{
-				attempted++;
-
-				var notification = new FirebaseNotification()
-				{
-					validate_only = true,
-					message =
-					{
-						token = regId,
-						data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }"),
-					},
-				};
-
-				broker.QueueNotification(notification);
+				broker.Start();
+				Assert.Fail("It should fail with exception");
+			} catch(ArgumentException)
+			{
 			}
 
 			broker.Stop();
-
-			Assert.Equal(0, succeeded);
-			Assert.Equal(attempted, failed);
 		}
 	}
 }

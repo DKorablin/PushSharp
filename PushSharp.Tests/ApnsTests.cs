@@ -62,21 +62,9 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 			{
 			}
 
-			/*foreach(var dt in new String[] { "deviceToken1", "deviceToken2", })
-			{
-				attempted++;
-				broker.QueueNotification(new ApnsNotification(dt)
-				{
-					Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"Manual test\" } }")
-				});
-			}*/
-
 			broker.Stop();
 
 			Log.Trace.Flush();
-
-			/*Assert.Equal(0, succeeded);
-			Assert.Equal(attempted, failed);*/
 		}
 
 		[Fact]
