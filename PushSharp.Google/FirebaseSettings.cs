@@ -6,6 +6,8 @@ namespace AlphaOmega.PushSharp.Google
 	/// <summary>The settings to connect to the Firebase PUSH server</summary>
 	public class FirebaseSettings
 	{
+		private String _messageSendUri;
+
 		/// <summary>The project identifier.</summary>
 		[JsonProperty("project_id")]
 		public String ProjectId { get; set; }
@@ -24,7 +26,11 @@ namespace AlphaOmega.PushSharp.Google
 
 		/// <summary>The Firebase PUSH message send Url.</summary>
 		[JsonIgnore]
-		public String MessageSendUri { get; set; }
+		public String MessageSendUri
+		{
+			get => this._messageSendUri ?? (this._messageSendUri = $"https://fcm.googleapis.com/v1/projects/{this.ProjectId}/messages:send");
+			set => this._messageSendUri = value;
+		}
 
 		/// <summary>Create empty instance of <see cref="FirebaseSettings"/></summary>
 		public FirebaseSettings()
@@ -43,8 +49,6 @@ namespace AlphaOmega.PushSharp.Google
 			this.PrivateKey = privateKey ?? throw new ArgumentNullException(nameof(privateKey));
 			this.ClientEmail = clientEmail ?? throw new ArgumentNullException(nameof(clientEmail));
 			this.TokenUri = tokenUri ?? throw new ArgumentNullException(nameof(tokenUri));
-
-			this.MessageSendUri = $"https://fcm.googleapis.com/v1/projects/{this.ProjectId}/messages:send";
 		}
 	}
 }

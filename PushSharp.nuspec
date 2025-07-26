@@ -9,10 +9,10 @@
 		<projectUrl>https://github.com/DKorablin/PushSharp/</projectUrl>
 		<icon>images\icon.png</icon>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry and Firefox OS</description>
+		<description>A server-side library for sending Push Notifications to iOS/OSX (APNS HTTP/2), Android/Chrome (FCM V1), Huawei (HMS), Windows Phone/Windows (WNS), Amazon (ADM), Blackberry</description>
 		<summary>A server-side library for sending Push Notifications to many platforms (APNS, FCM, HMS, WNS, ADM)</summary>
 		<releaseNotes>
-			4.1.* - Updated APNS for HTTP/2 implementation, Updated Android FCM V1 implementation, Added Huawei (HMS), Added .NET Standard 2.0 build, see project site for more info
+			4.1.* - Updated APNS for HTTP/2 implementation, Updated Android FCM V1 implementation, Added Huawei (HMS), Added .NET Standard 2.0 build. For details on the full changelog, see the Releases tab on GitHub.
 		</releaseNotes>
 		<copyright>2012-2016 Redth, 2025 Danila Korablin</copyright>
 		<language>en-US</language>
@@ -43,7 +43,6 @@
 		<file src="bin\net48\PushSharp.Amazon.dll" target="lib\net48" />
 		<file src="bin\net48\PushSharp.Apple.dll" target="lib\net48" />
 		<file src="bin\net48\PushSharp.Blackberry.dll" target="lib\net48" />
-		<file src="bin\net48\PushSharp.Firefox.dll" target="lib\net48" />
 		<file src="bin\net48\PushSharp.Google.dll" target="lib\net48" />
 		<file src="bin\net48\PushSharp.Huawei.dll" target="lib\net48" />
 		<file src="bin\net48\PushSharp.Windows.dll" target="lib\net48" />
@@ -52,7 +51,6 @@
 		<file src="bin\netstandard20\PushSharp.Amazon.dll" target="lib\netstandard2.0" />
 		<file src="bin\netstandard20\PushSharp.Apple.dll" target="lib\netstandard2.0" />
 		<file src="bin\netstandard20\PushSharp.Blackberry.dll" target="lib\netstandard2.0" />
-		<file src="bin\netstandard20\PushSharp.Firefox.dll" target="lib\netstandard2.0" />
 		<file src="bin\netstandard20\PushSharp.Google.dll" target="lib\netstandard2.0" />
 		<file src="bin\netstandard20\PushSharp.Huawei.dll" target="lib\netstandard2.0" />
 		<file src="bin\netstandard20\PushSharp.Windows.dll" target="lib\netstandard2.0" />

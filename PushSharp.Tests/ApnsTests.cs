@@ -8,12 +8,11 @@ using Xunit;
 
 namespace AlphaOmega.PushSharp.Tests
 {
-	[Collection("Apns")]
 	public class ApnsTests
 	{
 		private readonly List<String> messages = new List<String>();
 
-		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
+		[Fact]
 		public void ApnsNotification_ShouldReportFail_WhenServerUnreachable()
 		{
 			Log.AddTraceListener(new TestLogger(messages));
@@ -23,14 +22,14 @@ namespace AlphaOmega.PushSharp.Tests
 			var attempted = 0;
 
 			var settings = new ApnsSettings(
-				ApnsSettings.ApnsServerEnvironment.Production,
-				Settings.Instance.ApnsCertificateFile,
+				ApnsSettings.ApnsServerEnvironment.Development,
 				Settings.Instance.ApnsCertificateKeyId,
 				Settings.Instance.ApnsTeamId,
 				Settings.Instance.ApnsBundleId)
 			{
 				Host = "null://localhost:433",
 			};
+			settings.LoadP8CertificateFromFile(Settings.Instance.ApnsCertificateFile);
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);
@@ -60,6 +59,29 @@ namespace AlphaOmega.PushSharp.Tests
 
 			Assert.Equal(0, succeeded);
 			Assert.Equal(attempted, failed);
+		}
+
+		[Fact]
+		public void Apns_Settings_Should_ReadCertificate()
+		{
+			const String TestCert = @"-----BEGIN PRIVATE KEY-----
+MIIBQgIBADATBgcqhkjOPQIBBggqhkjOPQMBBwSCASYwggEiAgEBBCBMVEQzbhtz
+WvE/uCMg6vZq2/8I9dqCfUk6q+jhaHStiaCB+jCB9wIBATAsBgcqhkjOPQEBAiEA
+/////wAAAAEAAAAAAAAAAAAAAAD///////////////8wWwQg/////wAAAAEAAAAA
+AAAAAAAAAAD///////////////wEIFrGNdiqOpPns+u9VXaYhrxlHQawzFOw9jvO
+PD4n0mBLAxUAxJ02CIbnBJNqZnjhE50mt4GffpAEQQRrF9Hy4SxCR/i85uVjpEDy
+dwN9gS3rM6D0oTlF2JjClk/jQuL+Gn+bjufrSnwPnhYrzjNXazFezsu2QGg3v1H1
+AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
+-----END PRIVATE KEY-----";
+
+			var settings = new ApnsSettings(ApnsSettings.ApnsServerEnvironment.Development, nameof(ApnsSettings.KeyId), nameof(ApnsSettings.TeamId), nameof(ApnsSettings.TeamId));
+			settings.P8Certificate = TestCert;
+
+			Assert.NotNull(settings.P8Signer);
+
+			var configuration = new ApnsConfiguration(settings);
+			var accessToken = configuration.AccessToken;
+			Assert.True(!String.IsNullOrWhiteSpace(accessToken));
 		}
 	}
 }

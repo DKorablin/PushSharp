@@ -47,7 +47,26 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            msbuild -nologo -restore $proj.FullName /property:Configuration=Release -property:OutputPath="${{github.workspace}}\bin\" -property:Version=${{needs.version.outputs.new_version}} -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+            msbuild -nologo -restore $proj.FullName
+                -property:Configuration=Release
+                -property:OutputPath="${{github.workspace}}\bin\"
+                -property:Version=${{needs.version.outputs.new_version}}
+                -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Build failed for $($proj.FullName)"
+                $failedProjects += $proj.FullName
+            } else {
+                Write-Host "Build succeeded for $($proj.FullName)"
+            }
+        }
+
+        if ($failedProjects.Count -gt 0) {
+            Write-Error "`nBuild failed for the following project(s):"
+            $failedProjects | ForEach-Object { Write-Error $_ }
+            exit 1
+        } else {
+            Write-Host "`nAll projects built successfully."
         }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Assemblies
@@ -61,7 +80,6 @@ jobs:
           ${{github.workspace}}\bin\PushSharp.Amazon.dll
           ${{github.workspace}}\bin\PushSharp.Apple.dll
           ${{github.workspace}}\bin\PushSharp.Blackberry.dll
-          ${{github.workspace}}\bin\PushSharp.Firefox.dll
           ${{github.workspace}}\bin\PushSharp.Google.dll
           ${{github.workspace}}\bin\PushSharp.Huawei.dll
           ${{github.workspace}}\bin\PushSharp.Windows.dll
@@ -102,7 +120,28 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            dotnet build $($proj.FullName) --configuration Release --no-restore /p:OutputPath="../bin/" /p:SignAssembly=true /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}" /p:AssemblyVersion=${{needs.version.outputs.new_version}} /p:FileVersion=${{needs.version.outputs.new_version}} /p:InformationalVersion=${{needs.version.outputs.new_version}}
+            dotnet build $($proj.FullName) --configuration Release --no-restore
+                /p:OutputPath="../bin/"
+                /p:SignAssembly=true
+                /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
+                /p:AssemblyVersion=${{needs.version.outputs.new_version}}
+                /p:FileVersion=${{needs.version.outputs.new_version}}
+                /p:InformationalVersion=${{needs.version.outputs.new_version}}
+
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Build failed for $($proj.FullName)"
+                $failedProjects += $proj.FullName
+            } else {
+                Write-Host "Build succeeded for $($proj.FullName)"
+            }
+        }
+
+        if ($failedProjects.Count -gt 0) {
+            Write-Error "`nBuild failed for the following project(s):"
+            $failedProjects | ForEach-Object { Write-Error $_ }
+            exit 1
+        } else {
+            Write-Host "`nAll projects built successfully."
         }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Assemblies
@@ -116,7 +155,6 @@ jobs:
           ${{github.workspace}}\bin\PushSharp.Amazon.dll
           ${{github.workspace}}\bin\PushSharp.Apple.dll
           ${{github.workspace}}\bin\PushSharp.Blackberry.dll
-          ${{github.workspace}}\bin\PushSharp.Firefox.dll
           ${{github.workspace}}\bin\PushSharp.Google.dll
           ${{github.workspace}}\bin\PushSharp.Huawei.dll
           ${{github.workspace}}\bin\PushSharp.Windows.dll

@@ -32,9 +32,17 @@ namespace AlphaOmega.PushSharp.Apple
 
 		/// <summary>Create instance of APNS configuration instance.</summary>
 		/// <param name="settings">The settings instance.</param>
+		/// <exception cref="ArgumentException">P8 certificate is not specified.</exception>
 		/// <exception cref="ArgumentNullException">The <paramref name="settings"/> is required.</exception>
 		public ApnsConfiguration(ApnsSettings settings)
-			=> this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+		{
+			_ = settings ?? throw new ArgumentNullException(nameof(settings.P8Certificate));
+
+			if(settings.P8Signer == null)
+				throw new ArgumentException("P8 certificate is not specified.", nameof(settings));
+
+			this.Settings = settings;
+		}
 
 		private void RefreshAccessToken()
 		{

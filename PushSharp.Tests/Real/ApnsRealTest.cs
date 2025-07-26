@@ -21,11 +21,11 @@ namespace AlphaOmega.PushSharp.Tests.Real
 			var attempted = 0;
 
 			var settings = new ApnsSettings(
-				ApnsSettings.ApnsServerEnvironment.Production,
-				Settings.Instance.ApnsCertificateFile,
+				ApnsSettings.ApnsServerEnvironment.Development,
 				Settings.Instance.ApnsCertificateKeyId,
 				Settings.Instance.ApnsTeamId,
 				Settings.Instance.ApnsBundleId);
+			settings.LoadP8CertificateFromFile(Settings.Instance.ApnsCertificateFile);
 
 			var config = new ApnsConfiguration(settings);
 			var broker = new ApnsServiceBroker(config);

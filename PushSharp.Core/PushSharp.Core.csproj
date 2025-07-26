@@ -13,7 +13,8 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
-	<ItemGroup>
-		<!--PackageReference Include="SonarAnalyzer.CSharp" /-->
+	<ItemGroup><!--PackageReference Include="SonarAnalyzer.CSharp" /-->
+	
+	  <Folder Include="Properties\" />
 	</ItemGroup>
 </Project>

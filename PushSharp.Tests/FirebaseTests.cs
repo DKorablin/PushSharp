@@ -8,7 +8,6 @@ using Xunit;
 
 namespace AlphaOmega.PushSharp.Tests
 {
-	[Collection("Firebase")]
 	public class FirebaseTests
 	{
 		private List<String> messages = new List<String>();
@@ -35,7 +34,7 @@ namespace AlphaOmega.PushSharp.Tests
 			Assert.Contains("normal", str);
 		}
 
-		[Fact(Skip = Settings.AUTOBUILD_DISABLED)]
+		[Fact]
 		public void FirebaseNotification_ShouldReportFail_WhenServerUnreachable()
 		{
 			Log.AddTraceListener(new TestLogger(messages));

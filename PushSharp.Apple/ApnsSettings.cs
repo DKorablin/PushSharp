@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 
@@ -14,8 +16,6 @@ namespace AlphaOmega.PushSharp.Apple
 			{ ApnsServerEnvironment.Development, "https://api.sandbox.push.apple.com" },
 			{ ApnsServerEnvironment.Production, "https://api.push.apple.com" },
 		};
-
-		private ISigner _p8Signer;
 
 		/// <summary>The type of server to use to send messages.</summary>
 		public enum ApnsServerEnvironment
@@ -41,8 +41,20 @@ namespace AlphaOmega.PushSharp.Apple
 			set => ApnsSettings.Hosts[this.Environment] = value;
 		}
 
+		private String _p8Certificate;
 		/// <summary>Private key you downloaded when you created your APNS Auth Key</summary>
-		public String P8Certificate { get; }
+		/// <exception cref="ArgumentNullException">value is required</exception>
+		/// <exception cref="InvalidOperationException">Invalid p8 certificate specified</exception>
+		public String P8Certificate {
+			get => this._p8Certificate;
+			set{
+				if(String.IsNullOrEmpty(value))
+					throw new ArgumentNullException(nameof(value), "The contents of p8 certificate should not be empty");
+
+				this.P8Signer = CreateSigner(value);
+				this._p8Certificate = value;
+			}
+		}
 
 		/// <summary>10-character key ID from your Apple Developer account</summary>
 		public String KeyId { get; }
@@ -57,20 +69,19 @@ namespace AlphaOmega.PushSharp.Apple
 		/// </remarks>
 		public String AppBundleId { get; }
 
-		private ISigner P8Signer => this._p8Signer ?? (this._p8Signer = this.CreateSigner());
+		internal ISigner P8Signer { get; private set; }
 
 		/// <summary>Create instance of APNS settings</summary>
 		/// <param name="environment">The environment to use for sending messages.</param>
-		/// <param name="p8CertificatePath">The path to P8 certificate file.</param>
 		/// <param name="keyId">The Key ID of the p8 file.</param>
 		/// <param name="teamId">The team identifier.</param>
 		/// <param name="bundleId">The topic for the notification. In general, the topic is your app’s bundle ID/app ID.</param>
-		/// <exception cref="FileNotFoundException">File <paramref name="p8CertificatePath"/> not found</exception>
+		/// <exception cref="ArgumentException">Invalid <paramref name="environment"/> value specified</exception>
 		/// <exception cref="ArgumentNullException">All arguments are mandatory</exception>
-		public ApnsSettings(ApnsServerEnvironment environment, String p8CertificatePath, String keyId, String teamId, String bundleId)
+		public ApnsSettings(ApnsServerEnvironment environment, String keyId, String teamId, String bundleId)
 		{
-			if(String.IsNullOrWhiteSpace(p8CertificatePath))
-				throw new ArgumentNullException(nameof(p8CertificatePath));
+			if(!Enum.IsDefined(typeof(ApnsServerEnvironment), environment))
+				throw new ArgumentException("Invalid environment value specified", nameof(environment));
 			if(String.IsNullOrWhiteSpace(keyId))
 				throw new ArgumentNullException(nameof(keyId));
 			if(String.IsNullOrWhiteSpace(teamId))
@@ -78,23 +89,27 @@ namespace AlphaOmega.PushSharp.Apple
 			if(String.IsNullOrWhiteSpace(bundleId))
 				throw new ArgumentNullException(nameof(bundleId));
 
-			if(!File.Exists(p8CertificatePath))
-				throw new FileNotFoundException("P8 certificate file not found", p8CertificatePath);
-
 			this.Environment = environment;
-			this.P8Certificate = File.ReadAllText(p8CertificatePath);
 			this.KeyId = keyId;
 			this.TeamId = teamId;
 			this.AppBundleId = bundleId;
-
-			// Testing logic
-			_ = this.CreateSigner();
 		}
 
-		private ISigner CreateSigner()
+		/// <summary>Read P8 certificate from file system.</summary>
+		/// <param name="p8CertificatePath">The path to P8 certificate file</param>
+		/// <exception cref="FileNotFoundException">File <paramref name="p8CertificatePath"/> not found</exception>
+		public void LoadP8CertificateFromFile(String p8CertificatePath)
+		{
+			if(!File.Exists(p8CertificatePath))
+				throw new FileNotFoundException("P8 certificate file not found", p8CertificatePath);
+
+			this.P8Certificate = File.ReadAllText(p8CertificatePath);
+		}
+
+		private static ISigner CreateSigner(String p8Certificate)
 		{
 			AsymmetricKeyParameter key;
-			using(var reader = new StringReader(this.P8Certificate))
+			using(var reader = new StringReader(p8Certificate))
 			{
 				var pemReader = new PemReader(reader);
 				var keyObject = pemReader.ReadObject();
@@ -119,11 +134,35 @@ namespace AlphaOmega.PushSharp.Apple
 		internal Byte[] SignWithECDsa(Byte[] dataToSign)
 		{
 			var signer = this.P8Signer;
+			if(signer == null)
+				throw new InvalidOperationException($"{nameof(P8Certificate)} is not specified");
+
 			signer.BlockUpdate(dataToSign, 0, dataToSign.Length);
 			Byte[] signatureDer = signer.GenerateSignature();
 
 			// Convert DER-encoded signature to raw R||S per JWT spec
 			return ConvertDerToConcatenated(signatureDer);
+		}
+
+		internal Byte[] SignWithECDsa2(Byte[] dataToSign)
+		{
+			var lines = this.P8Certificate.Split(new Char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			String p8CertTrimmed = String.Join(String.Empty, Array.FindAll(lines, l => l != "-----BEGIN PRIVATE KEY-----" && l != "-----END PRIVATE KEY-----"));
+
+			var key = (ECPrivateKeyParameters)PrivateKeyFactory.CreateKey(Convert.FromBase64String(p8CertTrimmed));
+			var keyParams = key.Parameters.G.Multiply(key.D).Normalize();
+
+			using(var dsa = ECDsa.Create(new ECParameters
+			{
+				Curve = ECCurve.CreateFromValue(key.PublicKeyParamSet.Id),
+				D = key.D.ToByteArrayUnsigned(),
+				Q = new ECPoint
+				{
+					X = keyParams.XCoord.GetEncoded(),
+					Y = keyParams.YCoord.GetEncoded()
+				}
+			}))
+				return dsa.SignData(dataToSign, 0, dataToSign.Length, HashAlgorithmName.SHA256);
 		}
 
 		private static Byte[] ConvertDerToConcatenated(Byte[] derSignature)

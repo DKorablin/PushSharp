@@ -76,7 +76,7 @@ namespace AlphaOmega.PushSharp.Google
 			var strResponse = await httpResponse.Content.ReadAsStringAsync();
 			var json = JObject.Parse(strResponse);
 
-			throw new NotImplementedException();
+			Log.Trace.TraceData(System.Diagnostics.TraceEventType.Verbose, 100, json);
 		}
 
 		private static async Task ProcessErrorResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)
