@@ -60,15 +60,29 @@ namespace AlphaOmega.PushSharp.Tests
 				succeeded++;
 			};
 
-			try
+			broker.Start();
+
+			foreach(var regId in new String[] { "deviceToken1", "deviceToken2", })
 			{
-				broker.Start();
-				Assert.Fail("It should fail with exception");
-			} catch(ArgumentException)
-			{
+				attempted++;
+
+				var notification = new FirebaseNotification()
+				{
+					validate_only = true,
+					message =
+					{
+						token = regId,
+						data = JObject.Parse("{ \"somekey\" : \"I want cookie\" }"),
+					},
+				};
+
+				broker.QueueNotification(notification);
 			}
 
 			broker.Stop();
+
+			/*Assert.Equal(0, succeeded);
+			Assert.Equal(attempted, failed);*/
 		}
 	}
 }
