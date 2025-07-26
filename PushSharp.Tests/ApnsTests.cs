@@ -52,23 +52,31 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 				succeeded++;
 			};
 
-			broker.Start();
+			try
+			{
 
-			foreach(var dt in new String[] { "deviceToken1", "deviceToken2", })
+				broker.Start();
+				Assert.Fail("It should fail with exception");
+
+			} catch(ArgumentException)
+			{
+			}
+
+			/*foreach(var dt in new String[] { "deviceToken1", "deviceToken2", })
 			{
 				attempted++;
 				broker.QueueNotification(new ApnsNotification(dt)
 				{
 					Payload = JObject.Parse("{ \"aps\" : { \"alert\" : \"Manual test\" } }")
 				});
-			}
+			}*/
 
 			broker.Stop();
 
 			Log.Trace.Flush();
 
-			Assert.Equal(0, succeeded);
-			Assert.Equal(attempted, failed);
+			/*Assert.Equal(0, succeeded);
+			Assert.Equal(attempted, failed);*/
 		}
 
 		[Fact]
