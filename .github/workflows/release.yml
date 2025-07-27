@@ -44,6 +44,9 @@ jobs:
       shell: pwsh
       run: |
         $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj
+        Where-Object {
+          $_.Name -notmatch '(Tests35)\.csproj$'
+        }
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
