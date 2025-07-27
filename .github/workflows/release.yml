@@ -47,10 +47,10 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            msbuild -nologo -restore "$($proj.FullName)"
-                -property:Configuration=Release
-                -property:OutputPath="${{github.workspace}}\bin\"
-                -property:Version=${{needs.version.outputs.new_version}}
+            msbuild -nologo -restore "$($proj.FullName)" `
+                -property:Configuration=Release `
+                -property:OutputPath="${{github.workspace}}/bin" `
+                -property:Version=${{needs.version.outputs.new_version}} `
                 -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
 
             if ($LASTEXITCODE -ne 0) {
@@ -120,12 +120,12 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            dotnet build "$($proj.FullName)" --configuration Release --no-restore
-                /p:OutputPath="../bin/"
-                /p:SignAssembly=true
-                /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-                /p:AssemblyVersion=${{needs.version.outputs.new_version}}
-                /p:FileVersion=${{needs.version.outputs.new_version}}
+            dotnet build "$($proj.FullName)" --configuration Release --no-restore `
+                /p:OutputPath="${{github.workspace}}/bin" `
+                /p:SignAssembly=true `
+                /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}" `
+                /p:AssemblyVersion=${{needs.version.outputs.new_version}} `
+                /p:FileVersion=${{needs.version.outputs.new_version}} `
                 /p:InformationalVersion=${{needs.version.outputs.new_version}}
 
             if ($LASTEXITCODE -ne 0) {
