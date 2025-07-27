@@ -47,7 +47,7 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            msbuild -nologo -restore $proj.FullName
+            msbuild -nologo -restore "$($proj.FullName)"
                 -property:Configuration=Release
                 -property:OutputPath="${{github.workspace}}\bin\"
                 -property:Version=${{needs.version.outputs.new_version}}
@@ -120,7 +120,7 @@ jobs:
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            dotnet build $($proj.FullName) --configuration Release --no-restore
+            dotnet build "$($proj.FullName)" --configuration Release --no-restore
                 /p:OutputPath="../bin/"
                 /p:SignAssembly=true
                 /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
