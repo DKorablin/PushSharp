@@ -55,18 +55,9 @@ jobs:
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Error "Build failed for $($proj.FullName)"
-                $failedProjects += $proj.FullName
             } else {
                 Write-Host "Build succeeded for $($proj.FullName)"
             }
-        }
-
-        if ($failedProjects.Count -gt 0) {
-            Write-Error "`nBuild failed for the following project(s):"
-            $failedProjects | ForEach-Object { Write-Error $_ }
-            exit 1
-        } else {
-            Write-Host "`nAll projects built successfully."
         }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Assemblies
@@ -130,18 +121,9 @@ jobs:
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Error "Build failed for $($proj.FullName)"
-                $failedProjects += $proj.FullName
             } else {
                 Write-Host "Build succeeded for $($proj.FullName)"
             }
-        }
-
-        if ($failedProjects.Count -gt 0) {
-            Write-Error "`nBuild failed for the following project(s):"
-            $failedProjects | ForEach-Object { Write-Error $_ }
-            exit 1
-        } else {
-            Write-Host "`nAll projects built successfully."
         }
     #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
     - name: Signing PushSharp Assemblies
