@@ -104,16 +104,9 @@ broker.OnNotificationFailed += (notification, aggregateEx) => {
 			}
 
 		} else if (ex is DeviceSubscriptionExpiredException expiredException) {
-			
 			var oldId = expiredException.OldSubscriptionId;
-			var newId = expiredException.NewSubscriptionId;
 
 			Console.WriteLine ($"Device RegistrationId Expired: {oldId}");
-
-			if (!string.IsNullOrWhiteSpace (newId)) {
-				// If this value isn't null, our subscription changed and we should update our database
-				Console.WriteLine ($"Device RegistrationId Changed To: {newId}");
-			}
 		} else if (ex is RetryAfterException retryException) {
 			
 			// If you get rate limited, you should stop sending messages until after the RetryAfterUtc date

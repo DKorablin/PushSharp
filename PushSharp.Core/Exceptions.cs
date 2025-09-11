@@ -8,9 +8,6 @@ namespace AlphaOmega.PushSharp.Core
 		/// <summary>The old subscription token.</summary>
 		public String OldSubscriptionId { get; set; }
 
-		/// <summary>The new subscription token (If available).</summary>
-		public String NewSubscriptionId { get; set; }
-
 		/// <summary>The new token expiration date.</summary>
 		public DateTime ExpiredAt { get; set; }
 

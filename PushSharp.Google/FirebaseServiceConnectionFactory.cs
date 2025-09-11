@@ -103,6 +103,17 @@ namespace AlphaOmega.PushSharp.Google
 			}
 
 			var errorResponse = JsonConvert.DeserializeObject<FirebaseMessageResponse>(responseBody);
+			switch(errorResponse.error.status)
+			{
+			case FirebaseMessageResponse.FirebaseResponseStatus.NOT_FOUND:
+				if(Array.Exists(errorResponse.error.details, d => d.errorCode == FirebaseMessageResponse.FirebaseResponseStatus.UNREGISTERED))
+					throw new DeviceSubscriptionExpiredException(notification)
+					{
+						OldSubscriptionId = notification.message.token,
+					};
+				break;
+			}
+
 			throw new FcmNotificationException(notification, errorResponse);
 		}
 	}
