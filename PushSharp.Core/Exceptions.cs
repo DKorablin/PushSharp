@@ -13,7 +13,9 @@ namespace AlphaOmega.PushSharp.Core
 
 		/// <summary>Initializes a new instance of the <see cref="DeviceSubscriptionExpiredException"/> class.</summary>
 		/// <param name="notification">The notification instance which was expired.</param>
-		public DeviceSubscriptionExpiredException(INotification notification) : base("Device Subscription has Expired", notification)
+		/// <param name="message">The message to show in the logs.</param>
+		public DeviceSubscriptionExpiredException(INotification notification, String message = "Device Subscription has Expired")
+			: base(message, notification)
 			=> this.ExpiredAt = DateTime.UtcNow;
 	}
 

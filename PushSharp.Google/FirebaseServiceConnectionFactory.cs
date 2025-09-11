@@ -107,7 +107,7 @@ namespace AlphaOmega.PushSharp.Google
 			{
 			case FirebaseMessageResponse.FirebaseResponseStatus.NOT_FOUND:
 				if(Array.Exists(errorResponse.error.details, d => d.errorCode == FirebaseMessageResponse.FirebaseResponseStatus.UNREGISTERED))
-					throw new DeviceSubscriptionExpiredException(notification)
+					throw new DeviceSubscriptionExpiredException(notification, errorResponse.error.message)
 					{
 						OldSubscriptionId = notification.message.token,
 					};
