@@ -71,21 +71,26 @@ jobs:
                 Write-Host "Build succeeded for $($proj.FullName)"
             }
         }
-    #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
+    - name: Find portable executables to sign
+      id: find_binaries
+      run: |
+        $filePaths = Get-ChildItem -Path "${{ github.workspace }}\bin\Release" -Recurse -Include "${{ env.SolutionName }}.*.dll" | ForEach-Object { $_.FullName }
+        $multiLineString = $filePaths -join "`n"
+
+        echo "Found files to sign:"
+        echo $multiLineString
+
+        echo "files_to_sign<<EOF" >> $env:GITHUB_OUTPUT
+        echo $multiLineString >> $env:GITHUB_OUTPUT
+        echo "EOF" >> $env:GITHUB_OUTPUT
+      shell: pwsh
     - name: Signing PushSharp Assemblies
       uses: dlemstra/code-sign-action@v1
       with:
         certificate: '${{ secrets.SIGN_PE_CERTIFICATE }}'
         password: '${{ secrets.SIGN_PE_PASSWORD }}'
         recursive: false
-        files: |
-          ${{github.workspace}}\bin\PushSharp.Core.dll
-          ${{github.workspace}}\bin\PushSharp.Amazon.dll
-          ${{github.workspace}}\bin\PushSharp.Apple.dll
-          ${{github.workspace}}\bin\PushSharp.Blackberry.dll
-          ${{github.workspace}}\bin\PushSharp.Google.dll
-          ${{github.workspace}}\bin\PushSharp.Huawei.dll
-          ${{github.workspace}}\bin\PushSharp.Windows.dll
+        files: ${{ steps.find_binaries.outputs.files_to_sign }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
