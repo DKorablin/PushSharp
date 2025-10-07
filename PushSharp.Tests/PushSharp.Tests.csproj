@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<RootNamespace>AlphaOmega.PushSharp.Tests</RootNamespace>
@@ -7,10 +8,10 @@
 		<Configuration>Debug</Configuration>
 		<Deterministic>false</Deterministic>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+		<DefineConstants Condition="'$(ExtraDefineConstants)' != ''">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DefineConstants>$(DefineConstants);MANUAL_BUILD</DefineConstants>
 	</PropertyGroup>
 

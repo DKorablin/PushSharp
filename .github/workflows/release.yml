@@ -1,126 +1,70 @@
-name: Test, Buid, Release
+name: Test, Build, Release
 
 on:
   workflow_dispatch:
 
 env:
   SolutionName: ${{github.event.repository.name}}
+  DotNetVersion: 8.0.x
 
 jobs:
   version:
-    name: Incrementing version number
+    name: Tag / Version
     runs-on: ubuntu-latest
     outputs:
-      new_version: ${{steps.tag_version.outputs.new_version}}
-      new_tag: ${{steps.tag_version.outputs.new_tag}}
-      changelog: ${{steps.tag_version.outputs.changelog}}
+      new_version: ${{ steps.tag_version.outputs.new_version }}
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+      changelog: ${{ steps.tag_version.outputs.changelog }}
     steps:
-    - name: Updating version number
+    - name: Tag version
       id: tag_version
       uses: mathieudutour/github-tag-action@v6.2
       with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         #custom_tag: 4.1.0
 
-  build_net_framework:
-    name: Building .NET Framework assemblies
-    needs: [version]
-    runs-on: windows-latest
-    steps:
-    - name: Decoding SNK
-      id: sign_key_file
-      uses: timheuer/base64-to-file@v1.2
-      with:
-        fileName: 'Signature.snk'
-        encodedString: ${{secrets.SIGN_ASM_KEY}}
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Setup .NET Framework
-      uses: microsoft/setup-msbuild@v2
-    - name: Restoring NuGet packages
-      run: nuget restore "${{github.workspace}}\${{env.SolutionName}}.sln"
-    - name: Build .NET Framework projects
-      shell: pwsh
-      run: |
-        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *35.csproj
-        Where-Object {
-          $_.Name -notmatch '(Tests35)\.csproj$'
-        }
-
-        foreach ($proj in $csprojFiles) {
-            Write-Host "Building $($proj.FullName)..."
-            msbuild -nologo -restore "$($proj.FullName)" `
-                -property:Configuration=Release `
-                -property:OutputPath="${{github.workspace}}/bin" `
-                -property:Version=${{needs.version.outputs.new_version}} `
-                -property:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
-
-            if ($LASTEXITCODE -ne 0) {
-                Write-Error "Build failed for $($proj.FullName)"
-            } else {
-                Write-Host "Build succeeded for $($proj.FullName)"
-            }
-        }
-    #TODO: I need to find a better approach to sign output files without explicitly specify filename and extension
-    - name: Signing PushSharp Assemblies
-      uses: dlemstra/code-sign-action@v1
-      with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
-        recursive: false
-        files: |
-          ${{github.workspace}}\bin\PushSharp.Core.dll
-          ${{github.workspace}}\bin\PushSharp.Amazon.dll
-          ${{github.workspace}}\bin\PushSharp.Apple.dll
-          ${{github.workspace}}\bin\PushSharp.Blackberry.dll
-          ${{github.workspace}}\bin\PushSharp.Google.dll
-          ${{github.workspace}}\bin\PushSharp.Huawei.dll
-          ${{github.workspace}}\bin\PushSharp.Windows.dll
-    - name: Deploying artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: net48
-        path: ${{github.workspace}}/bin/*
-        if-no-files-found: error
-
   build_net:
-    name: Building .NET assemblies
+    name: Build
     needs: [version]
     runs-on: windows-latest
     steps:
-    - name: Decoding SNK
+    - name: Decode strong-name key
       id: sign_key_file
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'Signature.snk'
-        encodedString: ${{secrets.SIGN_ASM_KEY}}
+        encodedString: ${{ secrets.SIGN_ASM_KEY }}
     - uses: actions/checkout@v4
       with:
         submodules: true
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
       with:
-        dotnet-version: 8.0.x
-    - name: Restoring dependencies
-      run: dotnet restore ${{env.SolutionName}}.sln
-    - name: Building .NET projects
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Restore
+      run: msbuild ${{ env.SolutionName }}.sln /t:Restore
+    - name: Build multi-target project
       shell: pwsh
       run: |
-        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj |
+        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj
         Where-Object {
           $_.Name -notmatch '(35|Tests)\.csproj$'
         }
 
         foreach ($proj in $csprojFiles) {
             Write-Host "Building $($proj.FullName)..."
-            dotnet build "$($proj.FullName)" --configuration Release --no-restore `
-                /p:OutputPath="${{github.workspace}}/bin" `
+            msbuild "$($proj.FullName)" `
+                /p:Configuration=Release `
+                /p:BaseOutputPath="${{ github.workspace }}\bin\" `
+                /p:GenerateDocumentationFile=true `
                 /p:SignAssembly=true `
-                /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}" `
-                /p:AssemblyVersion=${{needs.version.outputs.new_version}} `
-                /p:FileVersion=${{needs.version.outputs.new_version}} `
-                /p:InformationalVersion=${{needs.version.outputs.new_version}}
+                /p:Version=${{ needs.version.outputs.new_version }} `
+                /p:AssemblyOriginatorKeyFile="${{ steps.sign_key_file.outputs.filePath }}"
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Error "Build failed for $($proj.FullName)"
@@ -132,8 +76,8 @@ jobs:
     - name: Signing PushSharp Assemblies
       uses: dlemstra/code-sign-action@v1
       with:
-        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
-        password: '${{secrets.SIGN_PE_PASSWORD}}'
+        certificate: '${{ secrets.SIGN_PE_CERTIFICATE }}'
+        password: '${{ secrets.SIGN_PE_PASSWORD }}'
         recursive: false
         files: |
           ${{github.workspace}}\bin\PushSharp.Core.dll
@@ -143,35 +87,42 @@ jobs:
           ${{github.workspace}}\bin\PushSharp.Google.dll
           ${{github.workspace}}\bin\PushSharp.Huawei.dll
           ${{github.workspace}}\bin\PushSharp.Windows.dll
-    - name: Deploying artifacts
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: NetStandard20
-        path: ${{github.workspace}}/bin/*
+        name: ${{ env.SolutionName }}_Binaries
+        path: ${{github.workspace}}\bin\Release\*
         if-no-files-found: error
+        compression-level: 0
+        retention-days: 1
 
   deploy_release:
     name: Deploying release
-    needs:
-      - version
-      - build_net
-      - build_net_framework
+    needs: [version, build_net]
+    if: needs.build_net.result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
     steps:
-    - name: Extracting all artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
         path: bin
     - name: Zipping artifacts
-      run: zip -qq -r ${{github.event.repository.name}}_${{needs.version.outputs.new_tag}}.zip *
-      working-directory: ${{github.workspace}}/bin
-    - name: Deploying GitHub release
+      run: |
+        cd ${{github.workspace}}/bin/${{ env.SolutionName }}_Binaries
+        for dir in */; do
+          dir_name="${dir%/}"
+          (cd "$dir_name" && zip -qq -r "../${{env.SolutionName}}_v${{needs.version.outputs.new_version}}_${dir_name}.zip" .)
+        done
+    - name: Publish GitHub Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{github.workspace}}/bin/${{github.event.repository.name}}_${{needs.version.outputs.new_tag}}.zip
-        tag: ${{needs.version.outputs.new_tag}}
-        name: Auto ${{needs.version.outputs.new_tag}}
-        body: ${{needs.version.outputs.changelog}}
+        artifacts: ${{github.workspace}}/bin/${{ env.SolutionName }}_Binaries/*.zip
+        tag: ${{ needs.version.outputs.new_tag }}
+        name: Auto ${{ needs.version.outputs.new_tag }}
+        body: ${{ needs.version.outputs.changelog }}
         artifactErrorsFailBuild: true
         generateReleaseNotes: true
 
@@ -180,7 +131,6 @@ jobs:
     needs:
         - version
         - build_net
-        - build_net_framework
     runs-on: windows-latest
     steps:
     - name: Checkout nessesary files from repository
@@ -191,7 +141,7 @@ jobs:
           Resources/PushSharp-Icon-NuGet-Small.png
           ${{env.SolutionName}}.nuspec
         sparse-checkout-cone-mode: false
-    - name: Extracting all artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
         path: bin
@@ -199,28 +149,20 @@ jobs:
       run: nuget pack ${{env.SolutionName}}.nuspec -Version ${{needs.version.outputs.new_version}} -OutputDirectory nupkg
     - name: Deploying to GitHub
       run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/DKorablin/index.json
-    - name: Deploying to NuGet
-      run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+#    - name: Deploying to NuGet
+#      run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
   failure_cleanup:
-  #error: tag '${{needs.version.outputs.new_tag}}' not found.
-    name: Removing version tag on failure
-    needs:
-      - version
-      - build_net
-      - build_net_framework
-    if: |
-      always() &&
-      needs.build_net_framework.result != 'success' &&
-      needs.build_net.result != 'success'
+    name: Cleanup Tag On Failure
+    needs: [version, build_net]
+    if: always() && needs.build_net.result != 'success'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: false
-        fetch-depth: 0 #Fetch all history for all tags and branches
-    - name: Removing version tag
+        fetch-depth: 0
+    - name: Remove created tag
       run: |
-        git tag -d ${{needs.version.outputs.new_tag}}
-
-        git push origin :refs/tags/"${{needs.version.outputs.new_tag}}"
+        git tag -d ${{ needs.version.outputs.new_tag }} || true
+        git push origin :refs/tags/${{ needs.version.outputs.new_tag }} || true
