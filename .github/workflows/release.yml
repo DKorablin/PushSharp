@@ -149,6 +149,12 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: bin
+    - name: Enumerate bin files
+      run: |
+        Write-Host "Listing all files under bin recursively:";
+        $files = Get-ChildItem -Path "$env:GITHUB_WORKSPACE\bin" -Recurse -File;
+        foreach ($f in $files) { Write-Host $f.FullName }
+        Write-Host "Total file count: $($files.Count)"
     - name: Packing artifacts
       run: nuget pack ${{env.SolutionName}}.nuspec -Version ${{needs.version.outputs.new_version}} -OutputDirectory nupkg
     - name: Deploying to GitHub
