@@ -19,6 +19,8 @@
 		<!--PackageReference Include="SonarAnalyzer.CSharp" /-->
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="xunit" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<PackageReference Include="xunit.runner.visualstudio">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
