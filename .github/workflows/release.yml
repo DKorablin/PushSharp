@@ -50,9 +50,9 @@ jobs:
     - name: Build multi-target project
       shell: pwsh
       run: |
-        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj | Where-Object
-        {
-            $_.Name -notlike "*Tests.csproj"
+        $csprojFiles = Get-ChildItem -Path ${{github.workspace}} -Recurse -Filter *.csproj
+        Where-Object {
+          $_.Name -notlike "*Tests.csproj"
         }
 
         foreach ($proj in $csprojFiles) {
