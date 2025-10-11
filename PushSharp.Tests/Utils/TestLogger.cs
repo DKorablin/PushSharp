@@ -11,10 +11,10 @@ namespace AlphaOmega.PushSharp.Tests.Utils
 		public TestLogger(List<String> messages)
 			=> this._messages = messages;
 
-		public override void Write(String o)
-			=> this._messages.Add(o);
+		public override void Write(String message)
+			=> this._messages.Add(message);
 
-		public override void WriteLine(String o)
-			=> this._messages.Add(o);
+		public override void WriteLine(String message)
+			=> this._messages.Add(message);
 	}
 }

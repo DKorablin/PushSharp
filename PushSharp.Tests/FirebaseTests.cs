@@ -10,7 +10,7 @@ namespace AlphaOmega.PushSharp.Tests
 {
 	public class FirebaseTests
 	{
-		private List<String> messages = new List<String>();
+		private readonly List<String> messages = new List<String>();
 
 		[Fact]
 		public void FirebaseNotification_Priority_Should_Serialize_As_String_High()

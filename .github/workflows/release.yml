@@ -3,6 +3,11 @@ name: Test, Build, Release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write      # Needed for creating releases and tags
+  packages: write      # Needed for pushing to GitHub Packages
+  id-token: write      # enable GitHub OIDC token issuance for this job
+
 env:
   SolutionName: ${{github.event.repository.name}}
 
@@ -11,15 +16,15 @@ jobs:
     name: Tag / Version
     runs-on: ubuntu-latest
     outputs:
-      new_version: ${{ steps.tag_version.outputs.new_version }}
-      new_tag: ${{ steps.tag_version.outputs.new_tag }}
-      changelog: ${{ steps.tag_version.outputs.changelog }}
+      new_version: ${{steps.tag_version.outputs.new_version}}
+      new_tag: ${{steps.tag_version.outputs.new_tag}}
+      changelog: ${{steps.tag_version.outputs.changelog}}
     steps:
     - name: Tag version
       id: tag_version
       uses: mathieudutour/github-tag-action@v6.2
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{secrets.GITHUB_TOKEN}}
         #custom_tag: 4.1.0
 
   build_net:
@@ -32,7 +37,7 @@ jobs:
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'Signature.snk'
-        encodedString: ${{ secrets.SIGN_ASM_KEY }}
+        encodedString: ${{secrets.SIGN_ASM_KEY}}
     - uses: actions/checkout@v4
       with:
         submodules: true
@@ -46,7 +51,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     - name: Restore
-      run: msbuild ${{ env.SolutionName }}.sln /t:Restore
+      run: msbuild ${{env.SolutionName}}.sln /t:Restore
     - name: Build multi-target project
       shell: pwsh
       run: |
@@ -62,8 +67,8 @@ jobs:
                 /p:BaseOutputPath="${{ github.workspace }}\bin\" `
                 /p:GenerateDocumentationFile=true `
                 /p:SignAssembly=true `
-                /p:Version=${{ needs.version.outputs.new_version }} `
-                /p:AssemblyOriginatorKeyFile="${{ steps.sign_key_file.outputs.filePath }}"
+                /p:Version=${{needs.version.outputs.new_version}} `
+                /p:AssemblyOriginatorKeyFile="${{steps.sign_key_file.outputs.filePath}}"
 
             if ($LASTEXITCODE -ne 0) {
                 Write-Error "Build failed for $($proj.FullName)"
@@ -74,7 +79,7 @@ jobs:
     - name: Find portable executables to sign
       id: find_binaries
       run: |
-        $filePaths = Get-ChildItem -Path "${{ github.workspace }}\bin\Release" -Recurse -Include "${{ env.SolutionName }}.*.dll" | ForEach-Object { $_.FullName }
+        $filePaths = Get-ChildItem -Path "${{github.workspace}}\bin\Release" -Recurse -Include "${{env.SolutionName}}.*.dll" | ForEach-Object { $_.FullName }
         $multiLineString = $filePaths -join "`n"
 
         echo "Found files to sign:"
@@ -87,14 +92,14 @@ jobs:
     - name: Signing PushSharp Assemblies
       uses: dlemstra/code-sign-action@v1
       with:
-        certificate: '${{ secrets.SIGN_PE_CERTIFICATE }}'
-        password: '${{ secrets.SIGN_PE_PASSWORD }}'
+        certificate: '${{secrets.SIGN_PE_CERTIFICATE}}'
+        password: '${{secrets.SIGN_PE_PASSWORD}}'
         recursive: false
-        files: ${{ steps.find_binaries.outputs.files_to_sign }}
+        files: ${{steps.find_binaries.outputs.files_to_sign}}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.SolutionName }}_Binaries
+        name: ${{env.SolutionName}}_Binaries
         path: ${{github.workspace}}\bin\Release\*
         if-no-files-found: error
         compression-level: 0
@@ -115,7 +120,7 @@ jobs:
         path: bin
     - name: Zipping artifacts
       run: |
-        cd ${{github.workspace}}/bin/${{ env.SolutionName }}_Binaries
+        cd ${{github.workspace}}/bin/${{env.SolutionName}}_Binaries
         for dir in */; do
           dir_name="${dir%/}"
           (cd "$dir_name" && zip -qq -r "../${{env.SolutionName}}_v${{needs.version.outputs.new_version}}_${dir_name}.zip" .)
@@ -123,10 +128,10 @@ jobs:
     - name: Publish GitHub Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ${{github.workspace}}/bin/${{ env.SolutionName }}_Binaries/*.zip
-        tag: ${{ needs.version.outputs.new_tag }}
-        name: Auto ${{ needs.version.outputs.new_tag }}
-        body: ${{ needs.version.outputs.changelog }}
+        artifacts: ${{github.workspace}}/bin/${{env.SolutionName}}_Binaries/*.zip
+        tag: ${{needs.version.outputs.new_tag}}
+        name: Auto ${{needs.version.outputs.new_tag}}
+        body: ${{needs.version.outputs.changelog}}
         artifactErrorsFailBuild: true
         generateReleaseNotes: true
 
@@ -153,12 +158,17 @@ jobs:
 #        $files = Get-ChildItem -Path "$env:GITHUB_WORKSPACE\bin" -Recurse -File;
 #        foreach ($f in $files) { Write-Host $f.FullName }
 #        Write-Host "Total file count: $($files.Count)"
-    - name: Packing artifacts
+    - name: Creating NuGet package
       run: nuget pack ${{env.SolutionName}}.nuspec -Version ${{needs.version.outputs.new_version}} -OutputDirectory nupkg
+    - name: NuGet login (OIDC)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{secrets.NUGET_USER}}
     - name: Deploying to GitHub
       run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/DKorablin/index.json
     - name: Deploying to NuGet
-      run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push nupkg\*.nupkg --skip-duplicate --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
   failure_cleanup:
     name: Cleanup Tag On Failure
@@ -172,5 +182,5 @@ jobs:
         fetch-depth: 0
     - name: Remove created tag
       run: |
-        git tag -d ${{ needs.version.outputs.new_tag }} || true
-        git push origin :refs/tags/${{ needs.version.outputs.new_tag }} || true
+        git tag -d ${{needs.version.outputs.new_tag}} || true
+        git push origin :refs/tags/${{needs.version.outputs.new_tag}} || true

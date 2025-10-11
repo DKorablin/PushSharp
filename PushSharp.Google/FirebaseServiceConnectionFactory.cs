@@ -65,14 +65,14 @@ namespace AlphaOmega.PushSharp.Google
 				using(var response = await this._client.SendAsync(message, cancellationToken))
 				{
 					if(response.IsSuccessStatusCode)
-						await ProcessOkResponseAsync(response, notification).ConfigureAwait(false);
+						await ProcessOkResponseAsync(response).ConfigureAwait(false);
 					else
 						await ProcessErrorResponseAsync(response, notification).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private static async Task ProcessOkResponseAsync(HttpResponseMessage httpResponse, FirebaseNotification notification)
+		private static async Task ProcessOkResponseAsync(HttpResponseMessage httpResponse)
 		{
 			var strResponse = await httpResponse.Content.ReadAsStringAsync();
 			var json = JObject.Parse(strResponse);

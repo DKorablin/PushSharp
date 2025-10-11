@@ -13,8 +13,6 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
-	<ItemGroup><!--PackageReference Include="SonarAnalyzer.CSharp" /-->
-	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="System.Net.Http" />
 	</ItemGroup>

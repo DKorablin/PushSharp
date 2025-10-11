@@ -59,6 +59,7 @@ AiEA/////wAAAAD//////////7zm+q2nF56E87nKwvxjJVECAQE=
 
 			} catch(ArgumentException)
 			{
+				// It should fail with exception
 			}
 
 			broker.Stop();

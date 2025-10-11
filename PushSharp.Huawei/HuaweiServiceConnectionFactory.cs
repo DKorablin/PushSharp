@@ -49,8 +49,8 @@ namespace AlphaOmega.PushSharp.Huawei
 			this._client = new PushSharpHttpClient();
 		}
 
-		async Task IServiceConnection<HuaweiNotification>.Send(HuaweiNotification notification, CancellationToken cancallationToken)
-			=> await this.SendWithRetry(notification, true, cancallationToken);
+		async Task IServiceConnection<HuaweiNotification>.Send(HuaweiNotification notification, CancellationToken cancellationToken)
+			=> await this.SendWithRetry(notification, true, cancellationToken);
 
 		private async Task SendWithRetry(HuaweiNotification notification, Boolean withRetryOnTokenExpiration, CancellationToken cancellationToken)
 		{
@@ -69,12 +69,12 @@ namespace AlphaOmega.PushSharp.Huawei
 					if(response.IsSuccessStatusCode)
 						await this.ProcessSuccessResponseAsync(response, notification, withRetryOnTokenExpiration, cancellationToken).ConfigureAwait(false);
 					else
-						await this.ProcessFailureResponseAsync(response, notification).ConfigureAwait(false);
+						await ProcessFailureResponseAsync(response, notification).ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task ProcessFailureResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification)
+		private static async Task ProcessFailureResponseAsync(HttpResponseMessage httpResponse, HuaweiNotification notification)
 		{
 			String responseBody;
 

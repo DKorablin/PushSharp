@@ -7,7 +7,10 @@
 		<PackageVersion Include="Portable.BouncyCastle" Version="1.9.0"/>
 		<PackageVersion Include="System.Net.Http.WinHttpHandler" Version="9.0.7"/>
 		<!--Analyzers-->
-		<PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
+		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
+			<PrivateAssets>All</PrivateAssets>
+			<IncludeAssets>Runtime; Build; Native; contentfiles; Analyzers; buildtransitive</IncludeAssets>
+		</GlobalPackageReference>
 		<!--Tests-->
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
 		<PackageVersion Include="xunit" Version="2.9.2" />

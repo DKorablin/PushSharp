@@ -36,7 +36,7 @@ namespace AlphaOmega.PushSharp.Apple
 		/// <exception cref="ArgumentNullException">The <paramref name="settings"/> is required.</exception>
 		public ApnsConfiguration(ApnsSettings settings)
 		{
-			_ = settings ?? throw new ArgumentNullException(nameof(settings.P8Certificate));
+			_ = settings ?? throw new ArgumentNullException(nameof(settings));
 
 			if(settings.P8Signer == null)
 				throw new ArgumentException("P8 certificate is not specified.", nameof(settings));

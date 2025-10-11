@@ -13,7 +13,9 @@ namespace AlphaOmega.PushSharp.Huawei
 	/// <see href="https://developer.huawei.com/consumer/en/doc/HMSCore-Guides-V5/open-platform-oauth-0000001053629189-V5#EN-US_TOPIC_0000001053629189__section12493191334711"/>
 	public class HuaweiConfiguration
 	{
+#pragma warning disable S1075 // URIs should not be hardcoded
 		private const String TOKEN_V3_URL = "https://oauth-login.cloud.huawei.com/oauth2/v3/token";
+#pragma warning restore S1075 // URIs should not be hardcoded
 
 		private readonly Object _tokenLock = new Object();
 		private TokenResponse _token;

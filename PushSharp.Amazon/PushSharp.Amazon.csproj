@@ -13,7 +13,6 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
-		<!--PackageReference Include="SonarAnalyzer.CSharp" /-->
 		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">

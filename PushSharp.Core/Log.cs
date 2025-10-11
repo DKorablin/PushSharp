@@ -7,7 +7,7 @@ namespace AlphaOmega.PushSharp.Core
 	public static class Log
 	{
 		/// <summary>The trace source instance to log all events.</summary>
-		public static TraceSource Trace = new TraceSource("AlphaOmega.PushSharp");
+		public static TraceSource Trace { get; } = new TraceSource("AlphaOmega.PushSharp");
 
 		/// <summary>Adds trace listener to the trace source and remove Default trace listener.</summary>
 		/// <remarks>Useful when impossible to add listener using config file.</remarks>
