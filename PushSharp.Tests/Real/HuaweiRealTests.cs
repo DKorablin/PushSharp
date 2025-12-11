@@ -37,7 +37,17 @@ namespace AlphaOmega.PushSharp.Tests.Real
 
 				var notification = new HuaweiNotification();
 				notification.Message.token = new String[] { regId };
-				notification.Message.data = "{ \"somekey\" : \"I want cookie\" }";
+				notification.Message.data = "{ \"m\" : \"notification.Message.data\", }";
+				notification.Message.notification = new HuaweiNotification.MessageNotification.Notification()
+				{
+					title = " ",//Illegal payload, content cannot be null in body. Code: 80100003
+					body = "AlphaOmega: notification.Message.notification",//Illegal payload, content cannot be null in body. Code: 80100003
+				};
+				notification.Message.android = new HuaweiNotification.MessageNotification.AndroidConfig()
+				{
+					notification = new HuaweiNotification.MessageNotification.AndroidConfig.AndroidNotification(),
+					data = "{ \"m\" : \"notification.Message.android.data\", }",
+				};
 
 				broker.QueueNotification(notification);
 			}
